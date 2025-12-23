@@ -9,3 +9,20 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+.sed{
+    @apply bg-[#00693E]
+}
+
+.thr {
+    @apply bg-[#228B22]/25
+}
+
+.nav .collapse {
+    display: none; /* hidden by default */
+}
+
+.nav .collapse.show {
+    display: block;
+}
+
