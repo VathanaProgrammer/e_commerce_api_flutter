@@ -15,7 +15,7 @@ class AdminSidebarMenu
 
         // Reset first to avoid duplicates on every request
         Menu::reset();
-
+        
         $gray900 = '#1a1a1a'; // gray-900 color
 
         // Add menu items
