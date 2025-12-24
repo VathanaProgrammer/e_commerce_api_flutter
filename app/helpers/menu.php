@@ -16,7 +16,7 @@ class Menu
             'role'     => $options['role'] ?? null,
             'children' => $options['children'] ?? [],
             'color'    => $options['color'] ?? '', // optional color
-        ];
+        ]; 
 
         static::$items[] = $item;
         return $item;
