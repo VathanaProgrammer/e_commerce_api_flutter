@@ -74,6 +74,3 @@
 
     </nav>
 </aside>
-
-<!-- Alpine.js for dropdown toggle -->
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
