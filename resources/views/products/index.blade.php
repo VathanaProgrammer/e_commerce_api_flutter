@@ -3,31 +3,109 @@
 @section('content')
 <div class="container py-4">
     <div class="row">
-
-        <!-- Products Widget -->
         <div class="col-12">
             <x-widget title="Products">
-                <!-- Table placeholder -->
-                <table class="table table-striped table-bordered">
+                <table id="productsTable" class="table table-striped table-bordered display nowrap">
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th>Product Name</th>
+                            <th>ID</th>
+                            <th>Name</th>
                             <th>Category</th>
-                            <th>Price</th>
-                            <th>Stock</th>
+                            <th>Variants</th>
+                            <th>Description</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <!-- You can fill rows later dynamically -->
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">Table data will go here</td>
-                        </tr>
-                    </tbody>
                 </table>
             </x-widget>
         </div>
-
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    $('#productsTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: '{{ route('products.data') }}',
+        columns: [
+            { data: 'id', name: 'id' },
+            { data: 'name', name: 'name' },
+            { data: 'category', name: 'category.name' },
+            { data: 'variants', name: 'variants', orderable: false, searchable: false },
+            { data: 'description', name: 'description', orderable: false, searchable: false },
+            { data: 'action', name: 'action', orderable: false, searchable: false }
+        ],
+        dom: '<"d-flex justify-content-between mb-2"lfB>rtip',
+        buttons: ['copy', 'csv', 'excel', 'print'],
+        pageLength: 10,
+        lengthMenu: [[10,25,50,-1],[10,25,50,"All"]],
+        initComplete: function(){
+            $('#productsTable_wrapper .dataTables_filter').css('margin-bottom','10px');
+            $('#productsTable_wrapper .dataTables_length').css('margin-bottom','10px');
+        }
+    });
+
+    $(document).on('click','.delete-product',function(e){
+        e.preventDefault();
+        if(!confirm('Are you sure to delete this product?')) return;
+        let url = $(this).attr('href');
+        $.ajax({
+            url: url,
+            type: 'DELETE',
+            data: {_token: '{{ csrf_token() }}'},
+            success: function(){ 
+                $('#productsTable').DataTable().ajax.reload(); 
+                toastr.success('Product deleted successfully'); 
+            },
+            error: function(){ 
+                toastr.error('Failed to delete product'); 
+            }
+        });
+    });
+});
+</script>
+
+<style>
+/* Make table and all related text black */
+#productsTable,
+#productsTable th,
+#productsTable td,
+#productsTable_wrapper .dataTables_info,
+#productsTable_wrapper .dataTables_length,
+#productsTable_wrapper .dataTables_filter,
+#productsTable_wrapper .dataTables_paginate,
+#productsTable_wrapper .dt-buttons button,
+#productsTable_wrapper .dataTables_filter input {
+    color: black !important;
+    background-color: white !important; /* ensures readable background */
+}
+
+/* Bold header */
+#productsTable thead th {
+    font-weight: bold;
+}
+
+/* Buttons styling */
+#productsTable_wrapper .dt-buttons button {
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: black;
+    padding: 4px 8px;
+    margin-right: 4px;
+}
+
+/* Optional spacing */
+#productsTable_wrapper {
+    margin-top: 20px;
+}
+#productsTable_wrapper .dataTables_filter {
+    margin-bottom: 10px;
+}
+#productsTable_wrapper .dataTables_length {
+    margin-bottom: 10px;
+}
+</style>
 @endsection

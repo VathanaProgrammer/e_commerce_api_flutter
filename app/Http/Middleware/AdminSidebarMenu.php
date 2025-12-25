@@ -37,7 +37,7 @@ class AdminSidebarMenu
                 ],
                 [
                     'title' => 'Add Product',
-                    'url' => route('products.create'),
+                    'url' => route('products.index'),
                     'icon' => '<i class="bi bi-plus-square"></i>',
                     'color' => $gray900,
                 ]

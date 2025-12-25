@@ -3,7 +3,7 @@
 @section('content')
     <x-widget title="Create Product">
 
-        <form action="" method="POST">
+        <form id="form_add_product">
             @csrf
 
             <div class="row g-3 align-items-end">
@@ -102,7 +102,7 @@
     <div class="modal fade" id="quickAddModal" tabindex="-1">
         <div class="modal-dialog modal-md">
             <div class="modal-content rounded-0">
-                <form method="POST">
+                <form method="POST" action="{{ route('categories.store') }}">
                     @csrf
                     <div class="modal-header py-2">
                         <h6 class="modal-title text-black">Add Category</h6>

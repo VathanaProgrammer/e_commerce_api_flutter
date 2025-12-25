@@ -1,8 +1,15 @@
 <?php
+
 use App\Http\Middleware\AdminSidebarMenu;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -11,8 +18,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Apply middleware to all web routes
+
+        // ✅ RESTORE FULL WEB STACK
         $middleware->group('web', [
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+            StartSession::class,
+            ShareErrorsFromSession::class,
+            VerifyCsrfToken::class,
+            SubstituteBindings::class,
+
+            // ✅ your custom middleware LAST
             AdminSidebarMenu::class,
         ]);
     })

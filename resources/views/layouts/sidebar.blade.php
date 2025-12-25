@@ -1,11 +1,5 @@
 <!-- Sidebar -->
-<aside class="bg-white text-gray-900 flex flex-col w-64 min-h-screen shadow">
-
-    <!-- Brand / Logo -->
-    <div class="p-4 mb-4 text-center border-b">
-        <h5 class="font-semibold">{{ session('business.name', 'Business Name') }}</h5>
-    </div>
-
+<aside class="bg-white text-gray-900 flex flex-col w-64 min-h-screen shadow mt-4">
     <!-- Sidebar Menu -->
     <nav class="flex-1 px-2">
 
