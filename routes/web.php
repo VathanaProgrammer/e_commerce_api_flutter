@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Middleware\AdminSidebarMenu;
+use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\AuthController;
 
 /*
@@ -21,7 +22,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
-    Route::get('/product', [ProductController::class, 'index'])->name('products.index');  
+    Route::get('/product', [ProductController::class, 'index'])->name('products.index');
     Route::get('/product/data', [ProductController::class, 'data'])->name('products.data');       // list products
     Route::get('/product/create', [ProductController::class, 'create'])->name('products.create');  // create product form
     Route::get('/product/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');    // edit product
@@ -40,4 +41,13 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/categories/edit', [CategoryController::class, 'edit'])->name('categories.edit');
     Route::put('/categories/update/{id}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('/categories/destroy/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+    Route::prefix('attributes')->group(function () {
+        Route::get('/', [AttributeController::class, 'index'])->name('attributes.index');
+        Route::get('/create', [AttributeController::class, 'create'])->name('attributes.create');
+        Route::post('/store', [AttributeController::class, 'store'])->name('attributes.store');
+        Route::get('/{id}/edit', [AttributeController::class, 'edit'])->name('attributes.edit');
+        Route::put('/{id}', [AttributeController::class, 'update'])->name('attributes.update');
+        Route::delete('/{id}', [AttributeController::class, 'destroy'])->name('attributes.destroy');
+    });
 });

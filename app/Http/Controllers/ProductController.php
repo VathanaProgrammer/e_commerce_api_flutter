@@ -60,9 +60,11 @@ class ProductController extends Controller
             return redirect()->back()->with('error', 'Product not found');
         }
 
+        $attributes = Attribute::all();
+
         $categories = Category::all(); // For select dropdown
 
-        return view('products.edit', compact('product', 'categories'));
+        return view('products.edit', compact('product', 'categories', 'attributes'));
     }
 
 
@@ -138,6 +140,74 @@ class ProductController extends Controller
                 'request' => $request->all(),
             ]);
             return redirect()->back()->with('error', 'Failed to create product. Please try again.');
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        $product = Product::with(['descriptionLines', 'variants.attributeValues'])->findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'description_lines.*' => 'nullable|string|max:500',
+            'variants.*.sku' => 'nullable|string|max:100',
+            'variants.*.price' => 'nullable|numeric|min:0',
+            'variants.*.attributes.*' => 'nullable|exists:attribute_values,id',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $product->update([
+                'name' => $request->name,
+                'category_id' => $request->category_id,
+            ]);
+
+            // 1. Update description lines
+            $product->descriptionLines()->delete();
+            if ($request->description_lines) {
+                foreach ($request->description_lines as $index => $line) {
+                    if ($line) {
+                        ProductDescriptionLine::create([
+                            'product_id' => $product->id,
+                            'text' => $line,
+                            'sort_order' => $index,
+                        ]);
+                    }
+                }
+            }
+
+            // 2. Update variants
+            $product->variants()->delete(); // remove old variants + their attribute links
+            if ($request->variants) {
+                foreach ($request->variants as $variantData) {
+                    $variant = ProductVariant::create([
+                        'product_id' => $product->id,
+                        'sku' => $variantData['sku'] ?? null,
+                        'price' => $variantData['price'] ?? 0,
+                    ]);
+
+                    if (isset($variantData['attributes'])) {
+                        foreach ($variantData['attributes'] as $valueId) {
+                            ProductVariantAttribute::create([
+                                'product_variant_id' => $variant->id,
+                                'attribute_value_id' => $valueId,
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Product updated successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to update product', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all(),
+            ]);
+            return redirect()->back()->with('error', 'Failed to update product.');
         }
     }
 }

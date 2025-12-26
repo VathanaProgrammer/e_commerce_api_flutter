@@ -58,20 +58,25 @@
             <div class="mt-3">
                 <label class="form-label small mb-1">Attributes</label>
                 <div id="attributesSection">
-                    @foreach ($product->attributes as $attr)
-                        <div class="row g-2 mb-2 align-items-center">
-                            <div class="col-auto">
-                                <input type="text" name="attributes[]" class="form-control form-control-sm rounded-0"
-                                    value="{{ $attr->name }}" placeholder="Attribute name">
-                            </div>
-                            <div class="col-auto">
-                                <button type="button" class="btn btn-sm btn-outline-danger removeAttr">Remove</button>
+                    @foreach ($attributes as $attr)
+                        <div class="attribute-box border p-2 mb-2" data-id="{{ $attr->id }}">
+                            <label class="small">{{ $attr->name }}</label>
+                            <div class="values">
+                                @foreach ($attr->values as $val)
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input attribute-check" type="checkbox"
+                                            name="product_attributes[{{ $attr->id }}][]" value="{{ $val->id }}"
+                                            @foreach ($product->variants as $v)
+                                     @if ($v->attributeValues->contains('id', $val->id)) checked @endif @endforeach>
+                                        <label class="form-check-label">{{ $val->value }}</label>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
                     @endforeach
                 </div>
-                <button type="button" class="btn btn-sm btn-outline-secondary" id="addAttr">Add Attribute</button>
             </div>
+
 
             {{-- Variants --}}
             <div class="mt-3">
