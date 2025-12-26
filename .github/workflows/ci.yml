@@ -30,7 +30,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
-            cd /home/ubuntu/e_commerce_api_flutter
+            cd /var/www/e_commerce_api_flutter
             git reset --hard
             git pull origin main
             composer install --no-interaction --prefer-dist
