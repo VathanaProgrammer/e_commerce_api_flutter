@@ -1,31 +1,39 @@
-name: Laravel CI
+name: Laravel CI/CD
 
 on:
   push:
     branches: [ main ]
-  pull_request:
 
 jobs:
   laravel-ci:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: 8.4
 
-      - name: Copy .env
-        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      - run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      - run: composer install --no-interaction --prefer-dist
+      - run: php artisan key:generate
+      - run: php artisan config:clear
 
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist
-
-      - name: Generate app key
-        run: php artisan key:generate
-
-      - name: Clear config
-        run: php artisan config:clear
+  deploy:
+    needs: laravel-ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ubuntu
+          key: ${{ secrets.DEPLOY_KEY }}
+          script: |
+            cd /home/ubuntu/e_commerce_api_flutter
+            git reset --hard
+            git pull origin main
+            composer install --no-interaction --prefer-dist
+            php artisan migrate --force
+            php artisan config:clear
+            php artisan cache:clear
