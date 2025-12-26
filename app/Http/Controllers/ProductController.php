@@ -48,25 +48,42 @@ class ProductController extends Controller
         return abort(404);
     }
 
+    public function edit($id)
+    {
+        $product = Product::with([
+            'category',
+            'descriptionLines',
+            'variants.attributeValues.attribute' // fetch variants -> their attribute values -> attribute
+        ])->find($id);
+
+        if (!$product) {
+            return redirect()->back()->with('error', 'Product not found');
+        }
+
+        $categories = Category::all(); // For select dropdown
+
+        return view('products.edit', compact('product', 'categories'));
+    }
+
 
     public function create()
     {
         $categories = Category::all();
-        return view('products.create', compact('categories'));
+        $attributes = Attribute::all();
+        return view('products.create', compact('categories', 'attributes'));
     }
 
     public function store(Request $request)
     {
         Log::info('Storing new product', ['request' => $request->all()]);
 
-        // Validate request
         $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'description_lines.*' => 'nullable|string|max:500',
-            'attributes.*' => 'nullable|string|max:100',
-            'variant_sku.*' => 'nullable|string|max:100',
-            'variant_price.*' => 'nullable|numeric|min:0',
+            'variants.*.sku' => 'nullable|string|max:100',
+            'variants.*.price' => 'nullable|numeric|min:0',
+            'variants.*.attributes.*' => 'nullable|exists:attribute_values,id',
         ]);
 
         DB::beginTransaction();
@@ -91,38 +108,20 @@ class ProductController extends Controller
                 }
             }
 
-            // 3. Save attributes
-            $attributeIds = [];
-            if ($request->attributes) {
-                foreach ($request->attributes as $attrName) {
-                    if ($attrName) {
-                        $attribute = Attribute::firstOrCreate(['name' => $attrName]);
-                        $attributeIds[] = $attribute->id;
-                    }
-                }
-            }
+            // 3. Save variants and link attribute values
+            if ($request->variants) {
+                foreach ($request->variants as $variantData) {
+                    $variant = ProductVariant::create([
+                        'product_id' => $product->id,
+                        'sku' => $variantData['sku'] ?? null,
+                        'price' => $variantData['price'] ?? 0,
+                    ]);
 
-            // 4. Save product variants
-            if ($request->variant_sku && $request->variant_price) {
-                foreach ($request->variant_sku as $index => $sku) {
-                    $price = $request->variant_price[$index];
-                    if ($sku || $price) {
-                        $variant = ProductVariant::create([
-                            'product_id' => $product->id,
-                            'sku' => $sku,
-                            'price' => $price,
-                        ]);
-
-                        // Assign attribute values to this variant
-                        foreach ($attributeIds as $attrId) {
-                            $attrValue = AttributeValue::firstOrCreate([
-                                'attribute_id' => $attrId,
-                                'value' => 'Default', // placeholder
-                            ]);
-
+                    if (isset($variantData['attributes'])) {
+                        foreach ($variantData['attributes'] as $valueId) {
                             ProductVariantAttribute::create([
                                 'product_variant_id' => $variant->id,
-                                'attribute_value_id' => $attrValue->id,
+                                'attribute_value_id' => $valueId,
                             ]);
                         }
                     }

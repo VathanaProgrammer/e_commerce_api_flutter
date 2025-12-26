@@ -25,4 +25,14 @@ class ProductVariant extends Model
     {
         return $this->hasMany(TransactionSaleLine::class);
     }
+    // Many-to-Many with AttributeValue via pivot table
+    public function attributeValues()
+    {
+        return $this->belongsToMany(
+            AttributeValue::class,
+            'product_variant_attributes', // pivot table
+            'product_variant_id',         // FK on pivot to this model
+            'attribute_value_id'          // FK on pivot to related model
+        );
+    }
 }

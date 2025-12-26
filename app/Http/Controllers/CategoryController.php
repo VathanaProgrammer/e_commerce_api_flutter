@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
@@ -22,7 +23,7 @@ class CategoryController extends Controller
 
             return DataTables::of($query)
                 ->addColumn('actions', function ($row) {
-                    $edit = '<a href="' . route('categories.edit', $row->id) . '" class="btn btn-sm btn-primary me-1">Edit</a>';
+                    $edit = '<button data-id="'. $row->id .'" data-name="' . $row->name . '" type="button" class="edit-category btn btn-sm btn-primary me-1">Edit</button>';
                     $delete = '<button data-url="' . route('categories.destroy', $row->id) . '" class="btn btn-sm btn-danger delete-category">Delete</button>';
                     return $edit . $delete;
                 })
@@ -61,5 +62,70 @@ class CategoryController extends Controller
             DB::rollBack();
             return redirect()->back()->with(['success' => false, 'msg' => 'Error creating category: ' . $e->getMessage()]);
         }
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $output = ['success' => false, 'msg' => 'Something went wrong'];
+
+        try {
+            DB::beginTransaction();
+
+            $category = Category::find($id);
+
+            if (! $category) {
+                $output = [
+                    'success' => false,
+                    'msg' => 'Category not found'
+                ];
+                return response()->json(['data' => $output]);
+            }
+
+            $category->delete();
+
+            DB::commit();
+
+            $output = [
+                'success' => true,
+                'msg' => 'Category deleted successfully'
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Category delete failed', [
+                'id' => $id,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+        }
+
+        return response()->json(['data' => $output]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        Log::info('Updating category', ['id' => $id, 'request' => $request->all()]);
+        $output = ['success' => false, 'msg' => 'Something went wrong'];
+
+        try {
+            $category = Category::find($id);
+
+            if (!$category) {
+                $output['msg'] = 'Category not found';
+                return response()->json(['data' => $output]);
+            }
+
+            $category->name = $request->input('name');
+            $category->save();
+
+            $output['success'] = true;
+            $output['msg'] = 'Category updated successfully';
+        } catch (\Exception $e) {
+            Log::emergency('File: ' . $e->getFile() . ' Line: ' . $e->getLine() . ' Message: ' . $e->getMessage());
+            $output['msg'] = 'Failed to update category';
+        }
+
+        return response()->json(['data' => $output]);
     }
 }

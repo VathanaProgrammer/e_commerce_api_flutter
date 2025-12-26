@@ -30,4 +30,17 @@ class Product extends Model
     {
         return $this->hasMany(ProductDiscount::class);
     }
+
+    // Proper attributes relationship via variants -> attribute values -> attribute
+    public function attributes()
+    {
+        return $this->hasManyThrough(
+            Attribute::class,          // Final model
+            AttributeValue::class,     // Through model
+            'id',                      // Foreign key on AttributeValue? We'll fix below
+            'id',                      // Foreign key on Attribute
+            'id',                      // Local key on Product
+            'attribute_id'             // Local key on AttributeValue
+        );
+    }
 }
