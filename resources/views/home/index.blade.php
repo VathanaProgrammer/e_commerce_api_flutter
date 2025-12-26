@@ -4,7 +4,7 @@
 <div class="container py-4">
     <div class="row">
 
-        <!-- Products Widget -->
+        {{-- <!-- Products Widget -->
         <div class="col-12">
             <x-widget title="Home">
                 <!-- Table placeholder -->
@@ -26,7 +26,12 @@
                     </tbody>
                 </table>
             </x-widget>
-        </div>
+        </div> --}}
+
+        <div class="col-12">
+            <x-widget title="Welcome to the LUXON Admin Panel">
+                <p class="mb-0">Use the navigation menu to manage products, categories, and orders.</p>
+            </x-widget>
 
     </div>
 </div>
