@@ -35,7 +35,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/product/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::post('/product', [ProductController::class, 'store'])->name('products.store');
 
-    Route::put('/product/tset', [ProductController::class, 'update'])->name('users.index');
     Route::put('/product/test', [ProductController::class, 'update'])->name('roles.index');
 
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
@@ -55,5 +54,15 @@ Route::middleware(['web', 'auth'])->group(function () {
         Route::get('/{id}/edit', [AttributeController::class, 'edit'])->name('attributes.edit');
         Route::put('/{id}', [AttributeController::class, 'update'])->name('attributes.update');
         Route::delete('/{id}', [AttributeController::class, 'destroy'])->name('attributes.destroy');
+    });
+
+    Route::prefix('users')->group(function () {
+        Route::get('/', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');
+        Route::get('/data', [\App\Http\Controllers\UserController::class, 'data'])->name('users.data');
+        Route::get('/create', [\App\Http\Controllers\UserController::class, 'create'])->name('users.create');
+        Route::post('/store', [\App\Http\Controllers\UserController::class, 'store'])->name('users.store');
+        Route::get('/{id}/edit', [\App\Http\Controllers\UserController::class, 'edit'])->name('users.edit');
+        Route::put('/{id}', [\App\Http\Controllers\UserController::class, 'update'])->name('users.update');
+        Route::delete('/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('users.destroy');
     });
 });
