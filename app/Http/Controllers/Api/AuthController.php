@@ -19,7 +19,7 @@ class AuthController extends Controller
         ]);
 
         // Find user by email (or username)
-        $user = User::where('email', $request->username)->first();
+        $user = User::where('username', $request->username)->first();
 
         // Check credentials
         if (!$user || !Hash::check($request->password, $user->password_hash)) {
