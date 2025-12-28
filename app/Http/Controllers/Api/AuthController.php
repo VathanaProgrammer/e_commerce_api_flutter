@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-    
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -9,16 +9,17 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
+    // Login with Sanctum token
     public function login(Request $request)
     {
         // Validate request
         $request->validate([
-            'email' => 'required|email',
+            'username' => 'required|string',
             'password' => 'required',
         ]);
 
-        // Find user
-        $user = User::where('email', $request->email)->first();
+        // Find user by email (or username)
+        $user = User::where('email', $request->username)->first();
 
         // Check credentials
         if (!$user || !Hash::check($request->password, $user->password_hash)) {
@@ -28,8 +29,11 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Simple token (for demo)
-        $token = base64_encode($user->id . ':' . $user->email);
+        // Revoke previous tokens if needed
+        $user->tokens()->delete();
+
+        // Create a new Sanctum token
+        $token = $user->createToken('api-token')->plainTextToken;
 
         // Return response
         return response()->json([
@@ -41,6 +45,26 @@ class AuthController extends Controller
                 'role' => $user->role,
             ],
             'token' => $token,
+        ]);
+    }
+
+    // Optional: Logout endpoint
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Logged out successfully'
+        ]);
+    }
+
+    // Optional: Authenticated user info
+    public function me(Request $request)
+    {
+        return response()->json([
+            'success' => true,
+            'user' => $request->user()
         ]);
     }
 }
