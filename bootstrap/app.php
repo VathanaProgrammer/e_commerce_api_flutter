@@ -9,6 +9,7 @@ use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\Routing\Middleware\SubstituteBindings;
+use App\Http\Middleware\SetBusinessSession;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             StartSession::class,
             ShareErrorsFromSession::class,
             VerifyCsrfToken::class,
+             SetBusinessSession::class,
             SubstituteBindings::class,
 
             // ✅ your custom middleware LAST

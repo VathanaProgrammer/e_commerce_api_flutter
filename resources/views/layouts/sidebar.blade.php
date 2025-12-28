@@ -39,11 +39,6 @@
                     <i class="bi bi-plus-square me-2"></i> List Attribute
                 </a>
 
-                <a href="{{ route('attributes.create') }}"
-                    class="flex items-center px-3 py-2 rounded hover:bg-gray-300 {{ request()->routeIs('attributes.create') ? 'bg-gray-300 font-semibold' : '' }}">
-                    <i class="bi bi-plus-square me-2"></i> Add Attribute
-                </a>
-
                 <!-- Categories inside Products -->
                 <a href="{{ route('categories.index') }}"
                     class="flex items-center px-3 py-2 rounded hover:bg-gray-300 {{ request()->routeIs('categories.index') ? 'bg-gray-300 font-semibold' : '' }}">

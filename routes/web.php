@@ -21,6 +21,11 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+    Route::get('/check-business', function () {
+        dd(session('business'));
+    });
+
+
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/product', [ProductController::class, 'index'])->name('products.index');
     Route::get('/product/data', [ProductController::class, 'data'])->name('products.data');       // list products
@@ -44,6 +49,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::prefix('attributes')->group(function () {
         Route::get('/', [AttributeController::class, 'index'])->name('attributes.index');
+        Route::get('/data', [AttributeController::class, 'data'])->name('attributes.data');
         Route::get('/create', [AttributeController::class, 'create'])->name('attributes.create');
         Route::post('/store', [AttributeController::class, 'store'])->name('attributes.store');
         Route::get('/{id}/edit', [AttributeController::class, 'edit'])->name('attributes.edit');
