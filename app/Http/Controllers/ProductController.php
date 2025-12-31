@@ -86,6 +86,7 @@ class ProductController extends Controller
             'variants.*.sku' => 'nullable|string|max:100',
             'variants.*.price' => 'nullable|numeric|min:0',
             'variants.*.attributes.*' => 'nullable|exists:attribute_values,id',
+            'discount.value' => 'nullable|numeric|min:0'
         ]);
 
         DB::beginTransaction();
@@ -129,18 +130,24 @@ class ProductController extends Controller
                     }
                 }
             }
-            if ($request->has('discount.value')) {
+            if ($request->filled('discount.value')) {
                 ProductDiscount::create([
-                    'name' => $request->discount['name'] ?? $product->name . ' Discount',
+                    'name' => $request->discount['name']
+                        ?? $product->name . ' Discount',
                     'product_id' => $product->id,
                     'value' => $request->discount['value'],
-                    'is_percentage' => $request->discount['is_percentage'] ?? true,
-                    'active' => $request->discount['active'] ?? true,
+                    'is_percentage' => (bool) ($request->discount['is_percentage'] ?? true),
+                    'active' => (bool) ($request->discount['active'] ?? true),
                 ]);
             }
 
+
             DB::commit();
-            return redirect()->back()->with('success', 'Product created successfully!');
+            return response()->json([
+                'success' => true,
+                'msg' => 'Product created successfully.',
+                'location' => route('products.index')
+            ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to store product', [
@@ -148,7 +155,10 @@ class ProductController extends Controller
                 'trace' => $e->getTraceAsString(),
                 'request' => $request->all(),
             ]);
-            return redirect()->back()->with('error', 'Failed to create product. Please try again.');
+            return response()->json([
+                'success' => false,
+                'msg' => 'Failed to create product. Please try again.'
+            ], 500);
         }
     }
 

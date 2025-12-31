@@ -158,9 +158,11 @@
                     method: 'POST',
                     data: form.serialize(),
                     success: function(res) {
-                        toastr.success('Product created!');
+                        toastr.success( res.msg || 'Product created!');
                         form[0].reset();
                         $('#variantsSection').empty();
+                        window.location.href = res.location;
+                        console.log('Product created', res);
                     },
                     error: function(err) {
                         toastr.error('Failed.');
