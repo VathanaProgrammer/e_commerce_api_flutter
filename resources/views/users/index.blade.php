@@ -1,39 +1,41 @@
 @extends('layouts.app')
 
 @section('content')
-    <x-widget title="Users List">
+    <div class="container py-4">
+        <x-widget title="Users List">
 
-        <div class="mb-3">
-            <a href="{{ route('users.create') }}" class="btn btn-success btn-sm rounded-0">
-                <i class="fas fa-plus"></i> Add User
-            </a>
-        </div>
+            <div class="mb-3">
+                <a href="{{ route('users.create') }}" class="btn btn-success btn-sm rounded-0">
+                    <i class="fas fa-plus"></i> Add User
+                </a>
+            </div>
 
-        <div class="card border-0 shadow-none">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0" id="usersTable">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>Profile</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Username</th>
-                                <th>Gender</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                                <th>Last Login</th>
-                                <th class="text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+            <div class="card border-0 shadow-none">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="usersTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Profile</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Username</th>
+                                    <th>Gender</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Last Login</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
 
-    </x-widget>
+        </x-widget>
+    </div>
 @endsection
 
 @section('scripts')

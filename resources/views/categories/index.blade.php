@@ -1,31 +1,33 @@
 @extends('layouts.app')
 
 @section('content')
-    @include('categories.edit')
-    @include('categories.create')
-    <x-widget title="Category List">
+    <div class="container py-4">
+        @include('categories.edit')
+        @include('categories.create')
+        <x-widget title="Category List">
 
-        <div class="mb-3">
-            <button class="btn btn-sm btn-success rounded-0" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
-                <i class="fas fa-plus"></i> Create New Category
-            </button>
-        </div>
+            <div class="mb-3">
+                <button class="btn btn-sm btn-success rounded-0" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
+                    <i class="fas fa-plus"></i> Create New Category
+                </button>
+            </div>
 
-        <div class="table-responsive w-100 overflow-hidden">
-            <table class="table" id="categoriesTable">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Created At</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+            <div class="table-responsive w-100 overflow-hidden">
+                <table class="table" id="categoriesTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Created At</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
 
-    </x-widget>
+        </x-widget>
+    </div>
 @endsection
 
 @section('scripts')
@@ -151,7 +153,7 @@
                 $('#editCategoryModal').modal('show');
 
 
-                
+
 
                 let categoryId = $(this).data('id');
                 let categoryName = $(this).data('name');

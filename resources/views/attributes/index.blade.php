@@ -1,31 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
-    <x-widget title="Attributes">
+    <div class="container py-4">
+        <x-widget title="Attributes List">
 
-        <div class="mb-3">
-            <button type="button" class="btn btn-sm btn-success rounded-0" data-bs-toggle="modal"
-                data-bs-target="#addAttributeModal">
-                <i class="fas fa-plus"></i> Add Attribute
-            </button>
-        </div>
+            <div class="mb-3">
+                <button class="btn btn-success btn-sm rounded-0" data-bs-toggle="modal"
+                    data-bs-target="#addAttributeModal">
+                    <i class="fas fa-plus"></i> Add Attribute
+                </button>
+            </div>
 
-        <div class="table-responsive w-100 overflow-hidden">
-            <table class="table" id="attributesTable">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Values</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+            <div class="card border-0 shadow-none">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="attributesTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Values</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-    </x-widget>
-
+        </x-widget>
+    </div>
     @include('attributes.edit')
     @include('attributes.create')
 @endsection
