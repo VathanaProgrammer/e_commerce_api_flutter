@@ -11,7 +11,7 @@
         </div>
 
         <div class="table-responsive w-100 overflow-hidden">
-            <table class="table table-sm table-bordered table-striped" id="attributesTable">
+            <table class="table" id="attributesTable">
                 <thead class="table-light">
                     <tr>
                         <th>#</th>
