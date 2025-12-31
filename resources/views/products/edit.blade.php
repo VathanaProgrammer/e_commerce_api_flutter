@@ -197,12 +197,14 @@
 
                 let form = $(this);
                 let url = form.attr('action'); // route('products.update', $product->id)
-                let formData = form.serialize();
+                let formData = new FormData(this); // Use FormData to handle nested arrays
 
                 $.ajax({
                     url: url,
                     type: 'POST',
                     data: formData,
+                    processData: false, // required for FormData
+                    contentType: false, // required for FormData
                     success: function(res) {
                         if (res.success) {
                             toastr.success('Product updated successfully!');
@@ -216,7 +218,6 @@
                         }
                     },
                     error: function(err) {
-                        // show errors
                         if (err.responseJSON && err.responseJSON.errors) {
                             let messages = Object.values(err.responseJSON.errors).flat().join(
                                 '<br>');
@@ -227,7 +228,6 @@
                     }
                 });
             });
-
 
             // Add Description Line
             $('#addLine').off('click').on('click', function() {

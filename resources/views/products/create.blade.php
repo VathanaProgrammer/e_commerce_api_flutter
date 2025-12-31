@@ -152,23 +152,25 @@
 
             $('#form_add_product').on('submit', function(e) {
                 e.preventDefault();
-                let form = $(this);
+                let formData = new FormData(this); // use FormData
                 $.ajax({
                     url: "{{ route('products.store') }}",
                     method: 'POST',
-                    data: form.serialize(),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function(res) {
-                        toastr.success( res.msg || 'Product created!');
+                        toastr.success(res.msg || 'Product created!');
                         form[0].reset();
                         $('#variantsSection').empty();
                         window.location.href = res.location;
-                        console.log('Product created', res);
                     },
                     error: function(err) {
                         toastr.error('Failed.');
                     }
                 });
             });
+
         });
     </script>
 @endsection
