@@ -40,7 +40,7 @@
                         {{-- Last Name --}}
                         <div class="col-md-5">
                             <label>Last Name</label>
-                            <input name="last_name" class="form-control form-control-sm rounded-0" required>
+                            <input name="last_name" class="form-control form-control-sm rounded-0">
                         </div>
 
                         {{-- Email --}}
