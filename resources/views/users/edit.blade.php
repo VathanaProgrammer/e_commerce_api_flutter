@@ -45,7 +45,7 @@
                     {{-- Last Name --}}
                     <div class="col-md-5">
                         <label>Last Name</label>
-                        <input name="last_name" value="{{ $user->last_name }}" class="form-control form-control-sm rounded-0">
+                        <input name="last_name" value="{{ $user->last_name ?? '' }}" class="form-control form-control-sm rounded-0">
                     </div>
 
                     {{-- Email --}}
