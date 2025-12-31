@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Product extends Model
 {
@@ -11,6 +12,12 @@ class Product extends Model
 
     protected $fillable = ['category_id', 'name', 'image_url'];
 
+    protected function imageUrl(): Attribute{
+        return Attribute::make(
+            get: fn ($value) =>
+                    $value ? asset('uploads/products/' . $value) : asset('uploads/products/default.jpg'),
+        );
+    }
     public function category()
     {
         return $this->belongsTo(Category::class);
