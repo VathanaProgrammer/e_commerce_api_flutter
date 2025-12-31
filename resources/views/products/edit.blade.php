@@ -97,7 +97,7 @@
                     <h6 class="mb-2">Attributes</h6>
                     <div id="attributesSection" class="mb-3">
                         @foreach ($attributes as $attr)
-                            <div class="mb-2" data-id="{{ $attr->id }}">
+                            <div class="mb-2 attribute-box" data-id="{{ $attr->id }}">
                                 <label class="small">{{ $attr->name }}</label>
                                 <div class="d-flex flex-wrap gap-2">
                                     @foreach ($attr->values as $val)
@@ -106,13 +106,14 @@
                                                 name="product_attributes[{{ $attr->id }}][]"
                                                 value="{{ $val->id }}"
                                                 @foreach ($product->variants as $v)
-                                                    @if ($v->attributeValues->contains('id', $val->id)) checked @endif @endforeach>
+                            @if ($v->attributeValues->contains('id', $val->id)) checked @endif @endforeach>
                                             <label class="form-check-label">{{ $val->value }}</label>
                                         </div>
                                     @endforeach
                                 </div>
                             </div>
                         @endforeach
+
                     </div>
 
                     <h6 class="mb-2">Variants</h6>
@@ -153,7 +154,7 @@
                 );
             });
             const oldImageUrl =
-            "{{ $product->image_url ? asset('uploads/products/' . $product->image_url) : '' }}";
+                "{{ $product->image_url ? asset('uploads/products/' . $product->image_url) : '' }}";
 
             function showPreview(fileInput) {
                 const file = fileInput.files[0];
