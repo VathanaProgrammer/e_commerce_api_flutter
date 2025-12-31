@@ -87,7 +87,7 @@ class UserController extends Controller
         $request->validate([
             'prefix' => 'nullable|in:Mr,Miss,other',
             'first_name' => 'required|string|max:100',
-            'last_name' => 'required|string|max:100',
+            'last_name' => 'string|max:100',
             'email' => 'required|email|unique:users,email',
             'username' => 'nullable|string|max:255',
             'password' => 'required|string|min:3',
@@ -108,7 +108,7 @@ class UserController extends Controller
         User::create([
             'prefix' => $request->prefix,
             'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
+            'last_name' => $request->last_name ?? null,
             'email' => $request->email,
             'username' => $request->username,
             'password_hash' => Hash::make($request->password),
@@ -134,7 +134,7 @@ class UserController extends Controller
         // Validate
         $request->validate([
             'first_name' => 'required|string|max:100',
-            'last_name'  => 'required|string|max:100',
+            'last_name'  => 'string|max:100',
             'email'      => 'required|email|unique:users,email,' . $user->id,
             'username'   => 'nullable|string|max:100',
             'password'   => 'nullable|string|min:3',
@@ -148,7 +148,7 @@ class UserController extends Controller
         // Fill user data
         $user->fill([
             'first_name' => $request->first_name,
-            'last_name'  => $request->last_name,
+            'last_name'  => $request->last_name ?? null,
             'email'      => $request->email,
             'username'   => $request->username,
             'role'       => $request->role,
