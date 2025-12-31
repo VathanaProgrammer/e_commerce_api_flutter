@@ -22,6 +22,9 @@ class CategoryController extends Controller
             $query = Category::query(); // <-- Pass the query, not get()
 
             return DataTables::of($query)
+                ->editColumn('created_at', function ($row) {
+                    return $row->created_at ? $row->created_at->format('Y-m-d H:i:s A') : '-';
+                })
                 ->addColumn('actions', function ($row) {
                     $edit = '<button data-id="'. $row->id .'" data-name="' . $row->name . '" type="button" class="edit-category btn btn-sm btn-primary me-1">Edit</button>';
                     $delete = '<button data-url="' . route('categories.destroy', $row->id) . '" class="btn btn-sm btn-danger delete-category">Delete</button>';

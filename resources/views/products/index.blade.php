@@ -5,18 +5,24 @@
         <div class="row">
             <div class="col-12">
                 <x-widget title="Products">
-                    <table id="productsTable" class="table table-striped table-bordered display nowrap">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Category</th>
-                                <th>Variants</th>
-                                <th>Description</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                    </table>
+                    <div class="card border-0 shadow-none">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table id="productsTable" class="table display nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Category</th>
+                                            <th>Variants</th>
+                                            <th>Description</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </x-widget>
             </div>
         </div>

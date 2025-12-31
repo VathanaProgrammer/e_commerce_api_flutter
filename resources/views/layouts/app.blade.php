@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css" rel="stylesheet" />
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
@@ -21,7 +22,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @stack('styles')
+    @section('styles')
 </head>
 
 <body class="bg-light">
@@ -97,7 +98,7 @@
     <!-- Audio elements -->
     <audio id="success-audio" src="{{ asset('sounds/success.mp3') }}" preload="auto"></audio>
     <audio id="error-audio" src="{{ asset('sounds/error.mp3') }}" preload="auto"></audio>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
     <!-- jQuery first (needed by DataTables) -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 

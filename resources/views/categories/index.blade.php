@@ -12,7 +12,7 @@
         </div>
 
         <div class="table-responsive w-100 overflow-hidden">
-            <table class="table table-sm table-bordered table-striped" id="categoriesTable">
+            <table class="table" id="categoriesTable">
                 <thead class="table-light">
                     <tr>
                         <th>#</th>

@@ -58,7 +58,7 @@
                     </span>
                     <i :class="open ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
                 </button>
-                <div x-show="open" class="space-y-1 pl-5">
+                <div x-show="open" class="space-y-1 pl-5 *:mt-2">
                     <a href="{{ route('users.index') }}"
                         class="flex items-center px-3 py-2 rounded hover:bg-gray-300 {{ request()->routeIs('users.index') ? 'bg-gray-300 font-semibold' : '' }}">
                         <i class="bi bi-person me-2"></i> Users List

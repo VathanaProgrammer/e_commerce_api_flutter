@@ -56,7 +56,7 @@ Route::middleware(['web', 'auth'])->group(function () {
         Route::delete('/{id}', [AttributeController::class, 'destroy'])->name('attributes.destroy');
     });
 
-    Route::prefix('users')->group(function () {
+    Route::prefix('user')->group(function () {
         Route::get('/', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');
         Route::get('/data', [\App\Http\Controllers\UserController::class, 'data'])->name('users.data');
         Route::get('/create', [\App\Http\Controllers\UserController::class, 'create'])->name('users.create');
