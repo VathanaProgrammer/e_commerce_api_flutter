@@ -64,7 +64,7 @@ class ProductController extends Controller
 
         $attributes = Attribute::all();
         $categories = Category::all();
-
+        Log::info('Editing product', ['product' => $product]);
         return view('products.edit', compact('product', 'categories', 'attributes'));
     }
 
@@ -86,16 +86,25 @@ class ProductController extends Controller
             'variants.*.sku' => 'nullable|string|max:100',
             'variants.*.price' => 'nullable|numeric|min:0',
             'variants.*.attributes.*' => 'nullable|exists:attribute_values,id',
-            'discount.value' => 'nullable|numeric|min:0'
+            'discount.value' => 'nullable|numeric|min:0',
+            'image' => 'nullable|image|max:2048',
         ]);
 
         DB::beginTransaction();
 
         try {
+            // 1. Handle image upload
+            $imageName = null;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('uploads/products'), $imageName);
+            }
             // 1. Create product
             $product = Product::create([
                 'name' => $request->name,
                 'category_id' => $request->category_id,
+                'image_url' => $imageName ? '/uploads/products/' . $imageName : null,
             ]);
 
             // 2. Save description lines
@@ -178,6 +187,17 @@ class ProductController extends Controller
 
         DB::beginTransaction();
         try {
+            // 1. Handle image update
+            if ($request->hasFile('image')) {
+                // Delete old image if exists
+                if ($product->image_url && file_exists(public_path('uploads/products/' . $product->image_url))) {
+                    unlink(public_path('uploads/products/' . $product->image_url));
+                }
+                $image = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('uploads/products'), $imageName);
+                $product->image_url = $imageName;
+            }
             $product->update([
                 'name' => $request->name,
                 'category_id' => $request->category_id,

@@ -40,7 +40,7 @@ class HomeController extends Controller
                     'id' => $product->id,
                     'name' => $product->name,
                     'price' => (int) $product->price,
-                    'image' => $product->image ?? '',
+                    'image_url' => $product->image_url ?? '',
                     'discount' => $discount ? [
                         'id' => $discount->id,
                         'value' => $discount->value,

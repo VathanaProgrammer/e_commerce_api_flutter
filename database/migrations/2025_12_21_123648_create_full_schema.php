@@ -37,7 +37,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->string('name');
-            $table->string('image_url')->nullable()->default('/img/default.png');
             $table->timestamps();
         });
 
