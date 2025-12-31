@@ -2,8 +2,7 @@
 
 @section('content')
     <x-widget title="Edit Product">
-
-        <form method="POST" action="{{ route('products.update', $product->id) }}">
+        <form method="POST" action="{{ route('products.update', $product->id) }}" id="form_update_product">
             @csrf
             @method('PUT')
 
@@ -122,6 +121,57 @@
                 <button type="button" class="btn btn-sm btn-outline-warning" id="addVariant">Add Variant</button>
             </div>
 
+            {{-- DISCOUNTS --}}
+            <div class="mt-4">
+                <label class="form-label small mb-1">Discount</label>
+                <div class="row g-2 align-items-center">
+
+                    @if ($product->discounts->count())
+                        {{-- Show existing discounts as selectable boxes --}}
+                        @foreach ($product->discounts as $discount)
+                            <div class="col-12 col-md-6 mb-2">
+                                <div class="discount-box border p-2 rounded {{ $discount->active ? 'selected' : '' }}"
+                                    data-id="{{ $discount->id }}" style="cursor:pointer;">
+                                    <strong>{{ $discount->name }}</strong> — {{ $discount->value }}
+                                    {{ $discount->is_percentage ? '%' : '$' }}
+                                    @if (!$discount->active)
+                                        <span class="text-muted">(Inactive)</span>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                        <input type="hidden" name="discount_id" id="discount_id"
+                            value="{{ $product->discounts->where('active', true)->first()?->id }}">
+                    @else
+                        {{-- No discount yet: show inputs to add one --}}
+                        <div class="row g-2 align-items-center" id="addDiscountSection">
+                            <div class="col-auto">
+                                <input type="text" name="discount[name]" class="form-control form-control-sm rounded-0"
+                                    placeholder="Discount Name">
+                            </div>
+                            <div class="col-auto">
+                                <input type="number" step="0.01" name="discount[value]"
+                                    class="form-control form-control-sm rounded-0" placeholder="Value">
+                            </div>
+                            <div class="col-auto">
+                                <select name="discount[is_percentage]" class="form-select form-select-sm rounded-0">
+                                    <option value="1">Percentage %</option>
+                                    <option value="0">Fixed Amount $</option>
+                                </select>
+                            </div>
+                            <div class="col-auto d-flex align-items-center">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="discount[active]"
+                                        value="1" checked>
+                                    <label class="form-check-label small">Active</label>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                </div>
+            </div>
+
             {{-- Submit --}}
             <div class="mt-4">
                 <button type="submit" class="btn btn-sm btn-success rounded-0">Update Product</button>
@@ -134,6 +184,50 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            $('.discount-box').on('click', function() {
+                // Remove selection from all boxes
+                $('.discount-box').removeClass('selected');
+                // Add selection to clicked box
+                $(this).addClass('selected');
+                // Update hidden input value
+                $('#discount_id').val($(this).data('id'));
+            });
+            $('#form_update_product').on('submit', function(e) {
+                e.preventDefault(); // stop default submit
+
+                let form = $(this);
+                let url = form.attr('action'); // route('products.update', $product->id)
+                let formData = form.serialize();
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: formData,
+                    success: function(res) {
+                        if (res.success) {
+                            toastr.success('Product updated successfully!');
+                            // Redirect to products index after a short delay
+                            setTimeout(function() {
+                                window.location.href = res.location;
+                            }, 500);
+                        } else {
+                            toastr.error(res.msg ||
+                                'Failed to update product. Please try again.');
+                        }
+                    },
+                    error: function(err) {
+                        // show errors
+                        if (err.responseJSON && err.responseJSON.errors) {
+                            let messages = Object.values(err.responseJSON.errors).flat().join(
+                                '<br>');
+                            toastr.error(messages);
+                        } else {
+                            toastr.error('Something went wrong.');
+                        }
+                    }
+                });
+            });
+
 
             // Add Description Line
             $('#addLine').off('click').on('click', function() {
@@ -200,4 +294,10 @@
 
         });
     </script>
+@endsection
+
+@section('styles')
+    <style>
+
+    </style>
 @endsection

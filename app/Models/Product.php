@@ -26,10 +26,18 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class);
     }
 
+    // Product.php
     public function discounts()
     {
         return $this->hasMany(ProductDiscount::class);
     }
+
+    // Helper to get the active discount
+    public function activeDiscount()
+    {
+        return $this->hasOne(ProductDiscount::class)->where('active', true);
+    }
+
 
     // Proper attributes relationship via variants -> attribute values -> attribute
     public function attributes()

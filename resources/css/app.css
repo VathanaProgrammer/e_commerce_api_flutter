@@ -10,7 +10,7 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-.sed{
+.sed {
     @apply bg-[#00693E]
 }
 
@@ -19,10 +19,24 @@
 }
 
 .nav .collapse {
-    display: none; /* hidden by default */
+    display: none;
+    /* hidden by default */
 }
 
 .nav .collapse.show {
     display: block;
 }
 
+.discount-box {
+    transition: all 0.2s;
+}
+
+.discount-box.selected{
+    color: rgb(231, 231, 231);
+    border-color: #07a502;
+    /* green border for selected */
+    background-color: #00bb10;
+}
+.discount-box.selected span.text-muted {
+    color: rgb(231, 231, 231) !important;
+}

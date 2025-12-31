@@ -9,6 +9,7 @@ use App\Models\Attribute;
 use App\Models\AttributeValue;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantAttribute;
+use App\Models\ProductDiscount;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Models\Category;
@@ -53,7 +54,8 @@ class ProductController extends Controller
         $product = Product::with([
             'category',
             'descriptionLines',
-            'variants.attributeValues.attribute' // fetch variants -> their attribute values -> attribute
+            'variants.attributeValues.attribute',
+            'activeDiscount', // only the active one
         ])->find($id);
 
         if (!$product) {
@@ -61,12 +63,10 @@ class ProductController extends Controller
         }
 
         $attributes = Attribute::all();
-
-        $categories = Category::all(); // For select dropdown
+        $categories = Category::all();
 
         return view('products.edit', compact('product', 'categories', 'attributes'));
     }
-
 
     public function create()
     {
@@ -129,6 +129,15 @@ class ProductController extends Controller
                     }
                 }
             }
+            if ($request->has('discount.value')) {
+                ProductDiscount::create([
+                    'name' => $request->discount['name'] ?? $product->name . ' Discount',
+                    'product_id' => $product->id,
+                    'value' => $request->discount['value'],
+                    'is_percentage' => $request->discount['is_percentage'] ?? true,
+                    'active' => $request->discount['active'] ?? true,
+                ]);
+            }
 
             DB::commit();
             return redirect()->back()->with('success', 'Product created successfully!');
@@ -145,6 +154,7 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
+        Log::info('Updating product', ['id' => $id, 'request' => $request->all()]);
         $product = Product::with(['descriptionLines', 'variants.attributeValues'])->findOrFail($id);
 
         $request->validate([
@@ -198,8 +208,33 @@ class ProductController extends Controller
                 }
             }
 
+            $discountId = $request->input('discount_id');
+            $discountData = $request->input('discount');
+
+            if ($discountId) {
+                // Case: user selected an existing discount
+                $product->discounts()->update(['active' => false]);
+                $product->discounts()->where('id', $discountId)->update(['active' => true]);
+            } elseif ($discountData && !empty($discountData['value'])) {
+                // Case: user added a new discount (no existing selected)
+                // Deactivate all old discounts
+                $product->discounts()->update(['active' => false]);
+
+                // Create new discount
+                ProductDiscount::create([
+                    'product_id' => $product->id,
+                    'name' => $discountData['name'] ?? $product->name . ' Discount',
+                    'value' => $discountData['value'],
+                    'is_percentage' => $discountData['is_percentage'] ?? true,
+                    'active' => $discountData['active'] ?? true,
+                ]);
+            } else {
+                // No discount selected or added → deactivate all
+                $product->discounts()->update(['active' => false]);
+            }
+
             DB::commit();
-            return redirect()->back()->with('success', 'Product updated successfully!');
+            return response()->json(['success' => true, 'msg' => 'Product updated successfully.', 'location' => route('products.index')], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to update product', [
@@ -207,7 +242,7 @@ class ProductController extends Controller
                 'trace' => $e->getTraceAsString(),
                 'request' => $request->all(),
             ]);
-            return redirect()->back()->with('error', 'Failed to update product.');
+            return response()->json(['success' => false, 'msg' => 'Failed to update product. Please try again.'], 500);
         }
     }
 }
