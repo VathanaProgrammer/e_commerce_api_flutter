@@ -22,7 +22,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
-/public/uploads
+
 /storage/debugbar
 /storage/framework/cache/data
 /storage/framework/sessions
