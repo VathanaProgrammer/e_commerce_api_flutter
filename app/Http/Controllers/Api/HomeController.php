@@ -24,11 +24,12 @@ class HomeController extends Controller
 
         // Products query
         $products = Product::with([
-                'category:id,name',
-                'discounts' => function ($q) {
-                    $q->where('active', true)->limit(1);
-                }
-            ])
+            'category:id,name',
+            'discounts' => function ($q) {
+                $q->where('active', true)->limit(1);
+            },
+            'variants', // load variants
+        ])
             ->when($category && $category !== 'All', function ($q) use ($category) {
                 $q->whereHas('category', function ($c) use ($category) {
                     $c->where('name', $category);
@@ -40,11 +41,13 @@ class HomeController extends Controller
             ->get()
             ->map(function ($product) {
                 $discount = $product->discounts->first();
+                $variant = $product->variants->first(); // first variant
+                $price = $variant ? $variant->price : 0;
 
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'price' => (int) $product->price,
+                    'price' => (float) $price, // float, not int
                     'image_url' => $product->image_url ?? '',
                     'discount' => $discount ? [
                         'id' => $discount->id,
@@ -53,6 +56,7 @@ class HomeController extends Controller
                     ] : null,
                 ];
             });
+
 
         return response()->json([
             'categories' => $categories,
