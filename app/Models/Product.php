@@ -15,7 +15,7 @@ class Product extends Model
     protected function imageUrl(): Attribute{
         return Attribute::make(
             get: fn ($value) =>
-                    $value ? asset('uploads/products/' . $value) : asset('uploads/products/default.jpg'),
+                    $value ? $value : asset('uploads/products/default.jpg'),
         );
     }
     public function category()

@@ -153,8 +153,7 @@
                     `<input type="text" name="description_lines[]" class="form-control form-control-sm mb-1 rounded-0">`
                 );
             });
-            const oldImageUrl =
-                "{{ $product->image_url ? asset('uploads/products/' . $product->image_url) : '' }}";
+            const oldImageUrl = "{{ $product->image_url }}";
 
             function showPreview(fileInput) {
                 const file = fileInput.files[0];
