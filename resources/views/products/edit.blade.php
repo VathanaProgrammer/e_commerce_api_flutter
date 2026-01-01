@@ -154,7 +154,7 @@
                 );
             });
             const oldImageUrl = "{{ $product->image_url }}";
-
+            console.log('Old Image URL:', oldImageUrl);
             function showPreview(fileInput) {
                 const file = fileInput.files[0];
                 if (file) {
