@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Business;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\Support\Facades\Bus;
 
 class HomeController extends Controller
 {
@@ -16,6 +18,9 @@ class HomeController extends Controller
 
         // Categories (for tabs)
         $categories = Category::select('id', 'name')->get();
+
+        // business info
+        $business = Business::select('id', 'name', 'logo')->first();
 
         // Products query
         $products = Product::with([
@@ -52,6 +57,7 @@ class HomeController extends Controller
         return response()->json([
             'categories' => $categories,
             'products' => $products,
+            'business' => $business,
         ]);
     }
 }
