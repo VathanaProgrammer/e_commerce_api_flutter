@@ -29,6 +29,10 @@ class AuthController extends Controller
             ], 401);
         }
 
+        $user->update([
+            'last_login' => now()
+        ]);
+
         // Revoke previous tokens if needed
         $user->tokens()->delete();
 
