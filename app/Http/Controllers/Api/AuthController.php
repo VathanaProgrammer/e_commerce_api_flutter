@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -35,6 +36,8 @@ class AuthController extends Controller
         
         $user = $user->fresh();
 
+        $lastLoginFormatted = Carbon::parse($user->last_login)->format('Y-m-d h:i A');
+
         // Revoke previous tokens if needed
         $user->tokens()->delete();
 
@@ -52,7 +55,7 @@ class AuthController extends Controller
                 'gender' => $user->gender,
                 'profile_image_url' => $user->profile_image_url,
                 'is_active' => $user->is_active ? true : false,
-                'last_login' => $user->last_login,
+                'last_login' => $lastLoginFormatted,
                 'username' => $user->username,
                 'role' => $user->role,
             ],
