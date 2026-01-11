@@ -5,11 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  laravel-ci:
-    runs-on: ubuntu-latest
-
   deploy:
-    needs: laravel-ci
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to server
@@ -20,10 +16,13 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
             cd /var/www/e_commerce_api_flutter
-            git reset --hard
-            git pull origin main
+
+            git fetch origin
+            git reset --hard origin/main
+
             npm install
             npm run build
+
             composer install --no-interaction --prefer-dist
             php artisan migrate --force
             php artisan config:clear
