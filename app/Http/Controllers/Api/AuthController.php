@@ -45,7 +45,7 @@ class AuthController extends Controller
                 'last_name' => $user->last_name,
                 'gender' => $user->gender,
                 'profile_image_url' => $user->profile_image_url,
-                'is_active' => $user->is_active,
+                'is_active' => $user->is_active ? true : false,
                 'last_login' => $user->last_login,
                 'username' => $user->username,
                 'role' => $user->role,
