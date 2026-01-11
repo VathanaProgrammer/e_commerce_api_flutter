@@ -24,6 +24,10 @@ class User extends Authenticatable
         'role'
     ];
 
+    protected $casts = [
+        'last_login' => 'datetime',
+    ];
+
     protected $hidden = ['password_hash'];
 
     public function getAuthPassword()
