@@ -35,13 +35,19 @@ class AuthController extends Controller
         // Create a new Sanctum token
         $token = $user->createToken('api-token')->plainTextToken;
 
-        // Return response
         return response()->json([
             'success' => true,
             'user' => [
                 'id' => $user->id,
-                'name' => $user->first_name . ' ' . $user->last_name,
                 'email' => $user->email,
+                'prefix' => $user->prefix,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'gender' => $user->gender,
+                'profile_image_url' => $user->profile_image_url,
+                'is_active' => $user->is_active,
+                'last_login' => $user->last_login,
+                'username' => $user->username,
                 'role' => $user->role,
             ],
             'token' => $token,
