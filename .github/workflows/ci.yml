@@ -7,17 +7,6 @@ on:
 jobs:
   laravel-ci:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.4
-
-      - run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-      - run: composer install --no-interaction --prefer-dist
-      - run: php artisan key:generate
-      - run: php artisan config:clear
 
   deploy:
     needs: laravel-ci
@@ -30,7 +19,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
-            cd /var/www/SmartRegistration_backend
+            cd /var/www/e_commerce_api_flutter
             git reset --hard
             git pull origin main
             npm install
