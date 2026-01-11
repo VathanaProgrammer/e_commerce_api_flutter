@@ -32,6 +32,8 @@ class AuthController extends Controller
         $user->update([
             'last_login' => now()
         ]);
+        
+        $user = $user->fresh();
 
         // Revoke previous tokens if needed
         $user->tokens()->delete();
