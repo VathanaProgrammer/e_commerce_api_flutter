@@ -10,6 +10,15 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
+aside {
+    width: 16rem;
+}
+
+aside a {
+    text-decoration: none;
+    color: inherit;
+}
+
 .sed {
     @apply bg-[#00693E]
 }
@@ -31,12 +40,81 @@
     transition: all 0.2s;
 }
 
-.discount-box.selected{
+.discount-box.selected {
     color: rgb(231, 231, 231);
     border-color: #07a502;
     /* green border for selected */
     background-color: #00bb10;
 }
+
 .discount-box.selected span.text-muted {
     color: rgb(231, 231, 231) !important;
+}
+
+.bg-completed,
+.bg-paid {
+    background-color: #45d35b;
+}
+
+.bg-ordered,
+.bg-padding {
+    background-color: #FA9600;
+}
+
+.bg-shipping {
+    background-color: #673AB7;
+}
+
+.bg-failed {
+    background-color: #E21818;
+}
+
+/* Gradient header for table */
+.base-bg th {
+    background: linear-gradient(90deg, #1e293b, #0f172a) !important;
+    color: #fff;
+    border-color: transparent;
+}
+
+/* Table body row background with borders */
+.table-body-bg tr td {
+    background-color: #E1E1E1 !important;
+    /* light gray */
+    color: #2A2A2A !important;
+    /* gray text */
+    border-bottom: 4px solid white !important;
+    /* add subtle row border */
+}
+
+.table-body-bg tr:nth-child(even) td {
+    background-color: #E1E1E1 !important;
+    /* consistent bg for even rows */
+    color: #2A2A2A !important;
+    border-bottom: 4px solid white !important;
+    /* add border for even rows too */
+}
+
+/* Optional: Remove double border at table bottom */
+.table-body-bg tr:last-child td {
+    border-bottom: none !important;
+}
+
+
+.modal-xl-plus {
+    max-width: 1400px;
+    /* Adjust width as needed */
+}
+
+.div-row-bg>div {
+    background-color: #E1E1E1;
+    color: #2A2A2A;
+    padding: 0.5rem;
+    /* optional padding like table cell */
+    margin-bottom: 0.25rem;
+    /* spacing between rows */
+}
+
+/* Alternate row color */
+.div-row-bg>div:nth-child(even) {
+    background-color: #E1E1E1;
 }

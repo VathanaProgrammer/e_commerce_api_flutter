@@ -25,7 +25,6 @@ Route::middleware(['web', 'auth'])->group(function () {
         dd(session('business'));
     });
 
-
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/product', [ProductController::class, 'index'])->name('products.index');
     Route::get('/product/data', [ProductController::class, 'data'])->name('products.data');       // list products
@@ -63,6 +62,17 @@ Route::middleware(['web', 'auth'])->group(function () {
         Route::post('/store', [\App\Http\Controllers\UserController::class, 'store'])->name('users.store');
         Route::get('/{id}/edit', [\App\Http\Controllers\UserController::class, 'edit'])->name('users.edit');
         Route::put('/{id}', [\App\Http\Controllers\UserController::class, 'update'])->name('users.update');
+        Route::get('/profile/{id}', [\App\Http\Controllers\UserController::class, 'profile'])->name('users.profile');
+        Route::get('/{id}', [\App\Http\Controllers\UserController::class, 'show'])->name('users.show');
         Route::delete('/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('users.destroy');
     });
+
+    Route::prefix('sales')->group(function () {
+        // web.php
+        Route::get('/orders', [App\Http\Controllers\SalesController::class, 'index'])->name('sales.orders');
+        Route::get('/{id}', [App\Http\Controllers\SalesController::class, 'show'])->name('sales.show');
+        Route::get('/{id}/edit', [App\Http\Controllers\SalesController::class, 'edit'])->name('sales.edit');
+        Route::get('/orders/data', [App\Http\Controllers\SalesController::class, 'data'])->name('sales.orders.data');
+    });
+
 });

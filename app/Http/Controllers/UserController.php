@@ -19,6 +19,16 @@ class UserController extends Controller
         return view('users.index');
     }
 
+    public function profile($id)
+    {
+        $user = User::findOrFail($id);
+
+        if(!$user) {
+            abort(404);
+        }
+        
+        return view('users.profile', compact('user'));
+    }
 
     public function data()
     {

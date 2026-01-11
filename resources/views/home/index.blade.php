@@ -29,7 +29,7 @@
         </div> --}}
 
         <div class="col-12">
-            <x-widget title="Welcome to the LUXON Admin Panel">
+            <x-widget title="Welcome to the  {{ session('business.name', 'Business Name') }} Admin Panel">
                 <p class="mb-0">Use the navigation menu to manage products, categories, and orders.</p>
             </x-widget>
 

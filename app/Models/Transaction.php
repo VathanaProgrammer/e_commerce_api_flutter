@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\TransactionStatus;
+use App\Enums\ShippingStatus;
 
 class Transaction extends Model
 {
@@ -12,6 +14,15 @@ class Transaction extends Model
     protected $fillable = [
         'user_id', 'total_sell_price', 'total_items', 'status',
         'shipping_status', 'shipping_address', 'delivery_person', 'invoice_no', 'discount_amount'
+    ];
+
+    protected $casts = [
+        'total_sell_price' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'status' => TransactionStatus::class,          
+        'shipping_status' => ShippingStatus::class,    
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function user()

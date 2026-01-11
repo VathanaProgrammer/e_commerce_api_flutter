@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-12">
                 <x-widget title="Products">
-                    <table id="productsTable" class="table display nowrap">
+                    <table id="productsTable" class="table display table-responsive">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -164,48 +164,4 @@
 
         });
     </script>
-
-    <style>
-        /* Make table and all related text black */
-        #productsTable,
-        #productsTable th,
-        #productsTable td,
-        #productsTable_wrapper .dataTables_info,
-        #productsTable_wrapper .dataTables_length,
-        #productsTable_wrapper .dataTables_filter,
-        #productsTable_wrapper .dataTables_paginate,
-        #productsTable_wrapper .dt-buttons button,
-        #productsTable_wrapper .dataTables_filter input {
-            color: black !important;
-            background-color: white !important;
-            /* ensures readable background */
-        }
-
-        /* Bold header */
-        #productsTable thead th {
-            font-weight: bold;
-        }
-
-        /* Buttons styling */
-        #productsTable_wrapper .dt-buttons button {
-            border: 1px solid #ccc;
-            background-color: #fff;
-            color: black;
-            padding: 4px 8px;
-            margin-right: 4px;
-        }
-
-        /* Optional spacing */
-        #productsTable_wrapper {
-            margin-top: 20px;
-        }
-
-        #productsTable_wrapper .dataTables_filter {
-            margin-bottom: 10px;
-        }
-
-        #productsTable_wrapper .dataTables_length {
-            margin-bottom: 10px;
-        }
-    </style>
 @endsection

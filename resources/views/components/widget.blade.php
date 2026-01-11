@@ -1,4 +1,4 @@
-<div style="color: #333;" class="mb-4 p-4 bg-gray-300 flex flex-col flex-grow">
+<div style="color: #333;" class="mb-4  flex flex-col flex-grow">
     <h2 class="font-semibold mb-2" style="color: #333;">{{ $title }}</h2>
 
     <!-- Content / Activity -->

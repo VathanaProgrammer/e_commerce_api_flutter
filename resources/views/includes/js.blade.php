@@ -25,6 +25,15 @@
             globalConfirmModal.hide();
         });
 
+
+        $(document).on('submit', '.logout-form', function(e) {
+            e.preventDefault();
+            let form = this;
+            showConfirmModal("Are you sure you want to logout?", function() {
+                form.submit();
+            });
+        });
+
 //         // -----------------------------
 //         // Submit Product Form via AJAX
 //         // -----------------------------

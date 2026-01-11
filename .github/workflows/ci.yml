@@ -30,7 +30,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
-            cd /var/www/e_commerce_api_flutter
+            cd /var/www/SmartRegistration_backend
             git reset --hard
             git pull origin main
             npm install
