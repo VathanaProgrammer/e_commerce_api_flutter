@@ -66,7 +66,7 @@ class ProductController extends Controller
                 'data' => [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'image_url' => $product->imageUrl,
+                    'image_url' => $product->image_url,
                     'category_id' => $product->category_id,
                     'category_name' => $product->category ? $product->category->name : null,
                     'description_lines' => $product->descriptionLines->map(function ($line) {
