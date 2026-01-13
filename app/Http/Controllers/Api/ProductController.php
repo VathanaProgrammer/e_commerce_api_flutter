@@ -4,10 +4,37 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\ProductDiscount;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    /**
+     * Simple test endpoint to check if product exists
+     */
+    public function test($id)
+    {
+        $product = Product::find($id);
+        
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found',
+                'product_id' => $id,
+                'all_product_ids' => Product::pluck('id')->toArray()
+            ], 404);
+        }
+        
+        return response()->json([
+            'success' => true,
+            'product' => $product,
+            'has_category' => $product->category_id !== null,
+            'category' => $product->category ?? null,
+            'variants_count' => $product->variants()->count(),
+            'description_lines_count' => $product->descriptionLines()->count(),
+        ]);
+    }
+
     /**
      * Get product details with variants and attributes
      */
@@ -25,30 +52,23 @@ class ProductController extends Controller
                 ], 404);
             }
 
-            // Load relationships one by one to see which fails
-            $product->load('category');
-            $product->load('descriptionLines');
-            $product->load('variants');
-            
-            // Try loading variant relationships if variants exist
-            if ($product->variants->isNotEmpty()) {
-                foreach ($product->variants as $variant) {
-                    try {
-                        $variant->load('attributes.attributeValue.attribute');
-                    } catch (\Exception $e) {
-                        // Variants exist but no attributes - that's ok
-                    }
-                }
-            }
+            // Load relationships
+            $product->load([
+                'category',
+                'descriptionLines' => function ($query) {
+                    $query->orderBy('sort_order');
+                },
+                'variants.attributes.attributeValue.attribute',
+            ]);
 
             return response()->json([
                 "success" => true,
                 'data' => [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'image_url' => $product->image_url,
+                    'image_url' => $product->imageUrl,
                     'category_id' => $product->category_id,
-                    'category_name' => $product->category->name,
+                    'category_name' => $product->category ? $product->category->name : null,
                     'description_lines' => $product->descriptionLines->map(function ($line) {
                         return [
                             'text' => $line->text,
@@ -56,13 +76,24 @@ class ProductController extends Controller
                         ];
                     }),
                     'variants' => $product->variants->map(function ($variant) {
-                        $discount = $variant->discount()->where('active', true)->first();
+                        // Get active discount for this specific variant
+                        $discount = ProductDiscount::where('product_variant_id', $variant->id)
+                            ->where('active', true)
+                            ->first();
+                        
+                        // If no variant-specific discount, check product-level discount
+                        if (!$discount) {
+                            $discount = ProductDiscount::where('product_id', $variant->product_id)
+                                ->whereNull('product_variant_id')
+                                ->where('active', true)
+                                ->first();
+                        }
                         
                         return [
                             'id' => $variant->id,
                             'product_id' => $variant->product_id,
                             'sku' => $variant->sku,
-                            'price' => $variant->price,
+                            'price' => (float) $variant->price,
                             'attributes' => $variant->attributes->map(function ($pivotAttr) {
                                 return [
                                     'attribute_value_id' => $pivotAttr->attributeValue->id,
@@ -73,9 +104,9 @@ class ProductController extends Controller
                             'discount' => $discount ? [
                                 'id' => $discount->id,
                                 'name' => $discount->name,
-                                'value' => $discount->value,
-                                'is_percentage' => $discount->is_percentage,
-                                'active' => $discount->active,
+                                'value' => (float) $discount->value,
+                                'is_percentage' => (bool) $discount->is_percentage,
+                                'active' => (bool) $discount->active,
                             ] : null,
                         ];
                     }),
@@ -83,9 +114,12 @@ class ProductController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Product not found',
-                'error' => $e->getMessage()
-            ], 404);
+                "success" => false,
+                'message' => 'Error loading product',
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ], 500);
         }
     }
 }
