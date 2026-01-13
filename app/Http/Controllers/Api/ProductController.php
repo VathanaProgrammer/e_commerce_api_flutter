@@ -15,7 +15,7 @@ class ProductController extends Controller
     public function test($id)
     {
         $product = Product::find($id);
-        
+
         if (!$product) {
             return response()->json([
                 'success' => false,
@@ -24,7 +24,7 @@ class ProductController extends Controller
                 'all_product_ids' => Product::pluck('id')->toArray()
             ], 404);
         }
-        
+
         return response()->json([
             'success' => true,
             'product' => $product,
@@ -43,7 +43,7 @@ class ProductController extends Controller
         try {
             // First check if product exists
             $product = Product::find($id);
-            
+
             if (!$product) {
                 return response()->json([
                     "success" => false,
@@ -52,13 +52,13 @@ class ProductController extends Controller
                 ], 404);
             }
 
-            // Load relationships
+            // Load relationships - use 'value' instead of 'attributeValue'
             $product->load([
                 'category',
                 'descriptionLines' => function ($query) {
                     $query->orderBy('sort_order');
                 },
-                'variants.attributes.attributeValue.attribute',
+                'variants.attributes.value.attribute',  // Changed here
             ]);
 
             return response()->json([
@@ -80,7 +80,7 @@ class ProductController extends Controller
                         $discount = ProductDiscount::where('product_variant_id', $variant->id)
                             ->where('active', true)
                             ->first();
-                        
+
                         // If no variant-specific discount, check product-level discount
                         if (!$discount) {
                             $discount = ProductDiscount::where('product_id', $variant->product_id)
@@ -88,7 +88,7 @@ class ProductController extends Controller
                                 ->where('active', true)
                                 ->first();
                         }
-                        
+
                         return [
                             'id' => $variant->id,
                             'product_id' => $variant->product_id,
@@ -96,9 +96,9 @@ class ProductController extends Controller
                             'price' => (float) $variant->price,
                             'attributes' => $variant->attributes->map(function ($pivotAttr) {
                                 return [
-                                    'attribute_value_id' => $pivotAttr->attributeValue->id,
-                                    'attribute_name' => $pivotAttr->attributeValue->attribute->name,
-                                    'value' => $pivotAttr->attributeValue->value,
+                                    'attribute_value_id' => $pivotAttr->value->id,  // Changed here
+                                    'attribute_name' => $pivotAttr->value->attribute->name,  // Changed here
+                                    'value' => $pivotAttr->value->value,  // Changed here
                                 ];
                             }),
                             'discount' => $discount ? [
