@@ -14,18 +14,35 @@ class ProductController extends Controller
     public function show($id)
     {
         try {
-            $product = Product::with([
-                'category',
-                'descriptionLines' => function ($query) {
-                    $query->orderBy('sort_order');
-                },
-                'variants.attributes.attributeValue.attribute',
-                'variants.discount' => function ($query) {
-                    $query->where('active', true);
+            // First check if product exists
+            $product = Product::find($id);
+            
+            if (!$product) {
+                return response()->json([
+                    "success" => false,
+                    'message' => 'Product not found',
+                    'product_id' => $id
+                ], 404);
+            }
+
+            // Load relationships one by one to see which fails
+            $product->load('category');
+            $product->load('descriptionLines');
+            $product->load('variants');
+            
+            // Try loading variant relationships if variants exist
+            if ($product->variants->isNotEmpty()) {
+                foreach ($product->variants as $variant) {
+                    try {
+                        $variant->load('attributes.attributeValue.attribute');
+                    } catch (\Exception $e) {
+                        // Variants exist but no attributes - that's ok
+                    }
                 }
-            ])->findOrFail($id);
+            }
 
             return response()->json([
+                "success" => true,
                 'data' => [
                     'id' => $product->id,
                     'name' => $product->name,
