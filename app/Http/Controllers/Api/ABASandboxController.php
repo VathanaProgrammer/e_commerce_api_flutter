@@ -36,46 +36,53 @@ class ABASandboxController extends Controller
         $this->orders[$orderId] = ['amount' => $amount, 'paid' => false];
 
         $payload = [
-            'merchantId' => $this->merchantId,
-            'orderId' => $orderId,
-            'amount' => $amount,
+            'req_time' => date('YmdHis'),
+            'merchant_id' => $this->merchantId,
+            'tran_id' => $orderId,
+            'first_name' => '',
+            'last_name' => '',
+            'email' => '',
+            'phone' => '',
+            'amount' => (float) $amount,
+            'purchase_type' => 'purchase',
+            'payment_option' => 'abapay_khqr',
+            'items' => base64_encode(json_encode([['name' => 'Test Item', 'quantity' => 1, 'price' => $amount]])),
             'currency' => 'KHR',
-            'callbackUrl' => url('/api/aba-callback'),
-            'description' => 'Test payment sandbox'
+            'callback_url' => base64_encode(url('/api/aba-callback')),
+            'return_deeplink' => null,
+            'custom_fields' => null,
+            'return_params' => null,
+            'payout' => null,
+            'lifetime' => 6,
+            'qr_image_template' => 'template3_color',
         ];
 
-        // JSON encode payload exactly for signing
         $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
         // Sign payload
         $privateKey = file_get_contents($this->privateKeyPath);
         $signature = '';
         openssl_sign($payloadJson, $signature, $privateKey, OPENSSL_ALGO_SHA256);
-        $signature = base64_encode($signature);
+        $payload['hash'] = base64_encode($signature);
 
         try {
             $client = new Client();
             $response = $client->post($this->abaApiUrl, [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                    'X-Signature' => $signature,
-                ],
-                'body' => $payloadJson, // <-- MUST match signed JSON
+                'headers' => ['Content-Type' => 'application/json'],
+                'body' => json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
             ]);
 
-            $body = (string) $response->getBody();
+            $body = $response->getBody()->getContents();
             Log::info('ABA Response', ['body' => $body]);
 
             $data = json_decode($body, true);
-
-            if (!$data) {
-                return response()->json(['error' => 'ABA returned invalid JSON', 'body' => $body], 500);
-            }
-
-            return response()->json(['qrImageUrl' => $data['qrImageUrl'] ?? null]);
+            return response()->json([
+                'qrImage' => $data['qrImage'] ?? null,
+                'qrString' => $data['qrString'] ?? null,
+                'status' => $data['status'] ?? null
+            ]);
         } catch (\Exception $e) {
-            Log::error('ABA QR Error: ' . $e->getMessage());
+            Log::error($e->getMessage());
             return response()->json(['error' => 'Failed to create QR'], 500);
         }
     }
