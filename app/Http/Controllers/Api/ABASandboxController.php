@@ -33,7 +33,7 @@ class ABASandboxController extends Controller
         $tranId = 'ORD-' . substr($orderId, 0, 10) . '-' . time();
         $currency = 'KHR';
 
-        $items = base64_encode(json_encode([['name'=>'Test Item','quantity'=>1,'price'=>$amount]], JSON_UNESCAPED_SLASHES));
+        $items = base64_encode(json_encode([['name' => 'Test Item', 'quantity' => 1, 'price' => $amount]], JSON_UNESCAPED_SLASHES));
         $callbackUrl = base64_encode($this->callbackUrl);
 
         $purchaseType = 'purchase';
@@ -73,20 +73,21 @@ class ABASandboxController extends Controller
             'items'             => $items,
             'currency'          => $currency,
             'callback_url'      => $callbackUrl,
-            'return_deeplink'   => '',
-            'custom_fields'     => '',
-            'return_params'     => '',
-            'payout'            => '',
+            'return_deeplink'   => null,
+            'custom_fields'     => null,
+            'return_params'     => null,
+            'payout'            => null,
             'lifetime'          => $lifetime,
             'qr_image_template' => $qrImageTemplate,
             'hash'              => $hash,
         ];
 
+
         $response = Http::withHeaders(['Content-Type' => 'application/json'])
             ->post('https://checkout-sandbox.payway.com.kh/api/payment-gateway/v1/payments/generate-qr', $payload);
 
         if (!$response->successful()) {
-            Log::error('ABA QR Error', ['status'=>$response->status(),'body'=>$response->body()]);
+            Log::error('ABA QR Error', ['status' => $response->status(), 'body' => $response->body()]);
             return response()->json(['error' => $response->body()], 500);
         }
 
