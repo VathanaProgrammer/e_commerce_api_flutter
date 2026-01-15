@@ -72,7 +72,7 @@ class ABASandboxController extends Controller
                 'status' => $data['status'] ?? null
             ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to create QR'], 500);
+            return response()->json(['error' => 'Failed to create QR: ' . $e], 500);
         }
     }
 
