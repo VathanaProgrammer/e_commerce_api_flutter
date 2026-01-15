@@ -16,7 +16,7 @@ class ABASandboxController extends Controller
     public function __construct()
     {
         $this->merchantId = config('services.aba.merchant_id');
-        $this->apiKey = config('services.aba.api_key'); // HMAC key from ABA sandbox
+        $this->apiKey = "6bdf718cb89c26617379a68251cc3524134b5d8b";
         $this->callbackUrl = url('/api/aba-callback');
     }
 
@@ -33,8 +33,7 @@ class ABASandboxController extends Controller
         $tranId = 'ORD-' . $orderId . '-' . time();
         $currency = 'KHR';
 
-        // Base64 encode items & callback URL
-        $items = base64_encode(json_encode([['name' => 'Test Item', 'quantity' => 1, 'price' => $amount]], JSON_UNESCAPED_SLASHES));
+        $items = base64_encode(json_encode([['name'=>'Test Item','quantity'=>1,'price'=>$amount]], JSON_UNESCAPED_SLASHES));
         $callbackUrl = base64_encode($this->callbackUrl);
 
         $purchaseType = 'purchase';
@@ -42,25 +41,19 @@ class ABASandboxController extends Controller
         $lifetime = 6;
         $qrImageTemplate = 'template3_color';
 
-        // Build hash string in exact order
         $hashString =
             $reqTime .
             $this->merchantId .
             $tranId .
             $amount .
             $items .
-            '' . // first_name
-            '' . // last_name
-            '' . // email
-            '' . // phone
+            '' . '' . '' . '' . // first_name, last_name, email, phone
             $purchaseType .
             $paymentOption .
             $callbackUrl .
             '' . // return_deeplink
             $currency .
-            '' . // custom_fields
-            '' . // return_params
-            '' . // payout
+            '' . '' . '' . // custom_fields, return_params, payout
             $lifetime .
             $qrImageTemplate;
 
@@ -89,16 +82,11 @@ class ABASandboxController extends Controller
             'hash'              => $hash,
         ];
 
-        // Call ABA sandbox QR API
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json'
-        ])->post('https://checkout-sandbox.payway.com.kh/api/payment-gateway/v1/payments/generate-qr', $payload);
+        $response = Http::withHeaders(['Content-Type' => 'application/json'])
+            ->post('https://checkout-sandbox.payway.com.kh/api/payment-gateway/v1/payments/generate-qr', $payload);
 
         if (!$response->successful()) {
-            Log::error('ABA QR Error', [
-                'status' => $response->status(),
-                'body' => $response->body()
-            ]);
+            Log::error('ABA QR Error', ['status'=>$response->status(),'body'=>$response->body()]);
             return response()->json(['error' => $response->body()], 500);
         }
 
