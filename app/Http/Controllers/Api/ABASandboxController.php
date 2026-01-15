@@ -30,7 +30,8 @@ class ABASandboxController extends Controller
         $orderId = $request->orderId;
         $amount = number_format((float) $request->amount, 2, '.', '');
         $reqTime = now()->utc()->format('YmdHis');
-        $tranId = 'ORD-' . substr($orderId, 0, 10) . '-' . time();
+        $tranId = 'O' . substr(md5($orderId . time()), 0, 15);
+
         $currency = 'KHR';
 
         $items = base64_encode(json_encode([['name' => 'Test Item', 'quantity' => 1, 'price' => $amount]], JSON_UNESCAPED_SLASHES));
