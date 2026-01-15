@@ -53,15 +53,19 @@ class ABASandboxController extends Controller
         // Use Guzzle to send request
         try {
             $client = new Client();
+            $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+
             $response = $client->post($this->abaApiUrl, [
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'X-Signature' => $signature,
                 ],
-                'json' => $payload,
+                'body' => $payloadJson, // <-- use 'body' so it matches the signed JSON exactly
             ]);
 
-            $data = json_decode($response->getBody()->getContents(), true);
+            $body = $response->getBody()->getContents();
+            Log::info('ABA Response', ['body' => $body]);
+            $data = json_decode($body, true);
 
             return response()->json(['qrImageUrl' => $data['qrImageUrl'] ?? null]);
         } catch (\Exception $e) {
