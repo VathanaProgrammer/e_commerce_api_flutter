@@ -57,7 +57,6 @@ class HomeController extends Controller
                 ];
             });
 
-
         return response()->json([
             'categories' => $categories,
             'products' => $products,

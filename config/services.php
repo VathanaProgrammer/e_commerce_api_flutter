@@ -34,5 +34,11 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'aba' => [
+        'merchant_id' => env('ABA_MERCHANT_ID'),
+        'api_url' => env('ABA_API_URL'),
+        'private_key_path' => env('ABA_PRIVATE_KEY_PATH'),
+        'public_key_path' => env('ABA_PUBLIC_KEY_PATH'),
+    ],
 
 ];
