@@ -32,7 +32,7 @@ class ABASandboxController extends Controller
         $orderId = $request->orderId;
         $amount = $request->amount;
 
-        // Store order in memory (for school project)
+        // Store order in memory
         $this->orders[$orderId] = ['amount' => $amount, 'paid' => false];
 
         $payload = [
@@ -44,35 +44,42 @@ class ABASandboxController extends Controller
             'description' => 'Test payment sandbox'
         ];
 
-        // Sign payload with RSA private key
+        // JSON encode payload exactly for signing
+        $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        // Sign payload
         $privateKey = file_get_contents($this->privateKeyPath);
         $signature = '';
-        openssl_sign(json_encode($payload), $signature, $privateKey, OPENSSL_ALGO_SHA256);
+        openssl_sign($payloadJson, $signature, $privateKey, OPENSSL_ALGO_SHA256);
         $signature = base64_encode($signature);
 
-        // Use Guzzle to send request
         try {
             $client = new Client();
-            $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
-
             $response = $client->post($this->abaApiUrl, [
                 'headers' => [
                     'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
                     'X-Signature' => $signature,
                 ],
-                'body' => $payloadJson, // <-- use 'body' so it matches the signed JSON exactly
+                'body' => $payloadJson, // <-- MUST match signed JSON
             ]);
 
-            $body = $response->getBody()->getContents();
+            $body = (string) $response->getBody();
             Log::info('ABA Response', ['body' => $body]);
+
             $data = json_decode($body, true);
+
+            if (!$data) {
+                return response()->json(['error' => 'ABA returned invalid JSON', 'body' => $body], 500);
+            }
 
             return response()->json(['qrImageUrl' => $data['qrImageUrl'] ?? null]);
         } catch (\Exception $e) {
-            Log::error($e->getMessage());
+            Log::error('ABA QR Error: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to create QR'], 500);
         }
     }
+
 
     public function callback(Request $request)
     {
