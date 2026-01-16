@@ -30,9 +30,8 @@ class ABASandboxController extends Controller
 
         $userId = $request->user_id;
         $payload = $request->payload;
-        $totalAmount = $payload['total']; // include discounts, shipping, tax
+        $totalAmount = $payload['total'];
 
-        // 1️⃣ Create PaymentIntent
         $intent = PaymentIntent::create([
             'user_id' => $userId,
             'gateway' => 'aba',
@@ -45,22 +44,25 @@ class ABASandboxController extends Controller
         $tranId = 'O' . substr(md5($intent->id . time()), 0, 15);
         $reqTime = now()->utc()->format('YmdHis');
 
-        $items = base64_encode(json_encode($payload['items'], JSON_UNESCAPED_SLASHES));
-        $callbackUrl = base64_encode($this->callbackUrl);
+        $itemsJson = json_encode($payload['items'], JSON_UNESCAPED_SLASHES);
+        $itemsBase64 = base64_encode($itemsJson);
+        $callbackUrlRaw = $this->callbackUrl;
+        $callbackUrlBase64 = base64_encode($callbackUrlRaw);
+        $amountStr = number_format($totalAmount, 2, '.', '');
 
         $hashString =
             $reqTime .
             $this->merchantId .
             $tranId .
-            number_format($totalAmount, 2, '.', '') .
-            $items .
-            '' . '' . '' . '' . // first_name, last_name, email, phone
+            $amountStr .
+            $itemsJson .
+            '' . '' . '' . '' .
             'purchase' .
             'abapay_khqr' .
-            $callbackUrl .
-            '' .                 // return_deeplink
+            $callbackUrlRaw .
+            '' .
             'KHR' .
-            '' . '' . '' .        // custom_fields, return_params, payout
+            '' . '' . '' .
             6 .
             'template3_color';
 
@@ -74,12 +76,12 @@ class ABASandboxController extends Controller
             'last_name' => '',
             'email' => '',
             'phone' => '',
-            'amount' => number_format($totalAmount, 2, '.', ''),
+            'amount' => $amountStr,
             'purchase_type' => 'purchase',
             'payment_option' => 'abapay_khqr',
-            'items' => $items,
+            'items' => $itemsBase64,
             'currency' => 'KHR',
-            'callback_url' => $callbackUrl,
+            'callback_url' => $callbackUrlBase64,
             'return_deeplink' => '',
             'custom_fields' => '',
             'return_params' => '',
@@ -89,7 +91,6 @@ class ABASandboxController extends Controller
             'hash' => $hash,
         ];
 
-
         $response = Http::withHeaders(['Content-Type' => 'application/json'])
             ->post('https://checkout-sandbox.payway.com.kh/api/payment-gateway/v1/payments/generate-qr', $payloadQR);
 
@@ -98,7 +99,6 @@ class ABASandboxController extends Controller
             return response()->json(['error' => $response->body()], 500);
         }
 
-        // 2️⃣ Save ABA tran_id to intent
         $intent->gateway_tran_id = $tranId;
         $intent->save();
 
@@ -108,6 +108,7 @@ class ABASandboxController extends Controller
             'qr' => $response->json(),
         ]);
     }
+
 
     public function callback(Request $request)
     {
