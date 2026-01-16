@@ -1,11 +1,11 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
+use App\Models\PaymentIntent;
+use Illuminate\Support\Facades\Log;
 
 class ABASandboxController extends Controller
 {
@@ -16,91 +16,132 @@ class ABASandboxController extends Controller
     public function __construct()
     {
         $this->merchantId = config('services.aba.merchant_id');
-        $this->apiKey = "6bdf718cb89c26617379a68251cc3524134b5d8b";
+        $this->apiKey = config('services.aba.api_key');
         $this->callbackUrl = url('/api/aba-callback');
     }
 
     public function createQR(Request $request)
     {
         $request->validate([
-            'orderId' => 'required|string',
-            'amount' => 'required|numeric',
+            'user_id' => 'required|integer',
+            'payload' => 'required|array', // cart + totals + shipping + discount
         ]);
 
-        $orderId = $request->orderId;
-        $amount = number_format((float) $request->amount, 2, '.', '');
+        $userId = $request->user_id;
+        $payload = $request->payload;
+        $totalAmount = $payload['total']; // include discounts, shipping, tax
+
+        // 1️⃣ Create PaymentIntent
+        $intent = PaymentIntent::create([
+            'user_id' => $userId,
+            'gateway' => 'aba',
+            'amount' => $totalAmount,
+            'currency' => 'KHR',
+            'payload_snapshot' => json_encode($payload),
+            'status' => 'pending',
+        ]);
+
+        $tranId = 'O' . substr(md5($intent->id . time()), 0, 15);
         $reqTime = now()->utc()->format('YmdHis');
-        $tranId = 'O' . substr(md5($orderId . time()), 0, 15);
 
-        $currency = 'KHR';
-
-        $items = base64_encode(json_encode([['name' => 'Test Item', 'quantity' => 1, 'price' => $amount]], JSON_UNESCAPED_SLASHES));
+        $items = base64_encode(json_encode($payload['items'], JSON_UNESCAPED_SLASHES));
         $callbackUrl = base64_encode($this->callbackUrl);
-
-        $purchaseType = 'purchase';
-        $paymentOption = 'abapay_khqr';
-        $lifetime = 6;
-        $qrImageTemplate = 'template3_color';
 
         $hashString =
             $reqTime .
             $this->merchantId .
             $tranId .
-            $amount .
+            number_format($totalAmount, 2, '.', '') .
             $items .
-            '' . '' . '' . '' . // first_name, last_name, email, phone
-            $purchaseType .
-            $paymentOption .
+            '' . '' . '' . '' .
+            'purchase' .
+            'abapay_khqr' .
             $callbackUrl .
-            '' . // return_deeplink
-            $currency .
-            '' . '' . '' . // custom_fields, return_params, payout
-            $lifetime .
-            $qrImageTemplate;
+            '' .
+            'KHR' .
+            '' . '' . '' .
+            6 .
+            'template3_color';
 
         $hash = base64_encode(hash_hmac('sha512', $hashString, $this->apiKey, true));
 
-        $payload = [
-            'req_time'          => $reqTime,
-            'merchant_id'       => $this->merchantId,
-            'tran_id'           => $tranId,
-            'first_name'        => '',
-            'last_name'         => '',
-            'email'             => '',
-            'phone'             => '',
-            'amount'            => $amount,
-            'purchase_type'     => $purchaseType,
-            'payment_option'    => $paymentOption,
-            'items'             => $items,
-            'currency'          => $currency,
-            'callback_url'      => $callbackUrl,
-            'return_deeplink'   => null,
-            'custom_fields'     => null,
-            'return_params'     => null,
-            'payout'            => null,
-            'lifetime'          => $lifetime,
-            'qr_image_template' => $qrImageTemplate,
-            'hash'              => $hash,
+        $payloadQR = [
+            'req_time' => $reqTime,
+            'merchant_id' => $this->merchantId,
+            'tran_id' => $tranId,
+            'first_name' => '',
+            'last_name' => '',
+            'email' => '',
+            'phone' => '',
+            'amount' => number_format($totalAmount, 2, '.', ''),
+            'purchase_type' => 'purchase',
+            'payment_option' => 'abapay_khqr',
+            'items' => $items,
+            'currency' => 'KHR',
+            'callback_url' => $callbackUrl,
+            'return_deeplink' => null,
+            'custom_fields' => null,
+            'return_params' => null,
+            'payout' => null,
+            'lifetime' => 6,
+            'qr_image_template' => 'template3_color',
+            'hash' => $hash,
         ];
 
-
-        $response = Http::withHeaders(['Content-Type' => 'application/json'])
-            ->post('https://checkout-sandbox.payway.com.kh/api/payment-gateway/v1/payments/generate-qr', $payload);
+        $response = Http::withHeaders(['Content-Type'=>'application/json'])
+            ->post('https://checkout-sandbox.payway.com.kh/api/payment-gateway/v1/payments/generate-qr', $payloadQR);
 
         if (!$response->successful()) {
-            Log::error('ABA QR Error', ['status' => $response->status(), 'body' => $response->body()]);
-            return response()->json(['error' => $response->body()], 500);
+            Log::error('ABA QR Error', ['status'=>$response->status(), 'body'=>$response->body()]);
+            return response()->json(['error'=>$response->body()], 500);
         }
 
+        // 2️⃣ Save ABA tran_id to intent
+        $intent->gateway_tran_id = $tranId;
+        $intent->save();
+
         return response()->json([
+            'payment_intent_id' => $intent->id,
             'tran_id' => $tranId,
-            'qr' => $response->json()
+            'qr' => $response->json(),
         ]);
     }
 
     public function callback(Request $request)
     {
+        $tranId = $request->input('tran_id');
+        $status = $request->input('status'); // success / failed
+
+        $intent = PaymentIntent::where('gateway_tran_id', $tranId)->first();
+        if (!$intent) return response()->json(['error'=>'Invalid tran_id'], 404);
+
+        $intent->status = $status === 'success' ? 'success' : 'failed';
+        $intent->save();
+
+        // ✅ Only now create actual transaction
+        if ($intent->status === 'success') {
+            $payload = json_decode($intent->payload_snapshot, true);
+            $transaction = \App\Models\Transaction::create([
+                'user_id' => $intent->user_id,
+                'total_sell_price' => $payload['total'],
+                'total_items' => count($payload['items']),
+                'status' => 'completed',
+                'shipping_address' => $payload['shipping'],
+                'discount_amount' => $payload['discount'] ?? 0,
+                'shipping_charge' => $payload['shipping_charge'] ?? 0,
+            ]);
+
+            foreach ($payload['items'] as $item) {
+                \App\Models\TransactionSaleLine::create([
+                    'transaction_id' => $transaction->id,
+                    'product_variant_id' => $item['variant_id'],
+                    'price' => $item['price'],
+                    'qty' => $item['quantity'],
+                ]);
+            }
+        }
+
         Log::info('ABA Callback', $request->all());
-        return response()->json(['ack' => 'ok']);
+        return response()->json(['ack'=>'ok']);
     }
 }
