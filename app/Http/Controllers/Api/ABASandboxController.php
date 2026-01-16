@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
@@ -53,13 +54,13 @@ class ABASandboxController extends Controller
             $tranId .
             number_format($totalAmount, 2, '.', '') .
             $items .
-            '' . '' . '' . '' .
+            '' . '' . '' . '' . // first_name, last_name, email, phone
             'purchase' .
             'abapay_khqr' .
             $callbackUrl .
-            '' .
+            '' .                 // return_deeplink
             'KHR' .
-            '' . '' . '' .
+            '' . '' . '' .        // custom_fields, return_params, payout
             6 .
             'template3_color';
 
@@ -79,21 +80,22 @@ class ABASandboxController extends Controller
             'items' => $items,
             'currency' => 'KHR',
             'callback_url' => $callbackUrl,
-            'return_deeplink' => null,
-            'custom_fields' => null,
-            'return_params' => null,
-            'payout' => null,
+            'return_deeplink' => '',
+            'custom_fields' => '',
+            'return_params' => '',
+            'payout' => '',
             'lifetime' => 6,
             'qr_image_template' => 'template3_color',
             'hash' => $hash,
         ];
 
-        $response = Http::withHeaders(['Content-Type'=>'application/json'])
+
+        $response = Http::withHeaders(['Content-Type' => 'application/json'])
             ->post('https://checkout-sandbox.payway.com.kh/api/payment-gateway/v1/payments/generate-qr', $payloadQR);
 
         if (!$response->successful()) {
-            Log::error('ABA QR Error', ['status'=>$response->status(), 'body'=>$response->body()]);
-            return response()->json(['error'=>$response->body()], 500);
+            Log::error('ABA QR Error', ['status' => $response->status(), 'body' => $response->body()]);
+            return response()->json(['error' => $response->body()], 500);
         }
 
         // 2️⃣ Save ABA tran_id to intent
@@ -113,7 +115,7 @@ class ABASandboxController extends Controller
         $status = $request->input('status'); // success / failed
 
         $intent = PaymentIntent::where('gateway_tran_id', $tranId)->first();
-        if (!$intent) return response()->json(['error'=>'Invalid tran_id'], 404);
+        if (!$intent) return response()->json(['error' => 'Invalid tran_id'], 404);
 
         $intent->status = $status === 'success' ? 'success' : 'failed';
         $intent->save();
@@ -142,6 +144,6 @@ class ABASandboxController extends Controller
         }
 
         Log::info('ABA Callback', $request->all());
-        return response()->json(['ack'=>'ok']);
+        return response()->json(['ack' => 'ok']);
     }
 }
