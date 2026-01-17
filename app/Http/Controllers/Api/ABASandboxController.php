@@ -44,9 +44,9 @@ class ABASandboxController extends Controller
         $tranId = 'O' . substr(md5($intent->id . time()), 0, 15);
         $reqTime = now()->utc()->format('YmdHis');
 
-        // Prepare items JSON - DO NOT use JSON_UNESCAPED_SLASHES for hash
+        // Prepare items JSON
         $itemsJson = json_encode($payload['items']);
-        $itemsBase64 = base64_encode($itemsJson);
+        $itemsBase64 = base64_encode($itemsJson);  // ← THIS GOES IN HASH!
         
         // Prepare callback URL
         $callbackUrlRaw = $this->callbackUrl;
@@ -68,25 +68,25 @@ class ABASandboxController extends Controller
         // currency + callback_url + return_deeplink + custom_fields + return_params + 
         // payout + lifetime + qr_image_template
         
-        // CORRECT ORDER from working example: payment_option → callback_url → currency
+        // Hash uses BASE64 items, not raw JSON!
         $hashString = 
             $reqTime .
             $this->merchantId .
             $tranId .
             $amount .
-            $itemsJson .
-            '' .  // first_name
-            '' .  // last_name  
-            '' .  // email
-            '' .  // phone
+            $itemsBase64 .       // ← USE BASE64, NOT $itemsJson!
+            '' .
+            '' .
+            '' .
+            '' .
             'purchase' .
             'abapay_khqr' .
-            $callbackUrlRaw .    // callback BEFORE currency!
-            '' .  // return_deeplink  
-            'KHR' .              // currency AFTER callback
-            '' .  // custom_fields
-            '' .  // return_params
-            '' .  // payout
+            $callbackUrlBase64 . // ← USE BASE64, NOT $callbackUrlRaw!
+            '' .
+            'KHR' .
+            '' .
+            '' .
+            '' .
             6 .
             'template3_color';
 
