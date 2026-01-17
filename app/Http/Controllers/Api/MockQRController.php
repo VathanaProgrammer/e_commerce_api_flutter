@@ -10,7 +10,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MockQRController extends Controller
 {
-    public function createTestQR(Request $request)
+    public function createQR(Request $request)
     {
         $request->validate([
             'user_id' => 'required|integer',

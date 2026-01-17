@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SalesController;
 use App\Http\Controllers\Api\ABASandboxController;
+use App\Http\Controllers\Api\MockQRController;
 
 Route::get('sanctum/user', function (Request $request) {
     return $request->user();
@@ -20,6 +21,6 @@ Route::get('/home', [HomeController::class, 'index']);
 Route::get('products/{id}', [ProductController::class, 'show']);
 Route::post('/sale/proccess', [SalesController::class, 'test']);
 
-Route::post('/create-qr', [ABASandboxController::class, 'createQR']);
+Route::post('/create-qr', [MockQRController::class, 'createQR']);
 Route::post('/aba-callback', [ABASandboxController::class, 'callback']);
 Route::get('/order-status/{orderId}', [ABASandboxController::class, 'status']);
