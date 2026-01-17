@@ -142,9 +142,8 @@ class SalesController extends Controller
             'payments',
         ])->findOrFail($id);
 
-        // Use enums directly from string values
-        $txStatus = TransactionStatus::fromValue($transaction->status);
-        $shippingStatus = ShippingStatus::fromValue($transaction->shipping_status);
+        $txStatus = $transaction->status;            // already enum
+        $shippingStatus = $transaction->shipping_status; // already enum
 
         return response()->json([
             'transaction' => [
@@ -154,14 +153,10 @@ class SalesController extends Controller
                 'total_items' => $transaction->total_items,
                 'discount_amount' => number_format($transaction->discount_amount, 2),
                 'shipping_address' => $transaction->shipping_address,
-
-                // ✅ ENUM APPLIED
                 'status' => $txStatus->label(),
                 'status_badge' => $txStatus->badge(),
-
                 'shipping_status' => $shippingStatus->label(),
                 'shipping_status_badge' => $shippingStatus->badge(),
-
                 'created_at' => $transaction->created_at->format('H:i A d/m/Y'),
             ],
 
@@ -175,8 +170,7 @@ class SalesController extends Controller
             ] : null,
 
             'payments' => $transaction->payments->map(function ($payment) {
-                $statusEnum = PaymentStatus::fromValue($payment->status);
-
+                $statusEnum = $payment->status; // already enum
                 return [
                     'id' => $payment->id,
                     'method' => strtoupper($payment->method),
@@ -212,7 +206,7 @@ class SalesController extends Controller
                 'discount' => number_format($transaction->discount_amount, 2),
                 'total_paid' => number_format(
                     $transaction->payments
-                        ->filter(fn($p) => PaymentStatus::fromValue($p->status) === PaymentStatus::Completed)
+                        ->filter(fn($p) => $p->status === PaymentStatus::Completed)
                         ->sum('amount'),
                     2
                 ),
