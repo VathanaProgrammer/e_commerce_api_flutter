@@ -62,26 +62,37 @@ class ABASandboxController extends Controller
         // payment_option + currency + callback_url + return_deeplink + 
         // custom_fields + return_params + payout + lifetime + qr_image_template
         
+        // CRITICAL: Empty strings MUST be explicitly included in concatenation
+        // PHP will treat '' as empty, not as null
+        $firstName = '';
+        $lastName = '';
+        $email = '';
+        $phone = '';
+        $returnDeeplink = null;  // Try null for these
+        $customFields = null;
+        $returnParams = null;
+        $payout = null;
+        
         $hashString =
             $reqTime .
             $this->merchantId .
             $tranId .
-            $amountNum .  // Use raw number, not formatted string
-            $itemsJson .  // Raw JSON, NOT base64
-            '' .  // first_name
-            '' .  // last_name
-            '' .  // email
-            '' .  // phone
-            'purchase' .  // purchase_type
-            'abapay_khqr' .  // payment_option
-            'KHR' .  // currency
-            $callbackUrlRaw .  // callback_url (raw URL, not base64)
-            '' .  // return_deeplink
-            '' .  // custom_fields
-            '' .  // return_params
-            '' .  // payout
-            6 .  // lifetime as integer
-            'template3_color';  // qr_image_template
+            $amountNum .
+            $itemsJson .
+            $firstName .
+            $lastName .
+            $email .
+            $phone .
+            'purchase' .
+            'abapay_khqr' .
+            'KHR' .
+            $callbackUrlRaw .
+            ($returnDeeplink ?? '') .  // Convert null to empty string
+            ($customFields ?? '') .
+            ($returnParams ?? '') .
+            ($payout ?? '') .
+            6 .
+            'template3_color';
 
         // Generate hash
         $hash = base64_encode(hash_hmac('sha512', $hashString, $this->apiKey, true));
@@ -95,9 +106,12 @@ class ABASandboxController extends Controller
             'items_json_length' => strlen($itemsJson),
             'hash_string_length' => strlen($hashString),
             'callback_url' => $callbackUrlRaw,
+            'FULL_HASH_STRING' => $hashString, // See exactly what we're hashing
+            'items_json' => $itemsJson,
         ]);
 
         // Build payload for ABA generate-qr API
+        // IMPORTANT: Use null for optional empty fields, not empty strings
         $payloadQR = [
             'req_time' => $reqTime,
             'merchant_id' => $this->merchantId,
@@ -106,16 +120,16 @@ class ABASandboxController extends Controller
             'last_name' => '',
             'email' => '',
             'phone' => '',
-            'amount' => $amountNum,  // Send as number, not string
+            'amount' => $amountNum,
             'purchase_type' => 'purchase',
             'payment_option' => 'abapay_khqr',
-            'items' => $itemsBase64,  // Base64 in API request
+            'items' => $itemsBase64,
             'currency' => 'KHR',
-            'callback_url' => $callbackUrlBase64,  // Base64 in API request
-            'return_deeplink' => '',
-            'custom_fields' => '',
-            'return_params' => '',
-            'payout' => '',
+            'callback_url' => $callbackUrlBase64,
+            'return_deeplink' => null,  // Use null instead of ''
+            'custom_fields' => null,     // Use null instead of ''
+            'return_params' => null,     // Use null instead of ''
+            'payout' => null,            // Use null instead of ''
             'lifetime' => 6,
             'qr_image_template' => 'template3_color',
             'hash' => $hash,
