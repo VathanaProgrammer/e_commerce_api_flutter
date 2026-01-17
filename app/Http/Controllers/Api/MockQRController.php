@@ -101,6 +101,7 @@ class MockQRController extends Controller
                 'total_sell_price' => $payload['total'] ?? $intent->amount,
                 'total_items' => array_sum(array_column($cartItems, 'quantity')),
                 'discount_amount' => $discountAmount,
+                'invoice_no' => 'INV'. Str::random(5),
                 'shipping_status' => ShippingStatus::default(),
                 'status' => 'completed',
                 'shipping_address' => json_encode($shipping),
