@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -123,7 +124,7 @@ class MockQRController extends Controller
                 'transaction_id' => $transaction->id,
                 'amount' => $payload['total'] ?? $intent->amount,
                 'method' => $intent->gateway,
-                'status' => 'success',
+                'status' => PaymentStatus::Completed,
                 'paid_at' => now(),
             ]);
 
