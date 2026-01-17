@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\PaymentIntent;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -12,6 +13,7 @@ class MockQRController extends Controller
 {
     public function createQR(Request $request)
     {
+        Log::info('Debug', ['Message' => $request->all()]);
         $request->validate([
             'user_id' => 'required|integer',
             'payload' => 'required|array',

@@ -22,5 +22,4 @@ Route::get('products/{id}', [ProductController::class, 'show']);
 Route::post('/sale/proccess', [SalesController::class, 'test']);
 
 Route::post('/create-qr', [MockQRController::class, 'createQR']);
-Route::post('/aba-callback', [ABASandboxController::class, 'callback']);
-Route::get('/order-status/{orderId}', [ABASandboxController::class, 'status']);
+Route::get('/test-qr/pay/{tranId}', [MockQRController::class, 'scan']);
