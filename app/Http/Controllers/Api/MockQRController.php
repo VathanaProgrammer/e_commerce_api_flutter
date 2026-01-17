@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 use App\Models\PaymentIntent;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\DB;
-
+use App\Enums\ShippingStatus;
 class MockQRController extends Controller
 {
     public function createQR(Request $request)
@@ -100,7 +100,7 @@ class MockQRController extends Controller
                 'total_sell_price' => $payload['total'] ?? $intent->amount,
                 'total_items' => array_sum(array_column($cartItems, 'quantity')),
                 'discount_amount' => $discountAmount,
-                'shipping_status' => 'pending',
+                'shipping_status' => ShippingStatus::default(),
                 'status' => 'completed',
                 'shipping_address' => json_encode($shipping),
                 'shipping_charge' => $payload['shipping_charge'] ?? 0,
