@@ -128,8 +128,8 @@ class SalesController extends Controller
             'payments',
         ])->findOrFail($id);
 
-        $txStatus       = TransactionStatus::fromValue($transaction->status);
-        $shippingStatus = ShippingStatus::fromValue($transaction->shipping_status);
+        $txStatus       = TransactionStatus::fromValue($transaction->status->value)->badge();
+        $shippingStatus = ShippingStatus::fromValue($transaction->shipping_status->value)->badge();
 
         return response()->json([
             'transaction' => [
@@ -160,7 +160,7 @@ class SalesController extends Controller
             ] : null,
 
             'payments' => $transaction->payments->map(function ($payment) {
-                $statusEnum = PaymentStatus::fromValue($payment->status);
+                $statusEnum = PaymentStatus::fromValue($payment->status->value)->badge();
 
                 return [
                     'id' => $payment->id,
@@ -203,7 +203,7 @@ class SalesController extends Controller
                 'total_paid' => number_format(
                     $transaction->payments
                         ->filter(fn ($p) =>
-                            PaymentStatus::fromValue($p->status) === PaymentStatus::Completed
+                            PaymentStatus::fromValue($p->status->value)->badge() === PaymentStatus::Completed
                         )
                         ->sum('amount'),
                     2
