@@ -68,7 +68,7 @@ class ABASandboxController extends Controller
         // currency + callback_url + return_deeplink + custom_fields + return_params + 
         // payout + lifetime + qr_image_template
         
-        // CORRECT ORDER: purchase_type → payment_option → currency
+        // CORRECT ORDER from working example: payment_option → callback_url → currency
         $hashString = 
             $reqTime .
             $this->merchantId .
@@ -80,10 +80,10 @@ class ABASandboxController extends Controller
             '' .  // email
             '' .  // phone
             'purchase' .
-            'abapay_khqr' .  // payment_option comes BEFORE currency
-            'KHR' .          // currency comes AFTER payment_option
-            $callbackUrlRaw .
+            'abapay_khqr' .
+            $callbackUrlRaw .    // callback BEFORE currency!
             '' .  // return_deeplink  
+            'KHR' .              // currency AFTER callback
             '' .  // custom_fields
             '' .  // return_params
             '' .  // payout
