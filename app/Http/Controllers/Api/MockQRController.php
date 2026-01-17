@@ -59,7 +59,7 @@ class MockQRController extends Controller
         ]);
     }
 
-    public function scan(PaymentIntent $tranId)
+    public function autoPayAfter2Sec($tranId)
     {
         $intent = PaymentIntent::where('gateway_tran_id', $tranId)->firstOrFail();
 
@@ -74,6 +74,27 @@ class MockQRController extends Controller
             'message' => 'Payment successful (TEST)',
             'tran_id' => $tranId,
             'amount' => $intent->amount,
+            "success" => true,
+            'status' => 'success', // optional for frontend check
+        ]);
+    }
+
+    public function scan($tranId)
+    {
+        $intent = PaymentIntent::where('gateway_tran_id', $tranId)->firstOrFail();
+
+        if ($intent->status !== 'pending') {
+            return response()->json(['message' => 'Already processed']);
+        }
+
+        $intent->status = 'success';
+        $intent->save();
+
+        return response()->json([
+            'message' => 'Payment successful (TEST)',
+            'tran_id' => $tranId,
+            'amount' => $intent->amount,
+            'status' => 'success', // optional for frontend check
         ]);
     }
 }
