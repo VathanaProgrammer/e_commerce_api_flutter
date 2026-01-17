@@ -40,7 +40,7 @@ class SalesController extends Controller
             )
 
             ->addColumn('status', fn ($tx) =>
-                TransactionStatus::fromValue($tx->status)->badge()
+                TransactionStatus::fromValue($tx->status->value)->badge()
             )
 
             ->addColumn('payments', function ($tx) {
@@ -53,7 +53,7 @@ class SalesController extends Controller
                     $html .= '<li class="small">'
                         . strtoupper($p->method)
                         . ': $' . number_format($p->amount, 2)
-                        . ' ' . PaymentStatus::fromValue($p->status)->badge()
+                        . ' ' . PaymentStatus::fromValue($p->status->value)->badge()
                         . '</li>';
                 }
                 $html .= '</ul>';
@@ -66,7 +66,7 @@ class SalesController extends Controller
             )
 
             ->addColumn('shipping_status', fn ($tx) =>
-                ShippingStatus::fromValue($tx->shipping_status)->badge()
+                ShippingStatus::fromValue($tx->shipping_status->value)->badge()
             )
 
             ->addColumn('invoice_no', fn ($tx) =>
