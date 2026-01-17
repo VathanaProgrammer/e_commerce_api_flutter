@@ -28,7 +28,7 @@ class MockQRController extends Controller
         // 1️⃣ Create payment intent
         $intent = PaymentIntent::create([
             'user_id' => $userId,
-            'gateway' => 'test_qr',
+            'gateway' => 'acleda',
             'amount' => $totalAmount,
             'currency' => 'KHR',
             'payload_snapshot' => json_encode($payload),
