@@ -27,19 +27,25 @@ class SalesController extends Controller
         $transactions = Transaction::with(['user', 'payments'])->latest();
 
         return DataTables::of($transactions)
-            ->addColumn('user', fn ($tx) =>
+            ->addColumn(
+                'user',
+                fn($tx) =>
                 $tx->user
                     ? $tx->user->first_name . ' ' . $tx->user->last_name
                     : 'Guest'
             )
 
-            ->addColumn('total_items', fn ($tx) => $tx->total_items)
+            ->addColumn('total_items', fn($tx) => $tx->total_items)
 
-            ->addColumn('total_price', fn ($tx) =>
+            ->addColumn(
+                'total_price',
+                fn($tx) =>
                 '$ ' . number_format($tx->total_sell_price, 2)
             )
 
-            ->addColumn('status', fn ($tx) =>
+            ->addColumn(
+                'status',
+                fn($tx) =>
                 TransactionStatus::fromValue($tx->status->value)->badge()
             )
 
@@ -61,19 +67,27 @@ class SalesController extends Controller
                 return $html;
             })
 
-            ->addColumn('shipping_address', fn ($tx) =>
+            ->addColumn(
+                'shipping_address',
+                fn($tx) =>
                 $tx->shipping_address ?? '<span class="text-muted">--</span>'
             )
 
-            ->addColumn('shipping_status', fn ($tx) =>
+            ->addColumn(
+                'shipping_status',
+                fn($tx) =>
                 ShippingStatus::fromValue($tx->shipping_status->value)->badge()
             )
 
-            ->addColumn('invoice_no', fn ($tx) =>
+            ->addColumn(
+                'invoice_no',
+                fn($tx) =>
                 $tx->invoice_no ?? '<span class="text-muted">--</span>'
             )
 
-            ->addColumn('discount_amount', fn ($tx) =>
+            ->addColumn(
+                'discount_amount',
+                fn($tx) =>
                 '$ ' . number_format($tx->discount_amount, 2)
             )
 
@@ -128,8 +142,9 @@ class SalesController extends Controller
             'payments',
         ])->findOrFail($id);
 
-        $txStatus       = TransactionStatus::fromValue($transaction->status->value)->badge();
-        $shippingStatus = ShippingStatus::fromValue($transaction->shipping_status->value)->badge();
+        // Use enums directly from string values
+        $txStatus = TransactionStatus::fromValue($transaction->status);
+        $shippingStatus = ShippingStatus::fromValue($transaction->shipping_status);
 
         return response()->json([
             'transaction' => [
@@ -154,22 +169,19 @@ class SalesController extends Controller
                 'name' => $transaction->user->first_name . ' ' . $transaction->user->last_name,
                 'email' => $transaction->user->email,
                 'profile_image' =>
-                    $transaction->user->profile_image_url
+                $transaction->user->profile_image_url
                     ?? 'https://ui-avatars.com/api/?name='
-                        . urlencode($transaction->user->first_name . ' ' . $transaction->user->last_name),
+                    . urlencode($transaction->user->first_name . ' ' . $transaction->user->last_name),
             ] : null,
 
             'payments' => $transaction->payments->map(function ($payment) {
-                $statusEnum = PaymentStatus::fromValue($payment->status->value)->badge();
+                $statusEnum = PaymentStatus::fromValue($payment->status);
 
                 return [
                     'id' => $payment->id,
                     'method' => strtoupper($payment->method),
-
-                    // ✅ ENUM APPLIED
                     'status' => $statusEnum->label(),
                     'status_badge' => $statusEnum->badge(),
-
                     'amount' => number_format($payment->amount, 2),
                     'paid_at' => $payment->paid_at
                         ? $payment->paid_at->format('d M Y H:i')
@@ -179,7 +191,7 @@ class SalesController extends Controller
 
             'sale_lines' => $transaction->saleLines->map(function ($line, $index) {
                 $variantDetails = $line->variant->attributeValues
-                    ->map(fn ($v) => $v->attribute->name . ': ' . $v->value)
+                    ->map(fn($v) => $v->attribute->name . ': ' . $v->value)
                     ->implode(', ');
 
                 return [
@@ -197,18 +209,13 @@ class SalesController extends Controller
                     $transaction->total_sell_price + $transaction->discount_amount,
                     2
                 ),
-
                 'discount' => number_format($transaction->discount_amount, 2),
-
                 'total_paid' => number_format(
                     $transaction->payments
-                        ->filter(fn ($p) =>
-                            PaymentStatus::fromValue($p->status->value)->badge() === PaymentStatus::Completed
-                        )
+                        ->filter(fn($p) => PaymentStatus::fromValue($p->status) === PaymentStatus::Completed)
                         ->sum('amount'),
                     2
                 ),
-
                 'total_amount' => number_format($transaction->total_sell_price, 2),
                 'total_items' => $transaction->total_items,
             ],
