@@ -52,9 +52,9 @@ class ABASandboxController extends Controller
         $callbackUrlRaw = $this->callbackUrl;
         $callbackUrlBase64 = base64_encode($callbackUrlRaw);
         
-        // Amount - for KHR, format with 2 decimal places
-        // KHR needs format like "1430.00" not just 1430
-        $amount = number_format((float)$totalAmount, 2, '.', '');
+        // Amount - CRITICAL: KHR should NOT have decimal points!
+        // USD: 100.00, KHR: 1430 (no decimals)
+        $amount = number_format((float)$totalAmount, 0, '', '');
 
         // ✅ CRITICAL: Hash string order for generate-qr API
         // Based on PDF docs page 27: req_time + merchant_id + tran_id + amount + items +
@@ -68,7 +68,7 @@ class ABASandboxController extends Controller
         // currency + callback_url + return_deeplink + custom_fields + return_params + 
         // payout + lifetime + qr_image_template
         
-        // Try different parameter order - maybe currency comes before payment_option?
+        // CORRECT ORDER: purchase_type → payment_option → currency
         $hashString = 
             $reqTime .
             $this->merchantId .
@@ -80,8 +80,8 @@ class ABASandboxController extends Controller
             '' .  // email
             '' .  // phone
             'purchase' .
-            'KHR' .  // Try currency here instead
-            'abapay_khqr' .
+            'abapay_khqr' .  // payment_option comes BEFORE currency
+            'KHR' .          // currency comes AFTER payment_option
             $callbackUrlRaw .
             '' .  // return_deeplink  
             '' .  // custom_fields
