@@ -52,8 +52,9 @@ class ABASandboxController extends Controller
         $callbackUrlRaw = $this->callbackUrl;
         $callbackUrlBase64 = base64_encode($callbackUrlRaw);
         
-        // Amount - use raw number without formatting
-        $amount = (float)$totalAmount;
+        // Amount - for KHR, format with 2 decimal places
+        // KHR needs format like "1430.00" not just 1430
+        $amount = number_format((float)$totalAmount, 2, '.', '');
 
         // ✅ CRITICAL: Hash string order for generate-qr API
         // Based on PDF docs page 27: req_time + merchant_id + tran_id + amount + items +
@@ -67,17 +68,25 @@ class ABASandboxController extends Controller
         // currency + callback_url + return_deeplink + custom_fields + return_params + 
         // payout + lifetime + qr_image_template
         
-        // TRY: What if we DON'T include callback_url in the hash at all?
-        // Some APIs only hash non-empty fields
+        // Hash with ALL parameters in correct order including callback_url
         $hashString = 
             $reqTime .
             $this->merchantId .
             $tranId .
-            $amount .
+            $amount .  // Now formatted as "1430.00"
             $itemsJson .
+            '' .  // first_name
+            '' .  // last_name  
+            '' .  // email
+            '' .  // phone
             'purchase' .
             'abapay_khqr' .
             'KHR' .
+            $callbackUrlRaw .  // Include callback_url
+            '' .  // return_deeplink  
+            '' .  // custom_fields
+            '' .  // return_params
+            '' .  // payout
             6 .
             'template3_color';
 
