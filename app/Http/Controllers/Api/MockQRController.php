@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\PaymentIntent;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\DB;
 
 class MockQRController extends Controller
 {
@@ -67,17 +68,78 @@ class MockQRController extends Controller
             return response()->json(['message' => 'Already processed']);
         }
 
+        // 1️⃣ Mark PaymentIntent as success
         $intent->status = 'success';
         $intent->save();
+
+        // 2️⃣ Create Transaction using payload_snapshot
+        $payload = json_decode($intent->payload_snapshot, true);
+
+        $transaction = DB::transaction(function () use ($intent, $payload) {
+            $cartItems = $payload['items'] ?? [];
+            $shipping = $payload['shipping_address'] ?? [];
+
+            // Total discount calculation
+            $discountAmount = 0;
+            foreach ($cartItems as $item) {
+                if (!empty($item['discount'])) {
+                    $discount = $item['discount'];
+                    $price = $item['price'];
+                    $qty = $item['quantity'];
+                    if ($discount['is_percentage']) {
+                        $discountAmount += $price * $discount['value'] / 100 * $qty;
+                    } else {
+                        $discountAmount += $discount['value'] * $qty;
+                    }
+                }
+            }
+
+            // Create Transaction
+            $transaction = \App\Models\Transaction::create([
+                'user_id' => $intent->user_id,
+                'total_sell_price' => $payload['total'] ?? $intent->amount,
+                'total_items' => array_sum(array_column($cartItems, 'quantity')),
+                'discount_amount' => $discountAmount,
+                'shipping_status' => 'pending',
+                'status' => 'completed',
+                'shipping_address' => json_encode($shipping),
+                'shipping_charge' => $payload['shipping_charge'] ?? 0,
+                'lat' => $shipping['latitude'] ?? null,
+                'long' => $shipping['longitude'] ?? null,
+            ]);
+
+            // Create Transaction Sale Lines
+            foreach ($cartItems as $item) {
+                \App\Models\TransactionSaleLine::create([
+                    'transaction_id' => $transaction->id,
+                    'product_variant_id' => $item['product_id'],
+                    'price' => $item['price'],
+                    'qty' => $item['quantity'],
+                ]);
+            }
+
+            // Create Payment record
+            \App\Models\Payment::create([
+                'transaction_id' => $transaction->id,
+                'amount' => $payload['total'] ?? $intent->amount,
+                'method' => $intent->gateway,
+                'status' => 'completed',
+                'paid_at' => now(),
+            ]);
+
+            return $transaction;
+        });
 
         return response()->json([
             'message' => 'Payment successful (TEST)',
             'tran_id' => $tranId,
             'amount' => $intent->amount,
-            "success" => true,
-            'status' => 'success', // optional for frontend check
+            'transaction_id' => $transaction->id,
+            'success' => true,
+            'status' => 'success',
         ]);
     }
+
 
     public function scan($tranId)
     {
