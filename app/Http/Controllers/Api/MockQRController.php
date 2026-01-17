@@ -123,7 +123,7 @@ class MockQRController extends Controller
                 'transaction_id' => $transaction->id,
                 'amount' => $payload['total'] ?? $intent->amount,
                 'method' => $intent->gateway,
-                'status' => 'completed',
+                'status' => 'success',
                 'paid_at' => now(),
             ]);
 
