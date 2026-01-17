@@ -68,21 +68,21 @@ class ABASandboxController extends Controller
         // currency + callback_url + return_deeplink + custom_fields + return_params + 
         // payout + lifetime + qr_image_template
         
-        // Hash with ALL parameters in correct order including callback_url
+        // Try different parameter order - maybe currency comes before payment_option?
         $hashString = 
             $reqTime .
             $this->merchantId .
             $tranId .
-            $amount .  // Now formatted as "1430.00"
+            $amount .
             $itemsJson .
             '' .  // first_name
             '' .  // last_name  
             '' .  // email
             '' .  // phone
             'purchase' .
+            'KHR' .  // Try currency here instead
             'abapay_khqr' .
-            'KHR' .
-            $callbackUrlRaw .  // Include callback_url
+            $callbackUrlRaw .
             '' .  // return_deeplink  
             '' .  // custom_fields
             '' .  // return_params
