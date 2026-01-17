@@ -67,26 +67,19 @@ class ABASandboxController extends Controller
         // currency + callback_url + return_deeplink + custom_fields + return_params + 
         // payout + lifetime + qr_image_template
         
+        // TRY: What if we DON'T include callback_url in the hash at all?
+        // Some APIs only hash non-empty fields
         $hashString = 
             $reqTime .
             $this->merchantId .
             $tranId .
             $amount .
-            $itemsJson .  // NOT base64 for hash
-            '' .  // first_name
-            '' .  // last_name  
-            '' .  // email
-            '' .  // phone
-            'purchase' .  // purchase_type
-            'abapay_khqr' .  // payment_option
-            'KHR' .  // currency
-            $callbackUrlRaw .  // callback_url (NOT base64 for hash)
-            '' .  // return_deeplink  
-            '' .  // custom_fields
-            '' .  // return_params
-            '' .  // payout
-            6 .  // lifetime as integer
-            'template3_color';  // qr_image_template
+            $itemsJson .
+            'purchase' .
+            'abapay_khqr' .
+            'KHR' .
+            6 .
+            'template3_color';
 
         // Generate hash
         $hash = base64_encode(hash_hmac('sha512', $hashString, $this->apiKey, true));
