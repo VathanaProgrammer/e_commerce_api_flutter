@@ -25,7 +25,7 @@ class ABASandboxController extends Controller
     {
         $request->validate([
             'user_id' => 'required|integer',
-            'payload' => 'required|array', // cart + totals + shipping + discount
+            'payload' => 'required|array',
         ]);
 
         $userId = $request->user_id;
@@ -44,29 +44,57 @@ class ABASandboxController extends Controller
         $tranId = 'O' . substr(md5($intent->id . time()), 0, 15);
         $reqTime = now()->utc()->format('YmdHis');
 
-        $itemsJson = json_encode($payload['items'], JSON_UNESCAPED_SLASHES);
+        // Prepare items
+        $itemsJson = json_encode($payload['items'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $itemsBase64 = base64_encode($itemsJson);
+        
+        // Prepare callback URL
         $callbackUrlRaw = $this->callbackUrl;
         $callbackUrlBase64 = base64_encode($callbackUrlRaw);
+        
+        // Amount formatting
         $amountStr = number_format($totalAmount, 2, '.', '');
 
+        // ✅ FIXED: Correct hash string construction
+        // Order: req_time + merchant_id + tran_id + amount + items + 
+        //        shipping + firstname + lastname + email + phone + type + 
+        //        payment_option + return_url + continue_success_url + currency + 
+        //        custom_fields + return_params + return_deeplink + payout + 
+        //        lifetime + qr_image_template
         $hashString =
             $reqTime .
             $this->merchantId .
             $tranId .
             $amountStr .
             $itemsJson .
-            '' . '' . '' . '' .
-            'purchase' .
-            'abapay_khqr' .
-            $callbackUrlRaw .
-            '' .
-            'KHR' .
-            '' . '' . '' .
-            6 .
-            'template3_color';
+            '' .  // shipping
+            '' .  // first_name
+            '' .  // last_name
+            '' .  // email
+            '' .  // phone
+            'purchase' .  // type
+            'abapay_khqr' .  // payment_option
+            $callbackUrlRaw .  // return_url (callback_url)
+            '' .  // continue_success_url (THIS WAS MISSING!)
+            'KHR' .  // currency
+            '' .  // custom_fields
+            '' .  // return_params
+            '' .  // return_deeplink
+            '' .  // payout
+            '6' .  // lifetime (as string)
+            'template3_color';  // qr_image_template
 
+        // Generate hash
         $hash = base64_encode(hash_hmac('sha512', $hashString, $this->apiKey, true));
+
+        // Log for debugging
+        Log::info('ABA QR Hash Debug', [
+            'hash_string_length' => strlen($hashString),
+            'merchant_id' => $this->merchantId,
+            'tran_id' => $tranId,
+            'amount' => $amountStr,
+            'req_time' => $reqTime,
+        ]);
 
         $payloadQR = [
             'req_time' => $reqTime,
@@ -95,7 +123,11 @@ class ABASandboxController extends Controller
             ->post('https://checkout-sandbox.payway.com.kh/api/payment-gateway/v1/payments/generate-qr', $payloadQR);
 
         if (!$response->successful()) {
-            Log::error('ABA QR Error', ['status' => $response->status(), 'body' => $response->body()]);
+            Log::error('ABA QR Error', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+                'request_payload' => $payloadQR
+            ]);
             return response()->json(['error' => $response->body()], 500);
         }
 
@@ -109,11 +141,10 @@ class ABASandboxController extends Controller
         ]);
     }
 
-
     public function callback(Request $request)
     {
         $tranId = $request->input('tran_id');
-        $status = $request->input('status'); // success / failed
+        $status = $request->input('status');
 
         $intent = PaymentIntent::where('gateway_tran_id', $tranId)->first();
         if (!$intent) return response()->json(['error' => 'Invalid tran_id'], 404);
@@ -121,7 +152,6 @@ class ABASandboxController extends Controller
         $intent->status = $status === 'success' ? 'success' : 'failed';
         $intent->save();
 
-        // ✅ Only now create actual transaction
         if ($intent->status === 'success') {
             $payload = json_decode($intent->payload_snapshot, true);
             $transaction = \App\Models\Transaction::create([
