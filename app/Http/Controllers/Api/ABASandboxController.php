@@ -44,74 +44,67 @@ class ABASandboxController extends Controller
         $tranId = 'O' . substr(md5($intent->id . time()), 0, 15);
         $reqTime = now()->utc()->format('YmdHis');
 
-        // Prepare items - CRITICAL: Do NOT use JSON_UNESCAPED_SLASHES for hash calculation
+        // Prepare items JSON - DO NOT use JSON_UNESCAPED_SLASHES for hash
         $itemsJson = json_encode($payload['items']);
         $itemsBase64 = base64_encode($itemsJson);
         
-        // Prepare callback URL - base64 for API, raw for hash
+        // Prepare callback URL
         $callbackUrlRaw = $this->callbackUrl;
         $callbackUrlBase64 = base64_encode($callbackUrlRaw);
         
-        // Amount formatting - use raw number, not formatted with commas
-        $amountNum = (float)$totalAmount;
+        // Amount - use raw number without formatting
+        $amount = (float)$totalAmount;
 
-        // ✅ CRITICAL FIX: Hash string for generate-qr API
-        // Based on generate-qr documentation, the order is:
-        // req_time + merchant_id + tran_id + amount + items + 
-        // first_name + last_name + email + phone + purchase_type + 
-        // payment_option + currency + callback_url + return_deeplink + 
-        // custom_fields + return_params + payout + lifetime + qr_image_template
+        // ✅ CRITICAL: Hash string order for generate-qr API
+        // Based on PDF docs page 27: req_time + merchant_id + tran_id + amount + items +
+        // shipping + firstname + lastname + email + phone + type + payment_option + 
+        // return_url + cancel_url + continue_success_url + return_deeplink + currency + 
+        // custom_fields + return_params
         
-        // CRITICAL: Empty strings MUST be explicitly included in concatenation
-        // PHP will treat '' as empty, not as null
-        $firstName = '';
-        $lastName = '';
-        $email = '';
-        $phone = '';
-        $returnDeeplink = null;  // Try null for these
-        $customFields = null;
-        $returnParams = null;
-        $payout = null;
+        // BUT the QR API documentation shows a DIFFERENT order without shipping/cancel_url!
+        // Correct order for generate-qr: req_time + merchant_id + tran_id + amount + items + 
+        // first_name + last_name + email + phone + purchase_type + payment_option +  
+        // currency + callback_url + return_deeplink + custom_fields + return_params + 
+        // payout + lifetime + qr_image_template
         
-        $hashString =
+        $hashString = 
             $reqTime .
             $this->merchantId .
             $tranId .
-            $amountNum .
-            $itemsJson .
-            $firstName .
-            $lastName .
-            $email .
-            $phone .
-            'purchase' .
-            'abapay_khqr' .
-            'KHR' .
-            $callbackUrlRaw .
-            ($returnDeeplink ?? '') .  // Convert null to empty string
-            ($customFields ?? '') .
-            ($returnParams ?? '') .
-            ($payout ?? '') .
-            6 .
-            'template3_color';
+            $amount .
+            $itemsJson .  // NOT base64 for hash
+            '' .  // first_name
+            '' .  // last_name  
+            '' .  // email
+            '' .  // phone
+            'purchase' .  // purchase_type
+            'abapay_khqr' .  // payment_option
+            'KHR' .  // currency
+            $callbackUrlRaw .  // callback_url (NOT base64 for hash)
+            '' .  // return_deeplink  
+            '' .  // custom_fields
+            '' .  // return_params
+            '' .  // payout
+            6 .  // lifetime as integer
+            'template3_color';  // qr_image_template
 
         // Generate hash
         $hash = base64_encode(hash_hmac('sha512', $hashString, $this->apiKey, true));
 
-        // Comprehensive logging for debugging
-        Log::info('ABA QR Hash Debug', [
+        // Detailed logging
+        Log::info('ABA QR Request Debug', [
+            'req_time' => $reqTime,
             'merchant_id' => $this->merchantId,
             'tran_id' => $tranId,
-            'amount' => $amountNum,
-            'req_time' => $reqTime,
-            'items_json_length' => strlen($itemsJson),
-            'hash_string_length' => strlen($hashString),
-            'callback_url' => $callbackUrlRaw,
-            'FULL_HASH_STRING' => $hashString, // See exactly what we're hashing
+            'amount' => $amount,
             'items_json' => $itemsJson,
+            'callback_url_raw' => $callbackUrlRaw,
+            'hash_string' => $hashString,
+            'hash_string_length' => strlen($hashString),
+            'hash' => $hash,
         ]);
 
-        // Build payload for ABA generate-qr API
-        // IMPORTANT: Use null for optional empty fields, not empty strings
+        // Build API payload
         $payloadQR = [
             'req_time' => $reqTime,
             'merchant_id' => $this->merchantId,
@@ -120,22 +113,21 @@ class ABASandboxController extends Controller
             'last_name' => '',
             'email' => '',
             'phone' => '',
-            'amount' => $amountNum,
+            'amount' => $amount,
             'purchase_type' => 'purchase',
             'payment_option' => 'abapay_khqr',
-            'items' => $itemsBase64,
+            'items' => $itemsBase64,  // Base64 for API
             'currency' => 'KHR',
-            'callback_url' => $callbackUrlBase64,
-            'return_deeplink' => null,  // Use null instead of ''
-            'custom_fields' => null,     // Use null instead of ''
-            'return_params' => null,     // Use null instead of ''
-            'payout' => null,            // Use null instead of ''
+            'callback_url' => $callbackUrlBase64,  // Base64 for API
+            'return_deeplink' => null,
+            'custom_fields' => null,
+            'return_params' => null,
+            'payout' => null,
             'lifetime' => 6,
             'qr_image_template' => 'template3_color',
             'hash' => $hash,
         ];
 
-        // Make API request
         $response = Http::withHeaders(['Content-Type' => 'application/json'])
             ->post('https://checkout-sandbox.payway.com.kh/api/payment-gateway/v1/payments/generate-qr', $payloadQR);
 
@@ -144,7 +136,6 @@ class ABASandboxController extends Controller
                 'status' => $response->status(),
                 'body' => $response->body(),
                 'request_payload' => $payloadQR,
-                'hash_string' => $hashString // Log for debugging
             ]);
             return response()->json(['error' => $response->body()], 500);
         }
