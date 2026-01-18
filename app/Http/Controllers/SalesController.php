@@ -154,6 +154,7 @@ class SalesController extends Controller
                 'shipping_address' => $transaction->shipping_address,
                 'status' => $txStatus->label(),
                 'status_badge' => $txStatus->badge(),
+                'shipping_charge' => $transaction->shipping_charge ?? '--',
                 'shipping_status' => $shippingStatus->label(),
                 'shipping_status_badge' => $shippingStatus->badge(),
                 'created_at' => $transaction->created_at->format('H:i A d/m/Y'),

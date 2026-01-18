@@ -131,7 +131,7 @@ class MockQRController extends Controller
             // Create Payment record
             \App\Models\Payment::create([
                 'transaction_id' => $transaction->id,
-                'amount' => $payload['total'] ?? $intent->amount,
+                'amount' => $transaction->total_sell_price ?? 0,
                 'method' => $intent->gateway,
                 'status' => PaymentStatus::Completed,
                 'paid_at' => now(),
