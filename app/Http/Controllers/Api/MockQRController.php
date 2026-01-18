@@ -79,7 +79,7 @@ class MockQRController extends Controller
 
         $transaction = DB::transaction(function () use ($intent, $payload) {
             $cartItems = $payload['items'] ?? [];
-            $shipping = $payload['shipping_address'] ?? [];
+            $shipping = $payload['more_address'] ?? [];
 
             // Total discount calculation
             $discountAmount = 0;
@@ -105,7 +105,7 @@ class MockQRController extends Controller
                 'invoice_no' => 'INV-'. Str::random(5),
                 'shipping_status' => ShippingStatus::default(),
                 'status' => 'completed',
-                'shipping_address' => json_encode($shipping),
+                'shipping_address' => $payload['shipping_address'],
                 'shipping_charge' => $payload['shipping_charge'] ?? 0,
                 'lat' => $shipping['latitude'] ?? null,
                 'long' => $shipping['longitude'] ?? null,
