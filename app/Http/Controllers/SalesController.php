@@ -58,7 +58,6 @@ class SalesController extends Controller
                 foreach ($tx->payments as $p) {
                     $html .= '<li class="small">'
                         . strtoupper($p->method)
-                        . ': $' . number_format($p->amount, 2)
                         . ' ' . PaymentStatus::fromValue($p->status->value)->badge()
                         . '</li>';
                 }

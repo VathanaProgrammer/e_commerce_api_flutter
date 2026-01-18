@@ -61,8 +61,9 @@ class MockQRController extends Controller
         ]);
     }
 
-    public function autoPayAfter2Sec($tranId)
+    public function autoPayAfter2Sec(Request $r, $tranId)
     {
+        Log::info('Debug', ['Message' => $r->all()]);
         $intent = PaymentIntent::where('gateway_tran_id', $tranId)->firstOrFail();
 
         if ($intent->status !== 'pending') {
@@ -101,7 +102,7 @@ class MockQRController extends Controller
                 'total_sell_price' => $payload['total'] ?? $intent->amount,
                 'total_items' => array_sum(array_column($cartItems, 'quantity')),
                 'discount_amount' => $discountAmount,
-                'invoice_no' => 'INV'. Str::random(5),
+                'invoice_no' => 'INV-'. Str::random(5),
                 'shipping_status' => ShippingStatus::default(),
                 'status' => 'completed',
                 'shipping_address' => json_encode($shipping),
