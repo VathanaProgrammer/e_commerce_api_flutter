@@ -107,7 +107,7 @@ class MockQRController extends Controller
                 'status' => 'completed',
                 'shipping_address' => $payload['shipping_address'],
                 'shipping_charge' => $payload['shipping_charge'] ?? 0,
-                'lat' => $shipping['latitude'] ?? null,
+                'lat' => $shipping['latitude'] ?? null, 
                 'long' => $shipping['longitude'] ?? null,
             ]);
 
