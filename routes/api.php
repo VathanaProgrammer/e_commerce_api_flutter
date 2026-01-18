@@ -24,3 +24,5 @@ Route::post('/sale/proccess', [SalesController::class, 'test']);
 Route::post('/create-qr', [MockQRController::class, 'createQR']);
 Route::get('/test-qr/pay/{tranId}', [MockQRController::class, 'scan']);
 Route::get('/auto_pay/{tranId}', [MockQRController::class, 'autoPayAfter2Sec']);
+// In api.php
+Route::post('/checkout/cash', [MockQRController::class, 'cashCheckout']);

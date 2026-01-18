@@ -105,7 +105,7 @@
                                 <th>Variant</th>
                                 <th>Price</th>
                                 <th>Quntity</th>
-                                <th>SubTotal</th>
+                                <th>Subtotal</th>
                             </tr>
                         </thead>
                         <tbody id="modal-items-tbody">

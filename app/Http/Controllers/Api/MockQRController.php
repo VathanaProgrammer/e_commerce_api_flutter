@@ -77,7 +77,7 @@ class MockQRController extends Controller
 
         // 2️⃣ Create Transaction using payload_snapshot
         $payload = json_decode($intent->payload_snapshot, true);
-        Log::info('Debug', ['tranId: '=> $tranId, 'Message' => $r->all()]);
+        Log::info('Debug', ['tranId: ' => $tranId, 'Message' => $r->all()]);
         $transaction = DB::transaction(function () use ($intent, $payload) {
             $cartItems = $payload['items'] ?? [];
 
@@ -167,6 +167,88 @@ class MockQRController extends Controller
             'tran_id' => $tranId,
             'amount' => $intent->amount,
             'status' => 'success', // optional for frontend check
+        ]);
+    }
+
+    // Add this method to MockQRController or create a new CheckoutController
+
+    public function cashCheckout(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|integer',
+            'payload' => 'required|array',
+        ]);
+
+        $userId = $request->user_id;
+        $payload = $request->payload;
+
+        Log::info('Cash Checkout', ['user_id' => $userId, 'payload' => $payload]);
+
+        $transaction = DB::transaction(function () use ($userId, $payload) {
+            $cartItems = $payload['items'] ?? [];
+            $moreAddress = $payload['more_address'] ?? [];
+
+            $latitude = $moreAddress['latitude'] ?? null;
+            $longitude = $moreAddress['longitude'] ?? null;
+
+            // Calculate discount
+            $discountAmount = 0;
+            foreach ($cartItems as $item) {
+                if (!empty($item['discount'])) {
+                    $discount = $item['discount'];
+                    $price = $item['price'];
+                    $qty = $item['quantity'];
+                    if ($discount['is_percentage']) {
+                        $discountAmount += $price * $discount['value'] / 100 * $qty;
+                    } else {
+                        $discountAmount += $discount['value'] * $qty;
+                    }
+                }
+            }
+
+            // Create Transaction
+            $transaction = \App\Models\Transaction::create([
+                'user_id' => $userId,
+                'total_sell_price' => $payload['total'],
+                'total_items' => array_sum(array_column($cartItems, 'quantity')),
+                'discount_amount' => $discountAmount,
+                'invoice_no' => 'INV-' . Str::random(8),
+                'shipping_status' => ShippingStatus::ordered, // Pending delivery
+                'status' => 'pending', // Order is pending
+                'shipping_address' => $payload['shipping_address'] ?? '',
+                'shipping_charge' => $payload['shipping_charge'] ?? 0,
+                'lat' => $latitude,
+                'long' => $longitude,
+            ]);
+
+            // Create Transaction Sale Lines
+            foreach ($cartItems as $item) {
+                \App\Models\TransactionSaleLine::create([
+                    'transaction_id' => $transaction->id,
+                    'product_variant_id' => $item['product_id'],
+                    'price' => $item['price'],
+                    'qty' => $item['quantity'],
+                ]);
+            }
+
+            // Create Payment record - PENDING for cash
+            \App\Models\Payment::create([
+                'transaction_id' => $transaction->id,
+                'amount' => $transaction->total_sell_price,
+                'method' => 'cash', // Cash on delivery
+                'status' => PaymentStatus::Pending, // Not paid yet
+                'paid_at' => null, // Will be set when cash is received
+            ]);
+
+            return $transaction;
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Order placed successfully! Pay cash on delivery.',
+            'transaction_id' => $transaction->id,
+            'invoice_no' => $transaction->invoice_no,
+            'total_amount' => $transaction->total_sell_price,
         ]);
     }
 }
