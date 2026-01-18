@@ -178,7 +178,7 @@ class SalesController extends Controller
                     'status_badge' => $statusEnum->badge(),
                     'amount' => number_format($payment->amount, 2),
                     'paid_at' => $payment->paid_at
-                        ? $payment->paid_at->format('d M Y H:i')
+                        ? $payment->paid_at->format('d M Y H:i A')
                         : 'N/A',
                 ];
             }),

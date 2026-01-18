@@ -141,7 +141,7 @@
 
                         // Update transaction details
                         $('#modal-shipping-address').text(data.transaction.shipping_address || '--');
-                        $('#modal-shipping').text(data.transaction.shipping_charge || '--');
+                        $('#modal-shipping').text('$ ' + data.transaction.shipping_charge || '--');
                         $('#modal-shipping-status').html(data.transaction.shipping_status_badge);
                         $('#modal-date').text(data.transaction.created_at);
 

@@ -12,8 +12,8 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'total_sell_price', 'total_items', 'status',
-        'shipping_status', 'shipping_address', 'delivery_person', 'invoice_no', 'discount_amount'
+        'user_id', 'total_sell_price', 'total_items', 'status', 'lat', 'long',
+        'shipping_status', 'shipping_address', 'delivery_person','shipping_charge', 'invoice_no', 'discount_amount'
     ];
 
     protected $casts = [
