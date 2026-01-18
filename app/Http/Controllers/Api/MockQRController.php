@@ -11,6 +11,7 @@ use App\Models\PaymentIntent;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\DB;
 use App\Enums\ShippingStatus;
+
 class MockQRController extends Controller
 {
     public function createQR(Request $request)
@@ -76,10 +77,16 @@ class MockQRController extends Controller
 
         // 2️⃣ Create Transaction using payload_snapshot
         $payload = json_decode($intent->payload_snapshot, true);
-
+        Log::info('Debug', ['tranId: '=> $tranId, 'Message' => $r->all()]);
         $transaction = DB::transaction(function () use ($intent, $payload) {
             $cartItems = $payload['items'] ?? [];
-            $shipping = $payload['more_address'] ?? [];
+
+            // ✅ FIX: Get more_address first, then extract lat/long
+            $moreAddress = $payload['more_address'] ?? [];
+
+            // Extract latitude and longitude from more_address
+            $latitude = $moreAddress['latitude'] ?? null;
+            $longitude = $moreAddress['longitude'] ?? null;
 
             // Total discount calculation
             $discountAmount = 0;
@@ -102,13 +109,13 @@ class MockQRController extends Controller
                 'total_sell_price' => $payload['total'] ?? $intent->amount,
                 'total_items' => array_sum(array_column($cartItems, 'quantity')),
                 'discount_amount' => $discountAmount,
-                'invoice_no' => 'INV-'. Str::random(5),
+                'invoice_no' => 'INV-' . Str::random(5),
                 'shipping_status' => ShippingStatus::default(),
                 'status' => 'completed',
-                'shipping_address' => $payload['shipping_address'],
+                'shipping_address' => $payload['shipping_address'] ?? '',
                 'shipping_charge' => $payload['shipping_charge'] ?? 0,
-                'lat' => $shipping['latitude'] ?? null, 
-                'long' => $shipping['longitude'] ?? null,
+                'lat' => $latitude,      // ✅ Now correctly extracted
+                'long' => $longitude,    // ✅ Now correctly extracted
             ]);
 
             // Create Transaction Sale Lines
