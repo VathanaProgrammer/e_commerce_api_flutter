@@ -27,6 +27,14 @@ class SalesController extends Controller
         $transactions = Transaction::with(['user', 'payments'])->latest();
 
         return DataTables::of($transactions)
+            ->addColumn('checkbox', function ($tx) {
+                return '
+                        <input type="checkbox"
+                            class="form-check-input transaction-checkbox"
+                            value="' . $tx->id . '">
+                    ';
+            })
+
             ->addColumn(
                 'user',
                 fn($tx) =>
@@ -118,6 +126,7 @@ class SalesController extends Controller
             })
 
             ->rawColumns([
+                'checkbox',
                 'status',
                 'payments',
                 'shipping_address',

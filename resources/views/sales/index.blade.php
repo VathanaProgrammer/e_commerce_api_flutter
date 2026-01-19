@@ -8,7 +8,9 @@
                     <table id="salesOrdersTable" class="table table-striped table-hover display nowrap w-full">
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>
+                                    <input type="checkbox" id="select-all">
+                                </th>
                                 <th>User</th>
                                 <th>Total Items</th>
                                 <th>Total Price</th>
@@ -37,9 +39,13 @@
                 serverSide: true,
                 ajax: '{{ route('sales.orders.data') }}',
                 columns: [{
-                        data: 'id',
-                        name: 'id'
+                        data: 'checkbox',
+                        name: 'checkbox',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
                     },
+
                     {
                         data: 'user',
                         name: 'user.first_name'
@@ -106,6 +112,22 @@
                     [10, 25, 50, "All"]
                 ]
             });
+
+            $(document).on('click', '.transaction-checkbox', function(e) {
+                e.stopPropagation();
+            });
+
+            $('#select-all').on('change', function() {
+                $('.transaction-checkbox').prop('checked', this.checked);
+            });
+
+            function getSelectedTransactionIds() {
+                return $('.transaction-checkbox:checked')
+                    .map(function() {
+                        return $(this).val();
+                    })
+                    .get();
+            }
 
             let t_modal = null;
 
