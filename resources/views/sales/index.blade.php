@@ -45,7 +45,12 @@
                         searchable: false,
                         className: 'text-center'
                     },
-
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
                     {
                         data: 'user',
                         name: 'user.first_name'
@@ -92,12 +97,7 @@
                         data: 'discount_amount',
                         name: 'discount_amount'
                     },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    },
+
                 ],
                 drawCallback: function() {
                     document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(function(drop) {
