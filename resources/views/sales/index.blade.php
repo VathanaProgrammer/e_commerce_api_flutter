@@ -9,7 +9,11 @@
                         <thead>
                             <tr>
                                 <th>
-                                    <input type="checkbox" id="select-all">
+                                    <!-- Default checkbox -->
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="select-all" />
+                                        <label class="form-check-label" for="flexCheckDefault">Default checkbox</label>
+                                    </div>
                                 </th>
                                 <th>User</th>
                                 <th>Total Items</th>
