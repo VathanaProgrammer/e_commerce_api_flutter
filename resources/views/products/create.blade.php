@@ -18,14 +18,14 @@
                                     <input type="text" name="name" class="form-control form-control-sm rounded-0">
                                 </div>
                                 <div class="mb-3">
-                                    <div class="mb-3 form-check">
+                                    <div class="mb- form-check">
                                         <input type="checkbox" name="is_recommended" class="form-check-input"
                                             id="isRecommended" value="1"
                                             {{ old('is_recommended', $product->is_recommended ?? false) ? 'checked' : '' }}>
                                         <label class="form-check-label" for="isRecommended">Recommended</label>
                                     </div>
 
-                                    <div class="mb-3 form-check">
+                                    <div class="mb- form-check">
                                         <input type="checkbox" name="is_featured" class="form-check-input" id="isFeatured"
                                             value="1"
                                             {{ old('is_featured', $product->is_featured ?? false) ? 'checked' : '' }}>
