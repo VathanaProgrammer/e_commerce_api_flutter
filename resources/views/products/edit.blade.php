@@ -16,10 +16,28 @@
                     <div class="col-md-6">
                         <h6 class="mb-2">Basic Info</h6>
 
-                        <div class="mb-3">
-                            <label class="form-label small">Product Name</label>
-                            <input type="text" name="name" class="form-control form-control-sm rounded-0"
-                                value="{{ old('name', $product->name) }}">
+                        <div class="d-flex justify-content-between">
+                            <div class="mb-3">
+                                <label class="form-label small">Product Name</label>
+                                <input type="text" name="name" class="form-control form-control-sm rounded-0"
+                                    value="{{ old('name', $product->name) }}">
+                            </div>
+                            <div class="mb-3">
+                                <div class="mb- form-check">
+                                    <input type="checkbox" name="is_recommended" class="form-check-input" id="isRecommended"
+                                        value="1"
+                                        {{ old('is_recommended', $product->is_recommended ?? false) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="isRecommended">Recommended</label>
+                                </div>
+
+                                <div class="mb- form-check">
+                                    <input type="checkbox" name="is_featured" class="form-check-input" id="isFeatured"
+                                        value="1"
+                                        {{ old('is_featured', $product->is_featured ?? false) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="isFeatured">Featured</label>
+                                </div>
+
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -86,15 +104,23 @@
                         <h6 class="mb-2">Descriptions</h6>
                         <div id="descriptionLines" class="mb-2">
                             @foreach ($product->descriptionLines as $line)
-                                <input type="text" name="description_lines[]"
-                                    class="form-control form-control-sm mb-1 rounded-0" value="{{ $line->text }}">
+                                <div class="description-line d-flex mb-1">
+                                    <input type="text" name="description_lines[]"
+                                        class="form-control form-control-sm rounded-0 me-2" value="{{ $line->text }}">
+                                    <button type="button" class="btn btn-sm btn-danger remove-line">Remove</button>
+                                </div>
                             @endforeach
                             @if (!$product->descriptionLines->count())
-                                <input type="text" name="description_lines[]"
-                                    class="form-control form-control-sm mb-1 rounded-0">
+                                <div class="description-line d-flex mb-1">
+                                    <input type="text" name="description_lines[]"
+                                        class="form-control form-control-sm rounded-0 me-2">
+                                    <button type="button" class="btn btn-sm btn-danger remove-line">Remove</button>
+                                </div>
                             @endif
                         </div>
-                        <button type="button" id="addLine" class="btn btn-sm btn-outline-primary mb-3">Add Line</button>
+
+                        <button type="button" id="addLine" class="btn btn-sm btn-outline-primary mb-3">Add
+                            Line</button>
 
                         <h6 class="mb-2">Attributes</h6>
                         <div id="attributesSection" class="mb-3">
@@ -121,19 +147,24 @@
                         <h6 class="mb-2">Variants</h6>
                         <div id="variantsSection" class="mb-2">
                             @foreach ($product->variants as $index => $variant)
-                                <div class="mb-2">
-                                    <input type="text" name="variants[{{ $index }}][sku]"
-                                        class="form-control form-control-sm mb-1 rounded-0" value="{{ $variant->sku }}"
-                                        placeholder="SKU">
-                                    <input type="number" name="variants[{{ $index }}][price]"
-                                        class="form-control form-control-sm mb-1 rounded-0" value="{{ $variant->price }}"
-                                        placeholder="Price">
+                                <div class="variant-box mb-2 d-flex flex-column">
+                                    <div class="d-flex gap-2 mb-1 align-items-center">
+                                        <input type="text" name="variants[{{ $index }}][sku]"
+                                            class="form-control form-control-sm" value="{{ $variant->sku }}"
+                                            placeholder="SKU">
+                                        <input type="number" name="variants[{{ $index }}][price]"
+                                            class="form-control form-control-sm" value="{{ $variant->price }}"
+                                            placeholder="Price">
+                                        <button type="button"
+                                            class="btn btn-sm btn-danger remove-variant">Remove</button>
+                                    </div>
                                     @foreach ($variant->attributeValues as $attrValue)
                                         <input type="hidden" name="variants[{{ $index }}][attributes][]"
                                             value="{{ $attrValue->id }}">
                                     @endforeach
                                 </div>
                             @endforeach
+
                         </div>
                         <button type="button" id="generateVariants" class="btn btn-sm btn-outline-warning">Generate
                             Variants</button>
@@ -223,6 +254,11 @@
             `);
                 });
             });
+
+            $(document).on('click', '.remove-variant', function() {
+                $(this).closest('.variant-box').remove();
+            });
+
 
             $('#form_update_product').on('submit', function(e) {
                 e.preventDefault();
