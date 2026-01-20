@@ -22,7 +22,6 @@ return new class extends Migration
         });
 
         Schema::table('products', function (Blueprint $table) {
-            $table->id();
             $table->boolean('is_featured')->default(false);
             $table->boolean('is_recommended')->default(false);
             $table->timestamps();
