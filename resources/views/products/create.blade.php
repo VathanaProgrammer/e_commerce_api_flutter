@@ -89,10 +89,14 @@
                         <div class="card p-3 mb-3">
                             <h6>Descriptions</h6>
                             <div id="descriptionLines" class="mb-2">
-                                <input type="text" name="description_lines[]"
-                                    class="form-control form-control-sm mb-1 rounded-0">
+                                <div class="description-line d-flex mb-1">
+                                    <input type="text" name="description_lines[]"
+                                        class="form-control form-control-sm rounded-0 me-2">
+                                    <button type="button" class="btn btn-sm btn-danger remove-line">Remove</button>
+                                </div>
                             </div>
                             <button type="button" id="addLine" class="btn btn-sm btn-outline-primary">Add Line</button>
+
                         </div>
 
                         {{-- Attributes --}}
@@ -140,10 +144,19 @@
     <script>
         $(function() {
             $('#addLine').click(function() {
-                $('#descriptionLines').append(
-                    `<input type="text" name="description_lines[]" class="form-control form-control-sm mb-1 rounded-0">`
-                );
+                $('#descriptionLines').append(`
+                                                <div class="description-line d-flex mb-1">
+                                                    <input type="text" name="description_lines[]" class="form-control form-control-sm rounded-0 me-2">
+                                                    <button type="button" class="btn btn-sm btn-danger remove-line">Remove</button>
+                                                </div>
+                                            `);
             });
+
+            // Remove a description line
+            $(document).on('click', '.remove-line', function() {
+                $(this).closest('.description-line').remove();
+            });
+
 
             // Image Preview
             $('input[name="image"]').on('change', function(e) {
@@ -160,7 +173,8 @@
             }
 
             $('#generateVariants').click(function() {
-                $('#variantsSection').empty();
+                $('#variantsSection').empty(); // clear old variants
+
                 let selected = {};
                 $('.attribute-box').each(function() {
                     let attrId = $(this).data('id');
@@ -173,8 +187,10 @@
                     });
                     if (vals.length) selected[attrId] = vals;
                 });
+
                 let keys = Object.keys(selected);
                 if (!keys.length) return;
+
                 let arrays = keys.map(k => selected[k]);
                 let combos = cartesian(arrays);
 
@@ -182,15 +198,25 @@
                     let selectsHtml = combo.map(c =>
                         `<div>${c.name} <input type="hidden" name="variants[${index}][attributes][]" value="${c.id}"></div>`
                     ).join('');
+
                     $('#variantsSection').append(`
-                <div class="variant-box border p-2 mb-2">
-                    <input type="text" name="variants[${index}][sku]" class="form-control form-control-sm mb-1" placeholder="SKU">
-                    <input type="number" name="variants[${index}][price]" class="form-control form-control-sm mb-1" placeholder="Price">
-                    ${selectsHtml}
+            <div class="variant-box border p-2 mb-2 d-flex flex-column">
+                <div class="d-flex gap-2 mb-1 align-items-center">
+                    <input type="text" name="variants[${index}][sku]" class="form-control form-control-sm" placeholder="SKU">
+                    <input type="number" name="variants[${index}][price]" class="form-control form-control-sm" placeholder="Price">
+                    <button type="button" class="btn btn-sm btn-danger remove-variant">Remove</button>
                 </div>
-            `);
+                ${selectsHtml}
+            </div>
+        `);
                 });
             });
+
+
+            $(document).on('click', '.remove-variant', function() {
+                $(this).closest('.variant-box').remove();
+            });
+
 
             $('#form_add_product').on('submit', function(e) {
                 e.preventDefault();
