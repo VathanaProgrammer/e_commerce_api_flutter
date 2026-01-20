@@ -121,7 +121,7 @@ class UserOrdersController extends Controller
                     'method' => $order->payments->first()?->method ?? 'N/A',
                     'status' => $order->payments->first()?->status ?? 'pending',
                     'amount' => $order->payments->first()?->amount ?? 0,
-                    'paid_at' => $order->payments->first()?->paid_at?->format('M d, Y H:i'),
+                    'paid_at' => $order->payments->first()?->paid_at?->format('M d, Y H:i A'),
                 ],
                 
                 'items' => $order->saleLines->map(function ($line) {
