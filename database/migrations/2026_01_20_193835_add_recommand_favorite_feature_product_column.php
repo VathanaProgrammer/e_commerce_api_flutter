@@ -21,7 +21,7 @@ return new class extends Migration
             $table->unique(['user_id', 'product_id']);
         });
 
-        Schema::create('products', function (Blueprint $table) {
+        Schema::table('products', function (Blueprint $table) {
             $table->id();
             $table->boolean('is_featured')->default(false);
             $table->boolean('is_recommended')->default(false);

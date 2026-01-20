@@ -70,7 +70,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->string('sku')->nullable();
             $table->decimal('price', 10, 2);
-            $table->timestamps();
+            $table->timestamps(); 
         });
 
         // Product Variant Attributes table

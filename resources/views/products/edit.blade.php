@@ -269,11 +269,15 @@
                     processData: false,
                     contentType: false,
                     success: function(res) {
-                        toastr.success(res.msg || 'Product updated!');
+                        if(res.data.success){
+                            toastr.success(res.msg || 'Product updated!');
+                        }else{
+                            toastr.error(res.msg || 'failed');
+                        }
                         setTimeout(() => window.location.href = res.location, 500);
                     },
                     error: function(err) {
-                        toastr.error('Failed.');
+                        console.log(err)
                     }
                 });
             });
