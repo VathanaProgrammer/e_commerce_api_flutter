@@ -36,7 +36,6 @@
                                         {{ old('is_featured', $product->is_featured ?? false) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="isFeatured">Featured</label>
                                 </div>
-
                             </div>
                         </div>
 
