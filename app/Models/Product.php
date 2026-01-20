@@ -12,10 +12,11 @@ class Product extends Model
 
     protected $fillable = ['category_id', 'name', 'image_url'];
 
-    protected function imageUrl(): Attribute{
+    protected function imageUrl(): Attribute
+    {
         return Attribute::make(
-            get: fn ($value) =>
-                    $value ? asset($value) : asset('uploads/products/default.jpg'),
+            get: fn($value) =>
+            $value ? asset($value) : asset('uploads/products/default.jpg'),
         );
     }
     public function category()
@@ -57,5 +58,10 @@ class Product extends Model
             'id',                      // Local key on Product
             'attribute_id'             // Local key on AttributeValue
         );
+    }
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites');
     }
 }

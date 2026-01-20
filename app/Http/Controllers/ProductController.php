@@ -88,6 +88,9 @@ class ProductController extends Controller
             'variants.*.attributes.*' => 'nullable|exists:attribute_values,id',
             'discount.value' => 'nullable|numeric|min:0',
             'image' => 'nullable|image|max:2048',
+            'is_recommended' =>  'nullable|boolean',
+            'is_featured' => 'nullable|boolean'
+
         ]);
 
         DB::beginTransaction();
@@ -105,6 +108,8 @@ class ProductController extends Controller
                 'name' => $request->name,
                 'category_id' => $request->category_id,
                 'image_url' => $imageName ? '/uploads/products/' . $imageName : null,
+                'is_recommended' => $request->has('is_recommended'),
+                'is_featured' => $request->has('is_featured'),
             ]);
 
             // 2. Save description lines
@@ -183,6 +188,8 @@ class ProductController extends Controller
             'variants.*.sku' => 'nullable|string|max:100',
             'variants.*.price' => 'nullable|numeric|min:0',
             'variants.*.attributes.*' => 'nullable|exists:attribute_values,id',
+            'is_recommended' =>  'nullable|boolean',
+            'is_featured' => 'nullable|boolean'
         ]);
 
         DB::beginTransaction();
@@ -201,6 +208,8 @@ class ProductController extends Controller
             $product->update([
                 'name' => $request->name,
                 'category_id' => $request->category_id,
+                'is_recommended' => $request->has('is_recommended'),
+                'is_featured' => $request->has('is_featured'),
             ]);
 
             // 1. Update description lines

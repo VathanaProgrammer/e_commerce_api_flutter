@@ -67,4 +67,9 @@ class User extends Authenticatable
             'profile_image' => $this->profile_image_url,
         ];
     }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(Product::class, 'favorites');
+    }
 }

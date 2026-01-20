@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('content') 
+@section('content')
     <div class="container py-4">
         <x-widget title="Create Product">
             <form id="form_add_product" enctype="multipart/form-data">
@@ -12,11 +12,29 @@
                     <div class="col-md-6">
                         <div class="card p-3 mb-3">
                             <h6>Basic Info</h6>
-                            <div class="mb-3">
-                                <label class="form-label small">Product Name</label>
-                                <input type="text" name="name" class="form-control form-control-sm rounded-0">
-                            </div>
+                            <div class="d-flex justify-content-between">
+                                <div class="mb-3">
+                                    <label class="form-label small">Product Name</label>
+                                    <input type="text" name="name" class="form-control form-control-sm rounded-0">
+                                </div>
+                                <div class="mb-3">
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" name="is_recommended" class="form-check-input"
+                                            id="isRecommended" value="1"
+                                            {{ old('is_recommended', $product->is_recommended ?? false) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="isRecommended">Recommended</label>
+                                    </div>
 
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" name="is_featured" class="form-check-input" id="isFeatured"
+                                            value="1"
+                                            {{ old('is_featured', $product->is_featured ?? false) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="isFeatured">Featured</label>
+                                    </div>
+
+                                </div>
+
+                            </div>
                             <div class="mb-3">
                                 <label class="form-label small">Category</label>
                                 <select name="category_id" class="form-select form-select-sm rounded-0">
@@ -163,7 +181,7 @@
                 combos.forEach((combo, index) => {
                     let selectsHtml = combo.map(c =>
                         `<div>${c.name} <input type="hidden" name="variants[${index}][attributes][]" value="${c.id}"></div>`
-                        ).join('');
+                    ).join('');
                     $('#variantsSection').append(`
                 <div class="variant-box border p-2 mb-2">
                     <input type="text" name="variants[${index}][sku]" class="form-control form-control-sm mb-1" placeholder="SKU">
