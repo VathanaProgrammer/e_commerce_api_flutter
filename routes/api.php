@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SalesController;
 use App\Http\Controllers\Api\ABASandboxController;
 use App\Http\Controllers\Api\MockQRController;
+use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\UserOrdersController;
 
 Route::get('sanctum/user', function (Request $request) {
@@ -30,3 +31,7 @@ Route::post('/checkout/cash', [MockQRController::class, 'cashCheckout']);
 // In routes/api.php
 Route::get('/user/orders', [UserOrdersController::class, 'index']);
 Route::get('/user/orders/{id}', [UserOrdersController::class, 'show']);
+
+Route::get('/favorites', [FavoriteController::class, 'index']);
+Route::post('/favorites/add', [FavoriteController::class, 'add']);
+Route::post('/favorites/remove', [FavoriteController::class, 'remove']);
