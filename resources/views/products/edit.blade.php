@@ -222,7 +222,6 @@
             }
 
             $('#generateVariants').click(function() {
-                $('#variantsSection').empty();
                 let selected = {};
                 $('.attribute-box').each(function() {
                     let attrId = $(this).data('id');
@@ -235,24 +234,43 @@
                     });
                     if (vals.length) selected[attrId] = vals;
                 });
+
                 let keys = Object.keys(selected);
                 if (!keys.length) return;
+
                 let arrays = keys.map(k => selected[k]);
                 let combos = cartesian(arrays);
 
+                // Get existing combinations
+                let existingCombos = [];
+                $('#variantsSection .variant-box').each(function() {
+                    let attrIds = $(this).find('input[name*="[attributes][]"]').map(function() {
+                        return $(this).val();
+                    }).get().sort().join('-');
+                    existingCombos.push(attrIds);
+                });
+
                 combos.forEach((combo, index) => {
-                    let selectsHtml = combo.map(c =>
-                        `<div>${c.name} <input type="hidden" name="variants[${index}][attributes][]" value="${c.id}"></div>`
-                    ).join('');
-                    $('#variantsSection').append(`
-                <div class="mb-2">
-                    <input type="text" name="variants[${index}][sku]" class="form-control form-control-sm mb-1 rounded-0" placeholder="SKU">
-                    <input type="number" name="variants[${index}][price]" class="form-control form-control-sm mb-1 rounded-0" placeholder="Price">
-                    ${selectsHtml}
-                </div>
-            `);
+                    let comboIds = combo.map(c => c.id).sort().join('-');
+                    if (!existingCombos.includes(comboIds)) {
+                        let selectsHtml = combo.map(c =>
+                            `<div>${c.name} <input type="hidden" name="variants[][attributes][]" value="${c.id}"></div>`
+                        ).join('');
+
+                        $('#variantsSection').append(`
+                            <div class="variant-box mb-2 d-flex flex-column">
+                                <div class="d-flex gap-2 mb-1 align-items-center">
+                                    <input type="text" name="variants[][sku]" class="form-control form-control-sm" placeholder="SKU">
+                                    <input type="number" name="variants[][price]" class="form-control form-control-sm" placeholder="Price">
+                                    <button type="button" class="btn btn-sm btn-danger remove-variant">Remove</button>
+                                </div>
+                                ${selectsHtml}
+                            </div>
+                        `);
+                    }
                 });
             });
+
 
             $(document).on('click', '.remove-variant', function() {
                 $(this).closest('.variant-box').remove();
@@ -269,9 +287,9 @@
                     processData: false,
                     contentType: false,
                     success: function(res) {
-                        if(res.data.success){
+                        if (res.data.success) {
                             toastr.success(res.msg || 'Product updated!');
-                        }else{
+                        } else {
                             toastr.error(res.msg || 'failed');
                         }
                         setTimeout(() => window.location.href = res.location, 500);

@@ -17,7 +17,7 @@ class HomeController extends Controller
         $search   = $request->query('search');
         $userId   = $request->query('user_id');
 
-        // Categories (for tabs)
+        // Categories 
         $categories = Category::select('id', 'name')->get();
 
         // business info
@@ -62,7 +62,7 @@ class HomeController extends Controller
                     ] : null,
                     'is_featured' => (bool) $product->is_featured,
                     'is_recommended' => (bool) $product->is_recommended,
-                    'is_favorite' => in_array($product->id, $favorites), // <-- HERE
+                    'is_favorite' => in_array($product->id, $favorites), 
                 ];
             });
 
