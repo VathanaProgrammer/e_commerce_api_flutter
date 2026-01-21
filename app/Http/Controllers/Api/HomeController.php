@@ -52,7 +52,7 @@ class HomeController extends Controller
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'price' => (float) $price,
+                    'price' => (float) number_format((float) $price, 2, '.', ''),
                     'image_url' => $product->image_url ?? '',
                     'category' => $product->category ? $product->category->name : null,
                     'discount' => $discount ? [
