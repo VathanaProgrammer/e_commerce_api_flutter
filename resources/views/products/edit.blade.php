@@ -287,8 +287,7 @@
                     processData: false,
                     contentType: false,
                     success: function(res) {
-                        console.log(res.data);
-                        if (res.data.success) {
+                        if (res.success) {
                             toastr.success(res.msg || 'Product updated!');
                         } else {
                             toastr.error(res.msg || 'failed');
