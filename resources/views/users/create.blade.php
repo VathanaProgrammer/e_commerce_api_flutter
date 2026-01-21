@@ -13,13 +13,14 @@
                     <label class="form-label d-block">Profile Image</label>
                     <img id="profilePreview" src="{{ $img ?? '/img/default-user.png' }}" class="img-fluid rounded-circle mb-2"
                         style="width:100%; aspect-ratio:1/1; object-fit:cover;">
-                    <input type="file" name="profile_image" class="form-control form-control-sm rounded-0"
+                    <input type="file" name="profile_image_url" class="form-control form-control-sm rounded-0"
                         accept="image/*">
                 </div>
 
                 {{-- Other User Inputs --}}
                 <div class="col-md-9">
                     <div class="row g-3">
+
                         {{-- Prefix --}}
                         <div class="col-md-3">
                             <label>Prefix</label>
@@ -82,6 +83,31 @@
                             </select>
                         </div>
 
+                        {{-- Phone --}}
+                        <div class="col-md-6">
+                            <label>Phone</label>
+                            <input name="phone" class="form-control form-control-sm rounded-0">
+                        </div>
+
+                        {{-- City --}}
+                        <div class="col-md-6">
+                            <label>City</label>
+                            <input name="city" class="form-control form-control-sm rounded-0">
+                        </div>
+
+                        {{-- Address --}}
+                        <div class="col-md-12">
+                            <label>Address</label>
+                            <input name="address" class="form-control form-control-sm rounded-0">
+                        </div>
+
+                        {{-- Profile Completion --}}
+                        <div class="col-md-12">
+                            <label>Profile Completion (%)</label>
+                            <input type="number" name="profile_completion" min="0" max="100" value="0"
+                                class="form-control form-control-sm rounded-0">
+                        </div>
+
                         {{-- Active --}}
                         <div class="col-md-12 mt-2">
                             <div class="form-check">
@@ -89,6 +115,7 @@
                                 <label class="form-check-label">Active</label>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -101,57 +128,56 @@
 
     </x-widget>
 @endsection
+
 @section('scripts')
-    <script>
-        $(document).ready(function() {
+<script>
+    $(document).ready(function() {
 
-            // Preview profile image
-            $('input[name="profile_image"]').on('change', function(e) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#profilePreview').attr('src', e.target.result);
-                }
-                reader.readAsDataURL(this.files[0]);
-            });
-
-            // AJAX form submit
-            $('#userForm').on('submit', function(e) {
-                e.preventDefault(); // prevent normal form submit
-
-                const formData = new FormData(this);
-
-                // Convert checkbox to true/false
-                formData.set('is_active', $('input[name="is_active"]').is(':checked') ? 1 : 0);
-
-                $.ajax({
-                    url: $(this).attr('action'),
-                    method: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: {
-                        'X-CSRF-TOKEN': $('input[name="_token"]').val()
-                    },
-                    beforeSend: function() {
-                        $('button[type="submit"]').prop('disabled', true).text('Saving...');
-                    },
-                    success: function(res) {
-                        toastr.success(res.msg || 'User added successfully!');
-                        window.location.href = res.location;
-                        // Reset form
-                        $('#userForm')[0].reset();
-                        $('#profilePreview').attr('src', '/img/default-user.png');
-                    },
-                    error: function(xhr) {
-                        toastr.error('Error: ' + (xhr.responseJSON?.message ||
-                            'Something went wrong.'));
-                    },
-                    complete: function() {
-                        $('button[type="submit"]').prop('disabled', false).text('Save');
-                    }
-                });
-            });
-
+        // Preview profile image
+        $('input[name="profile_image_url"]').on('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#profilePreview').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(this.files[0]);
         });
-    </script>
+
+        // AJAX form submit
+        $('#userForm').on('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            // Convert checkbox to true/false
+            formData.set('is_active', $('input[name="is_active"]').is(':checked') ? 1 : 0);
+
+            $.ajax({
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-TOKEN': $('input[name="_token"]').val()
+                },
+                beforeSend: function() {
+                    $('button[type="submit"]').prop('disabled', true).text('Saving...');
+                },
+                success: function(res) {
+                    toastr.success(res.msg || 'User added successfully!');
+                    window.location.href = res.location;
+                    $('#userForm')[0].reset();
+                    $('#profilePreview').attr('src', '/img/default-user.png');
+                },
+                error: function(xhr) {
+                    toastr.error('Error: ' + (xhr.responseJSON?.message || 'Something went wrong.'));
+                },
+                complete: function() {
+                    $('button[type="submit"]').prop('disabled', false).text('Save');
+                }
+            });
+        });
+
+    });
+</script>
 @endsection
