@@ -81,7 +81,7 @@
                             <label>Profile Completion (%)</label>
                             <input type="number" name="profile_completion" min="0" max="100" class="form-control form-control-sm rounded-0" value="{{ $user->profile_completion }}">
                         </div>
-
+  
                         {{-- Role --}}
                         <div class="col-md-6">
                             <label>Role</label>
