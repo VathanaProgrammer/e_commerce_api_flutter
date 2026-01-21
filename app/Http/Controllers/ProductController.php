@@ -84,7 +84,7 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'description_lines.*' => 'nullable|string|max:500',
             'variants.*.sku' => 'nullable|string|max:100',
-            'variants.*.price' => ['nullable','numeric','min:0','regex:/^\d+(\.\d{1,2})?$/'],
+            'variants.*.price' => ['nullable', 'numeric', 'min:0', 'regex:/^\d+(\.\d{1,2})?$/'],
             'variants.*.attributes.*' => 'nullable|exists:attribute_values,id',
             'discount.value' => 'nullable|numeric|min:0',
             'image' => 'nullable|image|max:2048',
@@ -186,7 +186,7 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'description_lines.*' => 'nullable|string|max:500',
             'variants.*.sku' => 'nullable|string|max:100',
-            'variants.*.price' => 'nullable|numeric|min:0',
+            'variants.*.price' => ['nullable', 'numeric', 'min:0', 'regex:/^\d+(\.\d{1,2})?$/'],
             'variants.*.attributes.*' => 'nullable|exists:attribute_values,id',
             'is_recommended' =>  'nullable|boolean',
             'is_featured' => 'nullable|boolean'
