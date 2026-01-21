@@ -10,7 +10,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['category_id', 'name', 'image_url', 'is_recommended', 'is_featured'];
+    protected $fillable = ['category_id', 'name', 'image_url', 'is_recommended', 'is_featured', "active"];
 
     protected function imageUrl(): Attribute
     {

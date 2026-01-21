@@ -181,13 +181,23 @@
 @section('scripts')
     <script>
         $(function() {
+            // Add description line
             $('#addLine').click(function() {
-                $('#descriptionLines').append(
-                    `<input type="text" name="description_lines[]" class="form-control form-control-sm mb-1 rounded-0">`
-                );
+                $('#descriptionLines').append(`
+            <div class="description-line d-flex mb-1">
+                <input type="text" name="description_lines[]" class="form-control form-control-sm rounded-0 me-2">
+                <button type="button" class="btn btn-sm btn-danger remove-line">Remove</button>
+            </div>
+        `);
             });
+
+            // Remove description line
+            $(document).on('click', '.remove-line', function() {
+                $(this).closest('.description-line').remove();
+            });
+
+            // Image preview
             const oldImageUrl = "{{ $product->image_url }}";
-            console.log('Old Image URL:', oldImageUrl);
 
             function showPreview(fileInput) {
                 const file = fileInput.files[0];
@@ -200,29 +210,62 @@
                 }
             }
 
-            // On file change
             $('input[name="image"]').on('change', function() {
                 showPreview(this);
             });
 
-            // Optional: if you have a "clear" button
-            $('#clearImage').on('click', function() {
-                const input = $('input[name="image"]');
-                input.val(''); // clear input
-                showPreview(input[0]);
-            });
-
-            // Run on page load just in case
             showPreview($('input[name="image"]')[0]);
 
+            // Cartesian product helper
             function cartesian(arr) {
                 return arr.reduce((a, b) => a.flatMap(d => b.map(e => [...d, e])), [
                     []
                 ]);
             }
 
+            // ✅ FIX: Get next variant index (preserve existing variants)
+            function getNextVariantIndex() {
+                let maxIndex = -1;
+                $('#variantsSection .variant-box').each(function() {
+                    // Extract index from name attribute like "variants[0][sku]"
+                    const nameAttr = $(this).find('input[name*="variants"]').first().attr('name');
+                    if (nameAttr) {
+                        const match = nameAttr.match(/variants\[(\d+)\]/);
+                        if (match) {
+                            const idx = parseInt(match[1]);
+                            if (idx > maxIndex) maxIndex = idx;
+                        }
+                    }
+                });
+                return maxIndex + 1;
+            }
+
+            // ✅ FIX: Check if variant already exists
+            function variantExists(combo) {
+                const comboIds = combo.map(c => c.id).sort().join(',');
+
+                let exists = false;
+                $('#variantsSection .variant-box').each(function() {
+                    const variantIds = [];
+                    $(this).find('input[name*="[attributes]"]').each(function() {
+                        variantIds.push($(this).val());
+                    });
+
+                    if (variantIds.sort().join(',') === comboIds) {
+                        exists = true;
+                        return false; // break loop
+                    }
+                });
+
+                return exists;
+            }
+
+            // Generate Variants button
             $('#generateVariants').click(function() {
-                $('#variantsSection').empty();
+                // ✅ DON'T clear existing variants
+                // $('#variantsSection').empty(); // REMOVED THIS LINE
+
+                // Get selected attributes
                 let selected = {};
                 $('.attribute-box').each(function() {
                     let attrId = $(this).data('id');
@@ -235,33 +278,69 @@
                     });
                     if (vals.length) selected[attrId] = vals;
                 });
+
                 let keys = Object.keys(selected);
-                if (!keys.length) return;
+                if (!keys.length) {
+                    toastr.warning('Please select at least one attribute');
+                    return;
+                }
+
                 let arrays = keys.map(k => selected[k]);
                 let combos = cartesian(arrays);
 
-                combos.forEach((combo, index) => {
-                    let selectsHtml = combo.map(c =>
-                        `<div>${c.name} <input type="hidden" name="variants[${index}][attributes][]" value="${c.id}"></div>`
+                // Get starting index for new variants
+                let startIndex = getNextVariantIndex();
+                let addedCount = 0;
+
+                combos.forEach((combo) => {
+                    // ✅ Skip if variant already exists
+                    if (variantExists(combo)) {
+                        console.log('Variant already exists, skipping:', combo.map(c => c.name)
+                            .join(', '));
+                        return;
+                    }
+
+                    const currentIndex = startIndex + addedCount;
+
+                    let attributesHtml = combo.map(c =>
+                        `<span class="badge bg-secondary me-1">${c.name}</span>
+                <input type="hidden" name="variants[${currentIndex}][attributes][]" value="${c.id}">`
                     ).join('');
+
                     $('#variantsSection').append(`
-                <div class="mb-2">
-                    <input type="text" name="variants[${index}][sku]" class="form-control form-control-sm mb-1 rounded-0" placeholder="SKU">
-                    <input type="number" step="0.01" name="variants[${index}][price]" class="form-control form-control-sm mb-1 rounded-0" placeholder="Price">
-                    ${selectsHtml}
+                <div class="variant-box mb-2 d-flex flex-column">
+                    <div class="d-flex gap-2 mb-1 align-items-center">
+                        <input type="text" name="variants[${currentIndex}][sku]" 
+                            class="form-control form-control-sm" placeholder="SKU">
+                        <input type="number" step="0.01" name="variants[${currentIndex}][price]" 
+                            class="form-control form-control-sm" placeholder="Price">
+                        <button type="button" class="btn btn-sm btn-danger remove-variant">Remove</button>
+                    </div>
+                    <div class="mb-1">${attributesHtml}</div>
                 </div>
             `);
+
+                    addedCount++;
                 });
+
+                if (addedCount > 0) {
+                    toastr.success(`${addedCount} new variant(s) added`);
+                } else {
+                    toastr.info('All variants already exist');
+                }
             });
 
+            // Remove variant
             $(document).on('click', '.remove-variant', function() {
                 $(this).closest('.variant-box').remove();
             });
 
-
+            // Form submission
             $('#form_update_product').on('submit', function(e) {
                 e.preventDefault();
+
                 let formData = new FormData(this);
+
                 $.ajax({
                     url: $(this).attr('action'),
                     type: 'POST',
@@ -269,15 +348,16 @@
                     processData: false,
                     contentType: false,
                     success: function(res) {
-                        if(res.success){
+                        if (res.success) {
                             toastr.success(res.msg || 'Product updated!');
-                        }else{
-                            toastr.error(res.msg || 'failed');
+                            setTimeout(() => window.location.href = res.location, 500);
+                        } else {
+                            toastr.error(res.msg || 'Failed to update product');
                         }
-                        setTimeout(() => window.location.href = res.location, 500);
                     },
                     error: function(err) {
-                        console.log(err)
+                        console.error(err);
+                        toastr.error('An error occurred. Please try again.');
                     }
                 });
             });
