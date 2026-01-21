@@ -287,6 +287,7 @@
                     processData: false,
                     contentType: false,
                     success: function(res) {
+                        console.log(res.data);
                         if (res.data.success) {
                             toastr.success(res.msg || 'Product updated!');
                         } else {
