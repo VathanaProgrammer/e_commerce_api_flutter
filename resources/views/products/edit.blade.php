@@ -261,7 +261,7 @@
                             <div class="variant-box mb-2 d-flex flex-column">
                                 <div class="d-flex gap-2 mb-1 align-items-center">
                                     <input type="text" name="variants[][sku]" class="form-control form-control-sm" placeholder="SKU">
-                                    <input type="number" name="variants[][price]" class="form-control form-control-sm" placeholder="Price">
+                                    <input type="number" step="0.01" name="variants[][price]" class="form-control form-control-sm" placeholder="Price">
                                     <button type="button" class="btn btn-sm btn-danger remove-variant">Remove</button>
                                 </div>
                                 ${selectsHtml}
