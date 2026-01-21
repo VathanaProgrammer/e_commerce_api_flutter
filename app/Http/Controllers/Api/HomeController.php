@@ -37,6 +37,7 @@ class HomeController extends Controller
             'discounts' => fn($q) => $q->where('active', true)->limit(1),
             'variants',
         ])
+            ->where('active', true)
             ->when(
                 $category && $category !== 'All',
                 fn($q) =>

@@ -89,7 +89,8 @@ class ProductController extends Controller
             'discount.value' => 'nullable|numeric|min:0',
             'image' => 'nullable|image|max:2048',
             'is_recommended' =>  'nullable|boolean',
-            'is_featured' => 'nullable|boolean'
+            'is_featured' => 'nullable|boolean',
+            'active' => 'nullable|boolean'
 
         ]);
 
@@ -110,6 +111,7 @@ class ProductController extends Controller
                 'image_url' => $imageName ? '/uploads/products/' . $imageName : null,
                 'is_recommended' => $request->has('is_recommended'),
                 'is_featured' => $request->has('is_featured'),
+                'active' => $request->has('active')
             ]);
 
             // 2. Save description lines
@@ -189,7 +191,8 @@ class ProductController extends Controller
             'variants.*.price' => ['nullable', 'numeric', 'min:0', 'regex:/^\d+(\.\d{1,2})?$/'],
             'variants.*.attributes.*' => 'nullable|exists:attribute_values,id',
             'is_recommended' =>  'nullable|boolean',
-            'is_featured' => 'nullable|boolean'
+            'is_featured' => 'nullable|boolean',
+            'active' => 'nullable|boolean'
         ]);
 
         DB::beginTransaction();
@@ -210,7 +213,8 @@ class ProductController extends Controller
                 'category_id' => $request->category_id,
                 'is_recommended' => $request->has('is_recommended'),
                 'is_featured' => $request->has('is_featured'),
-            ]);
+                'active' => $request->has('active')
+            ]); 
 
             // 1. Update description lines
             $product->descriptionLines()->delete();
