@@ -151,7 +151,7 @@
                                         <input type="text" name="variants[{{ $index }}][sku]"
                                             class="form-control form-control-sm" value="{{ $variant->sku }}"
                                             placeholder="SKU">
-                                        <input type="number" name="variants[{{ $index }}][price]"
+                                        <input type="number" step="0.01" name="variants[{{ $index }}][price]"
                                             class="form-control form-control-sm" value="{{ $variant->price }}"
                                             placeholder="Price">
                                         <button type="button"
