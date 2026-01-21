@@ -258,15 +258,15 @@
                         ).join('');
 
                         $('#variantsSection').append(`
-                            <div class="variant-box mb-2 d-flex flex-column">
-                                <div class="d-flex gap-2 mb-1 align-items-center">
-                                    <input type="text" name="variants[][sku]" class="form-control form-control-sm" placeholder="SKU">
-                                    <input type="number" step="0.01" name="variants[][price]" class="form-control form-control-sm" placeholder="Price">
-                                    <button type="button" class="btn btn-sm btn-danger remove-variant">Remove</button>
-                                </div>
-                                ${selectsHtml}
-                            </div>
-                        `);
+                    <div class="variant-box mb-2 d-flex flex-column">
+                        <div class="d-flex gap-2 mb-1 align-items-center">
+                            <input type="text" name="variants[][sku]" class="form-control form-control-sm" placeholder="SKU">
+                            <input type="number" step="0.01" name="variants[][price]" class="form-control form-control-sm" placeholder="Price">
+                            <button type="button" class="btn btn-sm btn-danger remove-variant">Remove</button>
+                        </div>
+                        ${selectsHtml}
+                    </div>
+                `);
                     }
                 });
             });
@@ -287,7 +287,7 @@
                     processData: false,
                     contentType: false,
                     success: function(res) {
-                        if (res.success) {
+                        if (res.data.success) {
                             toastr.success(res.msg || 'Product updated!');
                         } else {
                             toastr.error(res.msg || 'failed');
