@@ -60,6 +60,8 @@ class HomeController extends Controller
                         'value' => $discount->value,
                         'is_percentage' => (bool) $discount->is_percentage,
                     ] : null,
+                    'is_featured' => (bool) $product->is_featured,
+                    'is_recommended' => (bool) $product->is_recommended,
                     'is_favorite' => in_array($product->id, $favorites), // <-- HERE
                 ];
             });
