@@ -55,6 +55,10 @@ class AuthController extends Controller
                 'last_login' => $user->last_login?->toIso8601String(),
                 'username' => $user->username,
                 'role' => $user->role,
+                'city' => $user->city ?? null,
+                'address' => $user->address ?? null,
+                'phone'=> $user->address ?? null,
+                'profile_completion' => $user->profile_completion ?? null
             ],
             'token' => $token,
         ]);
