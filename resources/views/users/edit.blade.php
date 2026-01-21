@@ -3,7 +3,7 @@
 @section('content')
 <div class="container py-4">
     <x-widget title="Edit User">
-        <form id="userForm" method="POST" action="{{ route('users.update', $user->id) }}" enctype="multipart/form-data">
+        <form id="userEditForm" method="POST" action="{{ route('users.update', $user->id) }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -145,7 +145,7 @@
 
                 // Convert checkbox to true/false
                 formData.set('is_active', $('input[name="is_active"]').is(':checked') ? 1 : 0);
-
+                
                 $.ajax({
                     url: $(this).attr('action'),
                     method: 'POST',
