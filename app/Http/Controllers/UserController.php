@@ -139,6 +139,7 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
+        Log::info('data', ['request all' => $request->all()]);
         $user = User::findOrFail($id);
 
         // Validate
