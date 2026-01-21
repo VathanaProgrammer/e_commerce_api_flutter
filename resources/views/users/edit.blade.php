@@ -1,116 +1,127 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-4">
-        <x-widget title="Edit User">
+<div class="container py-4">
+    <x-widget title="Edit User">
+        <form id="userForm" method="POST" action="{{ route('users.update', $user->id) }}" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
 
-            <form id="userEditForm" method="POST" action="{{ route('users.update', $user->id) }}"
-                enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
+            <div class="row g-3 align-items-start">
 
-                <div class="row g-3 align-items-start">
+                {{-- Profile Image --}}
+                <div class="col-md-3 text-center">
+                    <label class="form-label d-block">Profile Image</label>
+                    <img id="profilePreview" 
+                         src="{{ $user->profile_image_url ?? '/img/default-user.png' }}" 
+                         class="img-fluid rounded-circle mb-2"
+                         style="width:100%; aspect-ratio:1/1; object-fit:cover;">
+                    <input type="file" name="profile_image_url" class="form-control form-control-sm rounded-0" accept="image/*">
+                </div>
 
-                    {{-- Profile Image --}}
-                    <div class="col-md-3 text-center">
-                        <label class="form-label d-block">Profile Image</label>
-                        <img id="profilePreview" src="{{ $user->profile_image_url }}" class="img-fluid rounded-circle mb-2"
-                            style="width:100%; aspect-ratio:1/1; object-fit:cover;">
-                        <input type="file" name="profile_image" class="form-control form-control-sm rounded-0"
-                            accept="image/*">
-                    </div>
+                {{-- Other User Inputs --}}
+                <div class="col-md-9">
+                    <div class="row g-3">
 
-                    {{-- Other Inputs --}}
-                    <div class="col-md-9">
-                        <div class="row g-3">
-                            {{-- Prefix --}}
-                            <div class="col-md-3">
-                                <label>Prefix</label>
-                                <select name="prefix" class="form-select form-select-sm rounded-0">
-                                    <option value="">—</option>
-                                    <option value="Mr" @selected($user->prefix === 'Mr')>Mr</option>
-                                    <option value="Miss" @selected($user->prefix === 'Miss')>Miss</option>
-                                    <option value="other" @selected($user->prefix === 'other')>Other</option>
-                                </select>
-                            </div>
+                        {{-- Prefix --}}
+                        <div class="col-md-3">
+                            <label>Prefix</label>
+                            <select name="prefix" class="form-select form-select-sm rounded-0">
+                                <option value="">—</option>
+                                <option value="Mr" {{ $user->prefix == 'Mr' ? 'selected' : '' }}>Mr</option>
+                                <option value="Miss" {{ $user->prefix == 'Miss' ? 'selected' : '' }}>Miss</option>
+                                <option value="other" {{ $user->prefix == 'other' ? 'selected' : '' }}>Other</option>
+                            </select>
+                        </div>
 
-                            {{-- First Name --}}
-                            <div class="col-md-4">
-                                <label>First Name</label>
-                                <input name="first_name" value="{{ $user->first_name }}"
-                                    class="form-control form-control-sm rounded-0" required>
-                            </div>
+                        {{-- First Name --}}
+                        <div class="col-md-4">
+                            <label>First Name</label>
+                            <input name="first_name" class="form-control form-control-sm rounded-0" required value="{{ $user->first_name }}">
+                        </div>
 
-                            {{-- Last Name --}}
-                            <div class="col-md-5">
-                                <label>Last Name</label>
-                                <input name="last_name" value="{{ $user->last_name ?? '' }}"
-                                    class="form-control form-control-sm rounded-0">
-                            </div>
+                        {{-- Last Name --}}
+                        <div class="col-md-5">
+                            <label>Last Name</label>
+                            <input name="last_name" class="form-control form-control-sm rounded-0" value="{{ $user->last_name }}">
+                        </div>
 
-                            {{-- Email --}}
-                            <div class="col-md-6">
-                                <label>Email</label>
-                                <input name="email" value="{{ $user->email }}" type="email"
-                                    class="form-control form-control-sm rounded-0" required>
-                            </div>
+                        {{-- Email --}}
+                        <div class="col-md-6">
+                            <label>Email</label>
+                            <input name="email" type="email" class="form-control form-control-sm rounded-0" required value="{{ $user->email }}">
+                        </div>
 
-                            {{-- Username --}}
-                            <div class="col-md-6">
-                                <label>Username</label>
-                                <input name="username" value="{{ $user->username }}"
-                                    class="form-control form-control-sm rounded-0">
-                            </div>
+                        {{-- Username --}}
+                        <div class="col-md-6">
+                            <label>Username</label>
+                            <input name="username" class="form-control form-control-sm rounded-0" value="{{ $user->username }}">
+                        </div>
 
-                            {{-- Password --}}
-                            <div class="col-md-6">
-                                <label>New Password (optional)</label>
-                                <input name="password" type="password" class="form-control form-control-sm rounded-0">
-                            </div>
+                        {{-- Phone --}}
+                        <div class="col-md-6">
+                            <label>Phone</label>
+                            <input name="phone" class="form-control form-control-sm rounded-0" value="{{ $user->phone }}">
+                        </div>
 
-                            {{-- Role --}}
-                            <div class="col-md-6">
-                                <label>Role</label>
-                                <select name="role" class="form-select form-select-sm rounded-0">
-                                    @foreach (['admin', 'staff', 'customer'] as $r)
-                                        <option value="{{ $r }}" @selected($user->role === $r)>{{ ucfirst($r) }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        {{-- City --}}
+                        <div class="col-md-6">
+                            <label>City</label>
+                            <input name="city" class="form-control form-control-sm rounded-0" value="{{ $user->city }}">
+                        </div>
 
-                            {{-- Gender --}}
-                            <div class="col-md-6">
-                                <label>Gender</label>
-                                <select name="gender" class="form-select form-select-sm rounded-0">
-                                    <option value="">—</option>
-                                    @foreach (['male', 'female', 'other'] as $g)
-                                        <option value="{{ $g }}" @selected($user->gender === $g)>{{ ucfirst($g) }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        {{-- Address --}}
+                        <div class="col-md-12">
+                            <label>Address</label>
+                            <input name="address" class="form-control form-control-sm rounded-0" value="{{ $user->address }}">
+                        </div>
 
-                            {{-- Active --}}
-                            <div class="col-md-12 mt-2">
-                                <div class="form-check">
-                                    <input type="checkbox" name="is_active" class="form-check-input"
-                                        @checked($user->is_active)>
-                                    <label class="form-check-label">Active</label>
-                                </div>
+                        {{-- Profile Completion --}}
+                        <div class="col-md-12">
+                            <label>Profile Completion (%)</label>
+                            <input type="number" name="profile_completion" min="0" max="100" class="form-control form-control-sm rounded-0" value="{{ $user->profile_completion }}">
+                        </div>
+
+                        {{-- Role --}}
+                        <div class="col-md-6">
+                            <label>Role</label>
+                            <select name="role" class="form-select form-select-sm rounded-0">
+                                <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="staff" {{ $user->role == 'staff' ? 'selected' : '' }}>Staff</option>
+                                <option value="customer" {{ $user->role == 'customer' ? 'selected' : '' }}>Customer</option>
+                            </select>
+                        </div>
+
+                        {{-- Gender --}}
+                        <div class="col-md-6">
+                            <label>Gender</label>
+                            <select name="gender" class="form-select form-select-sm rounded-0">
+                                <option value="">—</option>
+                                <option value="male" {{ $user->gender == 'male' ? 'selected' : '' }}>Male</option>
+                                <option value="female" {{ $user->gender == 'female' ? 'selected' : '' }}>Female</option>
+                                <option value="other" {{ $user->gender == 'other' ? 'selected' : '' }}>Other</option>
+                            </select>
+                        </div>
+
+                        {{-- Active --}}
+                        <div class="col-md-12 mt-2">
+                            <div class="form-check">
+                                <input type="checkbox" name="is_active" class="form-check-input" {{ $user->is_active ? 'checked' : '' }}>
+                                <label class="form-check-label">Active</label>
                             </div>
                         </div>
+
                     </div>
                 </div>
+            </div>
 
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-sm btn-success rounded-0">Update</button>
-                    <a href="{{ route('users.index') }}" class="btn btn-sm btn-secondary rounded-0">Cancel</a>
-                </div>
-            </form>
-
-        </x-widget>
-    </div>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-sm btn-success rounded-0">Update</button>
+                <a href="{{ route('users.index') }}" class="btn btn-sm btn-secondary rounded-0">Cancel</a>
+            </div>
+        </form>
+    </x-widget>
+</div>
 @endsection
 
 @section('scripts')
