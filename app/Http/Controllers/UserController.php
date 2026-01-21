@@ -23,10 +23,10 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        if(!$user) {
+        if (!$user) {
             abort(404);
         }
-        
+
         return view('users.profile', compact('user'));
     }
 
@@ -126,6 +126,10 @@ class UserController extends Controller
             'gender' => $request->gender,
             'profile_image_url' => $profileImageUrl,
             'is_active' => $request->boolean('is_active', true),
+            'phone' => $request->phone ?? null,
+            'city' => $request->city ?? null,
+            'address' => $request->address ?? null,
+            'profile_completion' => $request->profile_completion ?? null
         ]);
 
         $output = [
@@ -166,6 +170,10 @@ class UserController extends Controller
             'gender'     => $request->gender,
             'prefix'     => $request->prefix,
             'is_active'  => $request->boolean('is_active'),
+            'phone' => $request->phone ?? null,
+            'city' => $request->city ?? null,
+            'address' => $request->address ?? null,
+            'profile_completion' => $request->profile_completion ?? null
         ]);
 
         // Password
