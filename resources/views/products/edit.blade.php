@@ -1,188 +1,127 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container py-4">
-        <x-widget title="Edit Product">
-            <form id="form_update_product" enctype="multipart/form-data" method="POST"
-                action="{{ route('products.update', $product->id) }}">
-                @csrf
-                @method('PUT')
+<div class="container py-4">
+    <x-widget title="Edit User">
+        <form id="userForm" method="POST" action="{{ route('users.update', $user->id) }}" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
 
-                <input type="hidden" name="product_id" value="{{ $product->id }}">
+            <div class="row g-3 align-items-start">
 
-                <div class="row g-4">
+                {{-- Profile Image --}}
+                <div class="col-md-3 text-center">
+                    <label class="form-label d-block">Profile Image</label>
+                    <img id="profilePreview" 
+                         src="{{ $user->profile_image_url ?? '/img/default-user.png' }}" 
+                         class="img-fluid rounded-circle mb-2"
+                         style="width:100%; aspect-ratio:1/1; object-fit:cover;">
+                    <input type="file" name="profile_image_url" class="form-control form-control-sm rounded-0" accept="image/*">
+                </div>
 
-                    {{-- Left Column: Basic Info + Image + Discount --}}
-                    <div class="col-md-6">
-                        <h6 class="mb-2">Basic Info</h6>
+                {{-- Other User Inputs --}}
+                <div class="col-md-9">
+                    <div class="row g-3">
 
-                        <div class="d-flex justify-content-between">
-                            <div class="mb-3">
-                                <label class="form-label small">Product Name</label>
-                                <input type="text" name="name" class="form-control form-control-sm rounded-0"
-                                    value="{{ old('name', $product->name) }}">
-                            </div>
-                            <div class="mb-3">
-                                <div class="mb- form-check">
-                                    <input type="checkbox" name="is_recommended" class="form-check-input" id="isRecommended"
-                                        value="1"
-                                        {{ old('is_recommended', $product->is_recommended ?? false) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="isRecommended">Recommended</label>
-                                </div>
-
-                                <div class="mb- form-check">
-                                    <input type="checkbox" name="is_featured" class="form-check-input" id="isFeatured"
-                                        value="1"
-                                        {{ old('is_featured', $product->is_featured ?? false) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="isFeatured">Featured</label>
-                                </div>
-
-                                <div class="mb- form-check">
-                                    <input type="checkbox" name="active" class="form-check-input" id="active"
-                                        value="1"
-                                        {{ old('active', $product->active ?? false) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="active">Active</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label small">Category</label>
-                            <select name="category_id" class="form-select form-select-sm rounded-0">
-                                <option value="">Select</option>
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}"
-                                        {{ $category->id == $product->category_id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
-                                @endforeach
+                        {{-- Prefix --}}
+                        <div class="col-md-3">
+                            <label>Prefix</label>
+                            <select name="prefix" class="form-select form-select-sm rounded-0">
+                                <option value="">—</option>
+                                <option value="Mr" {{ $user->prefix == 'Mr' ? 'selected' : '' }}>Mr</option>
+                                <option value="Miss" {{ $user->prefix == 'Miss' ? 'selected' : '' }}>Miss</option>
+                                <option value="other" {{ $user->prefix == 'other' ? 'selected' : '' }}>Other</option>
                             </select>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label small">Product Image</label>
-                            <input type="file" name="image" class="form-control form-control-sm rounded-0"
-                                accept="image/*">
-                            @if ($product->image)
-                                <img id="imagePreview" src="{{ asset('uploads/products/' . $product->image) }}"
-                                    class="img-fluid mt-2" style="max-height:150px;">
-                            @else
-                                <img id="imagePreview" src="" class="img-fluid mt-2"
-                                    style="max-height:150px; display:none;">
-                            @endif
+                        {{-- First Name --}}
+                        <div class="col-md-4">
+                            <label>First Name</label>
+                            <input name="first_name" class="form-control form-control-sm rounded-0" required value="{{ $user->first_name }}">
                         </div>
 
-                        <h6 class="mt-4 mb-2">Discount</h6>
-                        <div class="row g-2 align-items-center">
-                            <div class="col-auto">
-                                <input type="text" name="discount[name]" class="form-control form-control-sm rounded-0"
-                                    value="{{ old('discount.name', $product->discounts->first()?->name) }}"
-                                    placeholder="Discount Name">
+                        {{-- Last Name --}}
+                        <div class="col-md-5">
+                            <label>Last Name</label>
+                            <input name="last_name" class="form-control form-control-sm rounded-0" value="{{ $user->last_name }}">
+                        </div>
+
+                        {{-- Email --}}
+                        <div class="col-md-6">
+                            <label>Email</label>
+                            <input name="email" type="email" class="form-control form-control-sm rounded-0" required value="{{ $user->email }}">
+                        </div>
+
+                        {{-- Username --}}
+                        <div class="col-md-6">
+                            <label>Username</label>
+                            <input name="username" class="form-control form-control-sm rounded-0" value="{{ $user->username }}">
+                        </div>
+
+                        {{-- Phone --}}
+                        <div class="col-md-6">
+                            <label>Phone</label>
+                            <input name="phone" class="form-control form-control-sm rounded-0" value="{{ $user->phone }}">
+                        </div>
+
+                        {{-- City --}}
+                        <div class="col-md-6">
+                            <label>City</label>
+                            <input name="city" class="form-control form-control-sm rounded-0" value="{{ $user->city }}">
+                        </div>
+
+                        {{-- Address --}}
+                        <div class="col-md-12">
+                            <label>Address</label>
+                            <input name="address" class="form-control form-control-sm rounded-0" value="{{ $user->address }}">
+                        </div>
+
+                        {{-- Profile Completion --}}
+                        <div class="col-md-12">
+                            <label>Profile Completion (%)</label>
+                            <input type="number" name="profile_completion" min="0" max="100" class="form-control form-control-sm rounded-0" value="{{ $user->profile_completion }}">
+                        </div>
+
+                        {{-- Role --}}
+                        <div class="col-md-6">
+                            <label>Role</label>
+                            <select name="role" class="form-select form-select-sm rounded-0">
+                                <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="staff" {{ $user->role == 'staff' ? 'selected' : '' }}>Staff</option>
+                                <option value="customer" {{ $user->role == 'customer' ? 'selected' : '' }}>Customer</option>
+                            </select>
+                        </div>
+
+                        {{-- Gender --}}
+                        <div class="col-md-6">
+                            <label>Gender</label>
+                            <select name="gender" class="form-select form-select-sm rounded-0">
+                                <option value="">—</option>
+                                <option value="male" {{ $user->gender == 'male' ? 'selected' : '' }}>Male</option>
+                                <option value="female" {{ $user->gender == 'female' ? 'selected' : '' }}>Female</option>
+                                <option value="other" {{ $user->gender == 'other' ? 'selected' : '' }}>Other</option>
+                            </select>
+                        </div>
+
+                        {{-- Active --}}
+                        <div class="col-md-12 mt-2">
+                            <div class="form-check">
+                                <input type="checkbox" name="is_active" class="form-check-input" {{ $user->is_active ? 'checked' : '' }}>
+                                <label class="form-check-label">Active</label>
                             </div>
-                            <div class="col-auto">
-                                <input type="number" step="0.01" name="discount[value]"
-                                    class="form-control form-control-sm rounded-0"
-                                    value="{{ old('discount.value', $product->discounts->first()?->value) }}"
-                                    placeholder="Value">
-                            </div>
-                            <div class="col-auto">
-                                <select name="discount[is_percentage]" class="form-select form-select-sm rounded-0">
-                                    <option value="1"
-                                        {{ $product->discounts->first()?->is_percentage ? 'selected' : '' }}>
-                                        Percentage %</option>
-                                    <option value="0"
-                                        {{ $product->discounts->first()?->is_percentage ? '' : 'selected' }}>Fixed Amount $
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-auto d-flex align-items-center">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="discount[active]" value="1"
-                                        {{ $product->discounts->first()?->active ? 'checked' : '' }}>
-                                    <label class="form-check-label small">Active</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Right Column: Description + Attributes + Variants --}}
-                    <div class="col-md-6">
-                        <h6 class="mb-2">Descriptions</h6>
-                        <div id="descriptionLines" class="mb-2">
-                            @foreach ($product->descriptionLines as $line)
-                                <div class="description-line d-flex mb-1">
-                                    <input type="text" name="description_lines[]"
-                                        class="form-control form-control-sm rounded-0 me-2" value="{{ $line->text }}">
-                                    <button type="button" class="btn btn-sm btn-danger remove-line">Remove</button>
-                                </div>
-                            @endforeach
-                            @if (!$product->descriptionLines->count())
-                                <div class="description-line d-flex mb-1">
-                                    <input type="text" name="description_lines[]"
-                                        class="form-control form-control-sm rounded-0 me-2">
-                                    <button type="button" class="btn btn-sm btn-danger remove-line">Remove</button>
-                                </div>
-                            @endif
                         </div>
 
-                        <button type="button" id="addLine" class="btn btn-sm btn-outline-primary mb-3">Add
-                            Line</button>
-
-                        <h6 class="mb-2">Attributes</h6>
-                        <div id="attributesSection" class="mb-3">
-                            @foreach ($attributes as $attr)
-                                <div class="mb-2 attribute-box" data-id="{{ $attr->id }}">
-                                    <label class="small">{{ $attr->name }}</label>
-                                    <div class="d-flex flex-wrap gap-2">
-                                        @foreach ($attr->values as $val)
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input attribute-check" type="checkbox"
-                                                    name="product_attributes[{{ $attr->id }}][]"
-                                                    value="{{ $val->id }}"
-                                                    @foreach ($product->variants as $v)
-                            @if ($v->attributeValues->contains('id', $val->id)) checked @endif @endforeach>
-                                                <label class="form-check-label">{{ $val->value }}</label>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endforeach
-
-                        </div>
-
-                        <h6 class="mb-2">Variants</h6>
-                        <div id="variantsSection" class="mb-2">
-                            @foreach ($product->variants as $index => $variant)
-                                <div class="variant-box mb-2 d-flex flex-column">
-                                    <div class="d-flex gap-2 mb-1 align-items-center">
-                                        <input type="text" name="variants[{{ $index }}][sku]"
-                                            class="form-control form-control-sm" value="{{ $variant->sku }}"
-                                            placeholder="SKU">
-                                        <input type="number" step="0.01" name="variants[{{ $index }}][price]"
-                                            class="form-control form-control-sm" value="{{ $variant->price }}"
-                                            placeholder="Price">
-                                        <button type="button"
-                                            class="btn btn-sm btn-danger remove-variant">Remove</button>
-                                    </div>
-                                    @foreach ($variant->attributeValues as $attrValue)
-                                        <input type="hidden" name="variants[{{ $index }}][attributes][]"
-                                            value="{{ $attrValue->id }}">
-                                    @endforeach
-                                </div>
-                            @endforeach
-
-                        </div>
-                        <button type="button" id="generateVariants" class="btn btn-sm btn-outline-warning">Generate
-                            Variants</button>
                     </div>
                 </div>
+            </div>
 
-                <div class="mt-3 text-end">
-                    <button class="btn btn-success">UPDATE PRODUCT</button>
-                </div>
-            </form>
-        </x-widget>
-    </div>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-sm btn-success rounded-0">Update</button>
+                <a href="{{ route('users.index') }}" class="btn btn-sm btn-secondary rounded-0">Cancel</a>
+            </div>
+        </form>
+    </x-widget>
+</div>
 @endsection
 
 @section('scripts')
