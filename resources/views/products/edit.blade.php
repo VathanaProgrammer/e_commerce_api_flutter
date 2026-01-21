@@ -269,7 +269,7 @@
                     processData: false,
                     contentType: false,
                     success: function(res) {
-                        if(res.data.success){
+                        if(res.success){
                             toastr.success(res.msg || 'Product updated!');
                         }else{
                             toastr.error(res.msg || 'failed');
