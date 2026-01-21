@@ -36,6 +36,13 @@
                                         {{ old('is_featured', $product->is_featured ?? false) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="isFeatured">Featured</label>
                                 </div>
+
+                                <div class="mb- form-check">
+                                    <input type="checkbox" name="active" class="form-check-input" id="active"
+                                        value="1"
+                                        {{ old('active', $product->active ?? false) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="active">Active</label>
+                                </div>
                             </div>
                         </div>
 
