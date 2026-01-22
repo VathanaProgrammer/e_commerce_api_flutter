@@ -32,20 +32,20 @@
         #productsTable {
             font-size: 0.9rem;
         }
-        
+
         .product-image {
             width: 50px;
             height: 50px;
             object-fit: cover;
             border-radius: 4px;
         }
-        
+
         .product-info {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        
+
         .variant-badge {
             display: inline-block;
             padding: 4px 8px;
@@ -55,7 +55,7 @@
             border-radius: 4px;
             font-size: 0.8rem;
         }
-        
+
         .variant-item {
             padding: 6px 10px;
             margin: 3px 0;
@@ -64,64 +64,64 @@
             border-radius: 3px;
             font-size: 0.85rem;
         }
-        
+
         .variant-sku {
             font-weight: 600;
             color: #495057;
         }
-        
+
         .variant-price {
             color: #28a745;
             font-weight: 600;
         }
-        
+
         .variant-attrs {
             font-size: 0.75rem;
             color: #6c757d;
             margin-top: 2px;
         }
-        
+
         .desc-line {
             padding: 3px 0;
             font-size: 0.85rem;
             line-height: 1.4;
         }
-        
+
         .desc-line:before {
             content: "• ";
             color: #6c757d;
         }
-        
+
         .status-badge {
             font-size: 0.75rem;
             padding: 4px 8px;
             border-radius: 12px;
         }
-        
+
         .variants-scrollable {
             max-height: 200px;
             overflow-y: auto;
             padding-right: 5px;
         }
-        
+
         .variants-scrollable::-webkit-scrollbar {
             width: 6px;
         }
-        
+
         .variants-scrollable::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 10px;
         }
-        
+
         .variants-scrollable::-webkit-scrollbar-thumb {
             background: #888;
             border-radius: 10px;
         }
-        
+
         .variants-scrollable::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
-        
+
         .variant-count-badge {
             background: #007bff;
             color: white;
@@ -193,7 +193,9 @@
                     [10, 25, 50, 100],
                     [10, 25, 50, 100]
                 ],
-                order: [[0, 'desc']],
+                order: [
+                    [0, 'desc']
+                ],
                 language: {
                     search: "_INPUT_",
                     searchPlaceholder: "Search products..."
@@ -203,7 +205,7 @@
             $(document).on('click', '.delete-product', function(e) {
                 e.preventDefault();
                 if (!confirm('Are you sure you want to delete this product?')) return;
-                
+
                 let url = $(this).attr('href');
                 $.ajax({
                     url: url,
