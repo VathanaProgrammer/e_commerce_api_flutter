@@ -11,7 +11,7 @@
                         </a>
                     </div>
                     <table id="productsTable" class="table table-hover table-striped">
-                        <thead class="table-dark">
+                        <thead class="">
                             <tr>
                                 <th width="5%">ID</th>
                                 <th width="15%">Product</th>
