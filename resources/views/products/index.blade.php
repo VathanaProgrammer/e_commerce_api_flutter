@@ -187,6 +187,7 @@
                     }
                 ],
                 dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip',
+                buttons: ['copy', 'csv', 'excel', 'print', 'pdf', 'colvis'],
                 pageLength: 25,
                 lengthMenu: [
                     [10, 25, 50, 100],
