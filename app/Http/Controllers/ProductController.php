@@ -37,7 +37,7 @@ class ProductController extends Controller
                     if ($product->active) {
                         $badges[] = '<span class="status-badge text-white bg-success">Active</span>';
                     } else {
-                        $badges[] = '<span class="status-badge text-white bg-danger">Inactive</span>';
+                        $badges[] = '<span class="status-badge text-white bg-secondary">Inactive</span>';
                     }
 
                     if ($product->is_featured) {

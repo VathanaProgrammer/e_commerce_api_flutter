@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container-fluid py-4">
+    <div class="container py-4">
         <div class="row">
             <div class="col-12">
                 <x-widget title="Products">
@@ -186,7 +186,7 @@
                         searchable: false
                     }
                 ],
-                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"lfB>>rtip',
+                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"fB>>rtip',
                 buttons: ['copy', 'csv', 'excel', 'print', 'pdf', 'colvis'],
                 pageLength: 25,
                 lengthMenu: [
