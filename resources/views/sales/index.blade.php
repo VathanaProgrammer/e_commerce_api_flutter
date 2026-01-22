@@ -11,6 +11,7 @@
                                 <th>
                                     <input type="checkbox" id="select-all">
                                 </th>
+                                <th>Action</th>
                                 <th>User</th>
                                 <th>Total Items</th>
                                 <th>Total Price</th>
@@ -20,7 +21,6 @@
                                 <th>Shipping Status</th>
                                 <th>Invoice No</th>
                                 <th>Discount</th>
-                                <th>Action</th>
                             </tr>
                         </thead>
                     </table>
