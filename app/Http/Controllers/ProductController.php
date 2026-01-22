@@ -26,23 +26,93 @@ class ProductController extends Controller
     public function data(Request $request)
     {
         if ($request->ajax()) {
-            $products = Product::with(['category', 'variants', 'descriptionLines'])->select('products.*');
+            $products = Product::with(['category', 'variants.attributeValues.attribute', 'descriptionLines'])
+                ->select('products.*');
 
             return DataTables::of($products)
-                ->addColumn('category', fn($product) => $product->category?->name ?? 'No Category')
-                ->addColumn('variants', function ($product) {
-                    $html = '';
-                    foreach ($product->variants as $variant) {
-                        $html .= "SKU: {$variant->sku}, Price: {$variant->price}<br>";
+                ->addColumn('category', fn($product) => $product->category?->name ?? '<span class="badge bg-secondary">No Category</span>')
+                ->addColumn('status', function ($product) {
+                    $badges = [];
+
+                    if ($product->active) {
+                        $badges[] = '<span class="status-badge bg-success">Active</span>';
+                    } else {
+                        $badges[] = '<span class="status-badge bg-secondary">Inactive</span>';
                     }
-                    return $html ?: 'No Variants';
+
+                    if ($product->is_featured) {
+                        $badges[] = '<span class="status-badge bg-warning text-dark">Featured</span>';
+                    }
+
+                    if ($product->is_recommended) {
+                        $badges[] = '<span class="status-badge bg-info text-dark">Recommended</span>';
+                    }
+
+                    return implode(' ', $badges);
                 })
-                ->addColumn('description', fn($product) => $product->descriptionLines->pluck('text')->implode('<br>') ?: 'No Description')
+                ->addColumn('variants', function ($product) {
+                    if ($product->variants->isEmpty()) {
+                        return '<span class="text-muted">No Variants</span>';
+                    }
+
+                    $count = $product->variants->count();
+                    $html = '<div class="mb-1"><span class="variant-count-badge">' . $count . ' Variant' . ($count > 1 ? 's' : '') . '</span></div>';
+                    $html .= '<div class="variants-scrollable">';
+
+                    foreach ($product->variants as $variant) {
+                        $attributes = $variant->attributeValues->map(function ($attrValue) {
+                            return '<span class="variant-badge">' . $attrValue->attribute->name . ': ' . $attrValue->value . '</span>';
+                        })->join(' ');
+
+                        $html .= '<div class="variant-item">';
+                        $html .= '<div><span class="variant-sku">SKU: ' . ($variant->sku ?: 'N/A') . '</span> | ';
+                        $html .= '<span class="variant-price">$' . number_format($variant->price, 2) . '</span></div>';
+
+                        if ($attributes) {
+                            $html .= '<div class="variant-attrs">' . $attributes . '</div>';
+                        }
+
+                        $html .= '</div>';
+                    }
+
+                    $html .= '</div>';
+                    return $html;
+                })
+                ->addColumn('description', function ($product) {
+                    if ($product->descriptionLines->isEmpty()) {
+                        return '<span class="text-muted">No Description</span>';
+                    }
+
+                    $html = '';
+                    foreach ($product->descriptionLines->take(3) as $line) {
+                        $html .= '<div class="desc-line">' . e($line->text) . '</div>';
+                    }
+
+                    if ($product->descriptionLines->count() > 3) {
+                        $remaining = $product->descriptionLines->count() - 3;
+                        $html .= '<small class="text-muted">+' . $remaining . ' more...</small>';
+                    }
+
+                    return $html;
+                })
                 ->addColumn('action', function ($product) {
-                    return '<a href="' . route('products.edit', $product->id) . '" class="btn btn-sm btn-primary me-1">Edit</a>
-                        <a href="' . route('products.destroy', $product->id) . '" class="btn btn-sm btn-danger delete-product">Delete</a>';
+                    return '
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a href="' . route('products.edit', $product->id) . '" 
+                           class="btn btn-outline-primary" 
+                           title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="' . route('products.destroy', $product->id) . '" 
+                           class="btn btn-outline-danger delete-product" 
+                           title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                ';
                 })
-                ->rawColumns(['variants', 'description', 'action'])
+                ->addColumn('image_url', fn($product) => $product->image_url)
+                ->rawColumns(['category', 'status', 'variants', 'description', 'action'])
                 ->make(true);
         }
 
@@ -214,7 +284,7 @@ class ProductController extends Controller
                 'is_recommended' => $request->has('is_recommended'),
                 'is_featured' => $request->has('is_featured'),
                 'active' => $request->has('active')
-            ]); 
+            ]);
 
             // 1. Update description lines
             $product->descriptionLines()->delete();
