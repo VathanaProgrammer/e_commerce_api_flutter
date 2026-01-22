@@ -186,7 +186,14 @@
                         searchable: false
                     }
                 ],
-                dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"fB>>rtip',
+                dom: '<"row mb-2"' +
+                    '<"col-md-4"l>' +
+                    '<"col-md-4 text-center"B>' +
+                    '<"col-md-4 text-end"f>' +
+                    '>' +
+                    'rtip',
+                buttons: ['copy', 'csv', 'excel', 'print', 'pdf', 'colvis'],
+
                 buttons: ['copy', 'csv', 'excel', 'print', 'pdf', 'colvis'],
                 pageLength: 25,
                 lengthMenu: [
