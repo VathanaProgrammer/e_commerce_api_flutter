@@ -19,6 +19,7 @@
         </a>
 
         <!-- Products -->
+        @role('admin|staff')
         @php
             $productActive =
                 request()->routeIs('products.*') ||
@@ -93,8 +94,10 @@
                 </a>
             </div>
         </div>
+        @endrole
 
         <!-- Sales Orders -->
+        @role('admin|staff')
         @php
             $salesActive = request()->routeIs('sales.orders.*') || request()->routeIs('sales.orders');
         @endphp
@@ -134,9 +137,11 @@
                 </a>
             </div>
         </div>
+        @endrole
 
 
         <!-- User Management -->
+        @role('admin')
         @php
             $userActive = request()->routeIs('users.*') || request()->routeIs('roles.*');
         @endphp
@@ -188,10 +193,12 @@
                 </a>
             </div>
         </div>
+        @endrole
 
         <!-- Divider -->
         <div class="my-4 mx-4 border-t border-slate-200"></div>
 
+        @role('admin')
         <div class="px-2">
             <p class="px-4 text-xs text-slate-400 uppercase tracking-wider mb-2">Settings</p>
             
@@ -204,6 +211,7 @@
                 <span>Business Settings</span>
             </a>
         </div>
+        @endrole
 
     </nav>
 </aside>

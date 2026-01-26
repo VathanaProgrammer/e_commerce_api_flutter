@@ -115,7 +115,7 @@ class UserController extends Controller
             $profileImageUrl = '/uploads/users/' . $filename;
         }
 
-        User::create([
+        $user = User::create([
             'prefix' => $request->prefix,
             'first_name' => $request->first_name,
             'last_name' => $request->last_name ?? null,
@@ -131,6 +131,8 @@ class UserController extends Controller
             'address' => $request->address ?? null,
             'profile_completion' => $request->profile_completion ?? null
         ]);
+
+        $user->assignRole($request->role);
 
         $output = [
             "success" => true,
@@ -190,6 +192,7 @@ class UserController extends Controller
         }
 
         $user->save();
+        $user->syncRoles([$request->role]);
 
         return response()->json([
             'success' => true,
