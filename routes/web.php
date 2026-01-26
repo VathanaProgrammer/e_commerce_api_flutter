@@ -74,6 +74,7 @@ Route::middleware(['web', 'auth'])->group(function () {
         Route::get('/orders/data', [App\Http\Controllers\SalesController::class, 'data'])->name('sales.orders.data');
         Route::get('/{id}', [App\Http\Controllers\SalesController::class, 'show'])->name('sales.show');
         Route::get('/{id}/edit', [App\Http\Controllers\SalesController::class, 'edit'])->name('sales.edit');
+        Route::get('/{id}/print', [App\Http\Controllers\SalesController::class, 'printInvoice'])->name('sales.print');
         Route::delete('/{id}', [App\Http\Controllers\SalesController::class, 'destroy'])->name('sales.destroy');
     });
 

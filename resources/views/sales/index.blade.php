@@ -222,6 +222,7 @@
 
             function loadTransactionDetails(transactionId) {
                 const modal = getTransactionModal();
+                $('#transactionModal').attr('data-current-id', transactionId);
                 modal.show();
 
                 $.ajax({
@@ -352,65 +353,13 @@
             });
             // Print Details
             $(document).on('click', '#btnPrintModal', function() {
-                const invoiceNo = $('#modal-invoice-no').text();
-                const content = $('#transactionModal .modal-body').html();
-                const businessName = "{{ session('business.name', 'Codefy') }}";
-                const businessAddress = "{{ session('business.address', 'Sen Sok') }}";
-                const businessMobile = "{{ session('business.mobile', '017552602') }}";
-                const businessEmail = "{{ session('business.email', 'siengvathana1@gmail.com') }}";
-                
-                const printWindow = window.open('', '_blank');
-                
-                const html = `
-                    <!DOCTYPE html>
-                    <html>
-                        <head>
-                            <title>Print Invoice - ${invoiceNo}</title>
-                            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-                            <style>
-                                body { padding: 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
-                                .print-header { border-bottom: 2px solid #f1f5f9; padding-bottom: 20px; margin-bottom: 30px; }
-                                .business-name { font-size: 28px; font-weight: 800; color: #1e293b; margin-bottom: 5px; }
-                                .invoice-title { font-size: 24px; font-weight: 700; color: #64748b; text-transform: uppercase; }
-                                .table th { background-color: #f8fafc !important; border-top: none; }
-                                .text-muted { color: #64748b !important; }
-                                @media print {
-                                    .btn-print-hidden { display: none; }
-                                    body { padding: 0; }
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <div class="print-header d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div class="business-name">${businessName}</div>
-                                    <div class="text-muted small">${businessAddress}</div>
-                                    <div class="text-muted small">Phone: ${businessMobile} | Email: ${businessEmail}</div>
-                                </div>
-                                <div class="text-end">
-                                    <div class="invoice-title">INVOICE</div>
-                                    <div class="fw-bold" style="font-size: 1.2rem;">${invoiceNo}</div>
-                                    <div class="small text-muted">Date: ${$('#modal-date').text()}</div>
-                                </div>
-                            </div>
-                            <div class="invoice-content">
-                                ${content}
-                            </div>
-                        </body>
-                    </html>
-                `;
-
-                printWindow.document.write(html);
-                printWindow.document.close();
-
-                // Wait for styles/images and then print
-                setTimeout(function() {
-                    if (printWindow && !printWindow.closed) {
-                        printWindow.focus();
-                        printWindow.print();
-                        printWindow.close();
-                    }
-                }, 1000);
+                const transactionId = $('#transactionModal').attr('data-current-id');
+                if (transactionId) {
+                    const url = '{{ route('sales.print', ':id') }}'.replace(':id', transactionId);
+                    window.open(url, '_blank');
+                } else {
+                    toastr.error('Could not determine transaction ID');
+                }
             });
         });
     </script>

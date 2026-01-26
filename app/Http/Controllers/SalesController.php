@@ -226,4 +226,18 @@ class SalesController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to delete transaction'], 500);
         }
     }
+
+    /**
+     * Print invoice
+     */
+    public function printInvoice($id)
+    {
+        $transaction = Transaction::with([
+            'user',
+            'saleLines.variant.product',
+            'saleLines.variant.attributeValues.attribute',
+        ])->findOrFail($id);
+
+        return view('sales.invoices.print', compact('transaction'));
+    }
 }
