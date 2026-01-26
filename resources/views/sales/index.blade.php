@@ -344,6 +344,57 @@
                     });
                 });
             });
+            // Print Details
+            $(document).on('click', '#btnPrintModal', function() {
+                const invoiceNo = $('#modal-invoice-no').text();
+                const content = $('#transactionModal .modal-body').html();
+                const businessName = "{{ session('business.name', 'My Business') }}";
+                const businessAddress = "{{ session('business.address', '') }}";
+                const businessMobile = "{{ session('business.mobile', '') }}";
+                const businessEmail = "{{ session('business.email', '') }}";
+                
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <html>
+                        <head>
+                            <title>Print Invoice - ${invoiceNo}</title>
+                            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+                            <style>
+                                body { padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+                                .print-header { border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 30px; }
+                                .business-name { font-size: 24px; font-weight: bold; color: #1e293b; }
+                                .invoice-title { font-size: 20px; color: #64748b; }
+                                .table th { background-color: #f8fafc !important; }
+                                @media print {
+                                    .btn-print-hidden { display: none; }
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="print-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="business-name">${businessName}</div>
+                                    <div class="text-muted small">${businessAddress}</div>
+                                    <div class="text-muted small">Phone: ${businessMobile} | Email: ${businessEmail}</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="invoice-title">INVOICE</div>
+                                    <div class="fw-bold">${invoiceNo}</div>
+                                    <div class="small text-muted">Date: ${$('#modal-date').text()}</div>
+                                </div>
+                            </div>
+                            ${content}
+                            <script>
+                                window.onload = function() {
+                                    window.print();
+                                    setTimeout(function() { window.close(); }, 100);
+                                };
+                            <\/script>
+                        </body>
+                    </html>
+                `);
+                printWindow.document.close();
+            });
         });
     </script>
 @endsection

@@ -15,14 +15,6 @@ class BusinessController extends Controller
     {
         $business = Business::first();
         
-        if (!$business) {
-            $business = Business::create([
-                'name' => 'My Business',
-                'currency' => 'USD',
-                'currency_symbol' => '$',
-            ]);
-        }
-
         return response()->json([
             'success' => true,
             'data' => $business
@@ -114,10 +106,16 @@ class BusinessController extends Controller
                 'id' => $business->id,
                 'name' => $business->name,
                 'logo' => $business->logo_url,
+                'mobile' => $business->mobile,
+                'email' => $business->email,
+                'address' => $business->address,
+                'city' => $business->city,
+                'country' => $business->country,
                 'currency' => $business->currency,
                 'currency_symbol' => $business->currency_symbol,
                 'tax_enabled' => $business->tax_enabled,
                 'tax_rate' => $business->tax_rate,
+                'tax_name' => $business->tax_name,
             ],
         ]);
 

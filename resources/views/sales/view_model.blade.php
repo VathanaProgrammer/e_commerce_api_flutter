@@ -130,7 +130,7 @@
                 </div>
             </div>
             <div class="modal-footer d-flex justify-content-end gap-2">
-                <button class="btn btn-primary rounded-pill px-4">
+                <button type="button" class="btn btn-primary rounded-pill px-4" id="btnPrintModal">
                     <i class="bi bi-printer me-2"></i>Print
                 </button>
                 <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">

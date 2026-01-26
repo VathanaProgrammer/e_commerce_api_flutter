@@ -21,7 +21,18 @@ class HomeController extends Controller
         $categories = Category::select('id', 'name')->get();
 
         // business info
-        $business = Business::select('id', 'name', 'logo')->first();
+        $business = Business::first();
+        if ($business) {
+            $business = [
+                'id' => $business->id,
+                'name' => $business->name,
+                'logo' => $business->logo_url,
+                'mobile' => $business->mobile,
+                'address' => $business->address,
+                'currency' => $business->currency,
+                'currency_symbol' => $business->currency_symbol,
+            ];
+        }
 
         // Make sure user_id is valid (numeric) and not empty
         $favorites = [];

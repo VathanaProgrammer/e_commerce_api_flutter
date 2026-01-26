@@ -33,6 +33,8 @@ class Business extends Model
         'telegram',
     ];
 
+    protected $appends = ['logo_url'];
+
     protected $casts = [
         'tax_enabled' => 'boolean',
         'tax_rate' => 'decimal:2',
