@@ -65,32 +65,45 @@
             $(document).on('click', '.view-map', function(e) {
                 e.preventDefault();
                 
-                const lat = $(this).data('lat');
-                const lng = $(this).data('lng');
+                let lat = $(this).data('lat');
+                let lng = $(this).data('lng');
 
                 if (!lat || !lng) {
                     toastr.warning('No location data available for this transaction.');
                     return;
                 }
 
+                // Force numeric values
+                lat = parseFloat(lat);
+                lng = parseFloat(lng);
+
                 mapModal.show();
 
                 // Initialize map after modal is shown (required for Leaflet to size correctly)
                 $('#mapModal').off('shown.bs.modal').on('shown.bs.modal', function() {
+                    // Cleanup previous map instance
                     if (map) {
+                        map.off();
                         map.remove();
+                        map = null;
                     }
 
-                    // Initialize Leaflet
-                    map = L.map('map').setView([lat, lng], 13);
+                    // Small delay to ensure modal transition is completely finished
+                    setTimeout(function() {
+                        map = L.map('map').setView([lat, lng], 15);
 
-                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 19,
-                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    }).addTo(map);
+                        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 19,
+                            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        }).addTo(map);
 
-                    marker = L.marker([lat, lng]).addTo(map)
-                        .bindPopup('<b>Transaction Location</b>').openPopup();
+                        L.marker([lat, lng]).addTo(map)
+                            .bindPopup('<b>Transaction Location</b>')
+                            .openPopup();
+
+                        // Force a recalculation of the map size
+                        map.invalidateSize();
+                    }, 100);
                 });
             });
 
