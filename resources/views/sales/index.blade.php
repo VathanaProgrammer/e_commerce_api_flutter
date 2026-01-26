@@ -354,24 +354,29 @@
             $(document).on('click', '#btnPrintModal', function() {
                 const invoiceNo = $('#modal-invoice-no').text();
                 const content = $('#transactionModal .modal-body').html();
-                const businessName = "{{ session('business.name', 'My Business') }}";
-                const businessAddress = "{{ session('business.address', '') }}";
-                const businessMobile = "{{ session('business.mobile', '') }}";
-                const businessEmail = "{{ session('business.email', '') }}";
+                const businessName = "{{ session('business.name', 'Codefy') }}";
+                const businessAddress = "{{ session('business.address', 'Sen Sok') }}";
+                const businessMobile = "{{ session('business.mobile', '017552602') }}";
+                const businessEmail = "{{ session('business.email', 'siengvathana1@gmail.com') }}";
                 
                 const printWindow = window.open('', '_blank');
-                printWindow.document.write(`
+                
+                const html = `
+                    <!DOCTYPE html>
                     <html>
                         <head>
                             <title>Print Invoice - ${invoiceNo}</title>
+                            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
                             <style>
-                                body { padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-                                .print-header { border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 30px; }
-                                .business-name { font-size: 24px; font-weight: bold; color: #1e293b; }
-                                .invoice-title { font-size: 20px; color: #64748b; }
-                                .table th { background-color: #f8fafc !important; }
+                                body { padding: 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
+                                .print-header { border-bottom: 2px solid #f1f5f9; padding-bottom: 20px; margin-bottom: 30px; }
+                                .business-name { font-size: 28px; font-weight: 800; color: #1e293b; margin-bottom: 5px; }
+                                .invoice-title { font-size: 24px; font-weight: 700; color: #64748b; text-transform: uppercase; }
+                                .table th { background-color: #f8fafc !important; border-top: none; }
+                                .text-muted { color: #64748b !important; }
                                 @media print {
                                     .btn-print-hidden { display: none; }
+                                    body { padding: 0; }
                                 }
                             </style>
                         </head>
@@ -384,24 +389,21 @@
                                 </div>
                                 <div class="text-end">
                                     <div class="invoice-title">INVOICE</div>
-                                    <div class="fw-bold">${invoiceNo}</div>
+                                    <div class="fw-bold" style="font-size: 1.2rem;">${invoiceNo}</div>
                                     <div class="small text-muted">Date: ${$('#modal-date').text()}</div>
                                 </div>
                             </div>
-                            ${content}
+                            <div class="invoice-content">
+                                ${content}
+                            </div>
                         </body>
                     </html>
-                `);
+                `;
+
+                printWindow.document.write(html);
                 printWindow.document.close();
 
-                // Wait for styles/images to load before printing
-                printWindow.onload = function() {
-                    printWindow.focus();
-                    printWindow.print();
-                    printWindow.close();
-                };
-
-                // Fallback if onload doesn't fire (sometimes happens with document.write)
+                // Wait for styles/images and then print
                 setTimeout(function() {
                     if (printWindow && !printWindow.closed) {
                         printWindow.focus();
