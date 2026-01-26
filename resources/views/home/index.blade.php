@@ -8,17 +8,19 @@
         border-radius: 20px;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         overflow: hidden;
-        opacity: 0;
-        transform: translateY(30px);
-        animation: cardSlideUp 0.6s ease forwards;
+        animation: cardSlideUp 0.6s ease both;
     }
     
-    .stat-card:nth-child(1) { animation-delay: 0.1s; }
-    .stat-card:nth-child(2) { animation-delay: 0.2s; }
-    .stat-card:nth-child(3) { animation-delay: 0.3s; }
-    .stat-card:nth-child(4) { animation-delay: 0.4s; }
+    .row > div:nth-child(1) .stat-card { animation-delay: 0.1s; }
+    .row > div:nth-child(2) .stat-card { animation-delay: 0.2s; }
+    .row > div:nth-child(3) .stat-card { animation-delay: 0.3s; }
+    .row > div:nth-child(4) .stat-card { animation-delay: 0.4s; }
 
     @keyframes cardSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
         to {
             opacity: 1;
             transform: translateY(0);
@@ -72,18 +74,17 @@
         border: none;
         border-radius: 20px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        opacity: 0;
-        animation: fadeInUp 0.6s ease 0.5s forwards;
+        animation: fadeInUp 0.6s ease 0.5s both;
     }
 
     @keyframes fadeInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
         from {
             opacity: 0;
             transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
     }
 
@@ -139,18 +140,17 @@
 
     /* Header Animation */
     .dashboard-header {
-        opacity: 0;
-        animation: slideDown 0.5s ease forwards;
+        animation: slideDown 0.5s ease both;
     }
 
     @keyframes slideDown {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
         from {
             opacity: 0;
             transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
     }
 
@@ -161,8 +161,7 @@
 
     /* Chart Container Animation */
     .chart-container {
-        opacity: 0;
-        animation: fadeInUp 0.6s ease 0.4s forwards;
+        animation: fadeInUp 0.6s ease 0.4s both;
     }
 </style>
 @endsection
@@ -186,56 +185,56 @@
     <div class="row g-4 mb-4">
         <!-- Revenue -->
         <div class="col-md-3">
-            <div class="card stat-card bg-gradient-primary text-white shadow h-100 position-relative" style="animation-delay: 0.1s;">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="stat-icon"><i class="bi bi-wallet2"></i></div>
+            <div class="card stat-card bg-gradient-primary text-white shadow h-100 position-relative">
+                <div class="card-body p-4 text-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3 text-white">
+                        <div class="stat-icon text-white"><i class="bi bi-wallet2"></i></div>
                         <span class="badge bg-white bg-opacity-25 rounded-pill px-3">+12.5%</span>
                     </div>
-                    <h6 class="text-white text-opacity-75 small mb-1 text-uppercase" style="letter-spacing: 0.5px;">Total Revenue</h6>
-                    <h3 class="fw-bold mb-0 counter-value">${{ number_format($data['total_sales'], 2) }}</h3>
+                    <h6 class="text-white text-opacity-75 small mb-1 text-uppercase" style="letter-spacing: 0.5px; color: rgba(255,255,255,0.85) !important;">Total Revenue</h6>
+                    <h3 class="fw-bold mb-0 counter-value text-white" style="color: #ffffff !important;">${{ number_format($data['total_sales'], 2) }}</h3>
                 </div>
             </div>
         </div>
 
         <!-- Orders -->
         <div class="col-md-3">
-            <div class="card stat-card bg-gradient-success text-white shadow h-100 position-relative" style="animation-delay: 0.2s;">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="stat-icon"><i class="bi bi-bag-check"></i></div>
+            <div class="card stat-card bg-gradient-success text-white shadow h-100 position-relative">
+                <div class="card-body p-4 text-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3 text-white">
+                        <div class="stat-icon text-white"><i class="bi bi-bag-check"></i></div>
                         <span class="badge bg-white bg-opacity-25 rounded-pill px-3">+8.2%</span>
                     </div>
-                    <h6 class="text-white text-opacity-75 small mb-1 text-uppercase" style="letter-spacing: 0.5px;">Total Orders</h6>
-                    <h3 class="fw-bold mb-0 counter-value">{{ number_format($data['total_orders']) }}</h3>
+                    <h6 class="text-white text-opacity-75 small mb-1 text-uppercase" style="letter-spacing: 0.5px; color: rgba(255,255,255,0.85) !important;">Total Orders</h6>
+                    <h3 class="fw-bold mb-0 counter-value text-white" style="color: #ffffff !important;">{{ number_format($data['total_orders']) }}</h3>
                 </div>
             </div>
         </div>
 
         <!-- Products -->
         <div class="col-md-3">
-            <div class="card stat-card bg-gradient-warning text-white shadow h-100 position-relative" style="animation-delay: 0.3s;">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+            <div class="card stat-card bg-gradient-warning text-white shadow h-100 position-relative">
+                <div class="card-body p-4 text-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3 text-white">
+                        <div class="stat-icon text-white"><i class="bi bi-box-seam"></i></div>
                         <span class="badge bg-white bg-opacity-25 rounded-pill px-3">Stock</span>
                     </div>
-                    <h6 class="text-white text-opacity-75 small mb-1 text-uppercase" style="letter-spacing: 0.5px;">Active Products</h6>
-                    <h3 class="fw-bold mb-0 counter-value">{{ number_format($data['total_products']) }}</h3>
+                    <h6 class="text-white text-opacity-75 small mb-1 text-uppercase" style="letter-spacing: 0.5px; color: rgba(255,255,255,0.85) !important;">Active Products</h6>
+                    <h3 class="fw-bold mb-0 counter-value text-white" style="color: #ffffff !important;">{{ number_format($data['total_products']) }}</h3>
                 </div>
             </div>
         </div>
 
         <!-- Customers -->
         <div class="col-md-3">
-            <div class="card stat-card bg-gradient-info text-white shadow h-100 position-relative" style="animation-delay: 0.4s;">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="stat-icon"><i class="bi bi-people"></i></div>
+            <div class="card stat-card bg-gradient-info text-white shadow h-100 position-relative">
+                <div class="card-body p-4 text-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3 text-white">
+                        <div class="stat-icon text-white"><i class="bi bi-people"></i></div>
                         <span class="badge bg-white bg-opacity-25 rounded-pill px-3">Live</span>
                     </div>
-                    <h6 class="text-white text-opacity-75 small mb-1 text-uppercase" style="letter-spacing: 0.5px;">Total Customers</h6>
-                    <h3 class="fw-bold mb-0 counter-value">{{ number_format($data['total_users']) }}</h3>
+                    <h6 class="text-white text-opacity-75 small mb-1 text-uppercase" style="letter-spacing: 0.5px; color: rgba(255,255,255,0.85) !important;">Total Customers</h6>
+                    <h3 class="fw-bold mb-0 counter-value text-white" style="color: #ffffff !important;">{{ number_format($data['total_users']) }}</h3>
                 </div>
             </div>
         </div>
