@@ -206,7 +206,9 @@
                             <tbody>
                                 @forelse($data['recent_orders'] as $order)
                                 <tr>
-                                    <td class="ps-4"><span class="fw-medium text-primary">#INV-{{ $order->invoice_no ?? $order->id }}</span></td>
+                                    <td class="ps-4">
+                                        <span class="fw-medium text-primary">#INV-{{ $order->invoice_no ?? $order->id }}</span>
+                                    </td>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <div class="rounded-circle bg-light border d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; font-size: 12px;">
@@ -222,7 +224,7 @@
                                     <td class="fw-bold text-success">${{ number_format($order->total_sell_price, 2) }}</td>
                                     <td>{!! $order->status->badge() !!}</td>
                                     <td class="text-end pe-4">
-                                        <button class="btn btn-light btn-sm rounded-pill" onclick="loadTransactionDetails({{ $order->id }})">
+                                        <button class="btn btn-light btn-sm rounded-pill view-order-details" data-id="{{ $order->id }}">
                                             <i class="fas fa-eye text-primary"></i>
                                         </button>
                                     </td>
@@ -240,96 +242,90 @@
         </div>
     </div>
 </div>
-
-{{-- Modal for view details will be handled by the layout include or specific page JS --}}
 @endsection
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const ctx = document.getElementById('salesChart');
-        if (!ctx) return;
-
-        // Destroy existing chart if it exists to prevent loops/leaks
-        if (window.mySalesChart) {
-            window.mySalesChart.destroy();
-        }
+    $(document).ready(function() {
         
-        // Mock data for the chart
-        const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        const chartData = {
-            labels: labels,
-            datasets: [{
-                label: 'Sales ($)',
-                data: [1200, 1900, 1500, 2500, 2200, 3000, 2800],
-                fill: true,
-                backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                borderColor: '#667eea',
-                tension: 0.4,
-                pointRadius: 4,
-                pointBackgroundColor: '#fff',
-                pointBorderColor: '#667eea',
-                pointBorderWidth: 2
-            }]
-        };
+        // --- 📊 SALES ANALYTICS CHART ---
+        const initSalesChart = () => {
+            const $canvas = $('#salesChart');
+            if (!$canvas.length) return;
 
-        const config = {
-            type: 'line',
-            data: chartData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: {
-                    duration: 1000 // Fixed duration
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        padding: 10,
-                        backgroundColor: '#1e293b',
-                        titleColor: '#fff',
-                        bodyColor: '#fff',
-                        cornerRadius: 8
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            display: true,
-                            drawBorder: false,
-                            color: '#f1f5f9'
-                        },
-                        ticks: {
-                            callback: value => '$' + value,
-                            font: { size: 11 },
-                            color: '#94a3b8'
+            const ctx = $canvas[0].getContext('2d');
+            
+            const salesData = {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Sales ($)',
+                    data: [1200, 1900, 1500, 2500, 2200, 3000, 2800],
+                    fill: true,
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderColor: '#667eea',
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#667eea',
+                    pointBorderWidth: 2
+                }]
+            };
+
+            const chartConfig = {
+                type: 'line',
+                data: salesData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            padding: 10,
+                            backgroundColor: '#1e293b',
+                            cornerRadius: 8
                         }
                     },
-                    x: {
-                        grid: {
-                            display: false
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { 
+                                callback: val => '$' + val,
+                                font: { size: 11 },
+                                color: '#94a3b8'
+                            }
                         },
-                        ticks: {
-                            font: { size: 11 },
-                            color: '#94a3b8'
+                        x: {
+                            grid: { display: false },
+                            ticks: { 
+                                font: { size: 11 },
+                                color: '#94a3b8'
+                            }
                         }
                     }
                 }
-            }
+            };
+
+            new Chart(ctx, chartConfig);
         };
 
-        window.mySalesChart = new Chart(ctx.getContext('2d'), config);
-    });
+        // --- 🖱️ EVENT HANDLERS ---
+        const bindEvents = () => {
+            // Handle viewing order details
+            $(document).on('click', '.view-order-details', function() {
+                const orderId = $(this).data('id');
+                window.location.href = "{{ route('sales.orders') }}?order_id=" + orderId;
+            });
+        };
 
-    // Function to handle showing order details
-    function loadTransactionDetails(id) {
-        window.location.href = "{{ route('sales.orders') }}?order_id=" + id;
-    }
+        // Initialize Everything
+        initSalesChart();
+        bindEvents();
+
+    });
 </script>
 @endsection
+
