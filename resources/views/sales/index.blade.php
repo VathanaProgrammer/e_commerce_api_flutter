@@ -240,10 +240,37 @@
                 });
             }
 
-            $('#close-transaction-modal').on('click', function() {
+            $(document).on('click', '#close-transaction-modal', function() {
                 if (t_modal) {
                     t_modal.hide();
                 }
+            });
+
+            // Delete Sale/Transaction
+            $(document).on('click', '.delete-sale', function(e) {
+                e.preventDefault();
+                let url = $(this).data('url');
+
+                showConfirmModal("Are you sure you want to delete this transaction?", function() {
+                    $.ajax({
+                        url: url,
+                        type: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(res) {
+                            if (res.success) {
+                                toastr.success(res.message || 'Transaction deleted successfully');
+                                table.ajax.reload();
+                            } else {
+                                toastr.error(res.message || 'Failed to delete transaction');
+                            }
+                        },
+                        error: function() {
+                            toastr.error('Something went wrong');
+                        }
+                    });
+                });
             });
         });
     </script>

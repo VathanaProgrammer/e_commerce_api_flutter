@@ -116,7 +116,10 @@ class SalesController extends Controller
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item text-danger" href="#">
+                                <a class="dropdown-item text-danger delete-sale"
+                                   href="#"
+                                   onclick="event.preventDefault();"
+                                   data-url="' . route('sales.destroy', $tx->id) . '">
                                     Delete
                                 </a>
                             </li>
@@ -223,5 +226,14 @@ class SalesController extends Controller
                 'total_items' => $transaction->total_items,
             ],
         ]);
+    }
+    public function destroy($id)
+    {
+        try {
+            Transaction::findOrFail($id)->delete();
+            return response()->json(['success' => true, 'message' => 'Transaction deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to delete transaction'], 500);
+        }
     }
 }

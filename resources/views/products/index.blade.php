@@ -209,22 +209,23 @@
 
             $(document).on('click', '.delete-product', function(e) {
                 e.preventDefault();
-                if (!confirm('Are you sure you want to delete this product?')) return;
-
                 let url = $(this).attr('href');
-                $.ajax({
-                    url: url,
-                    type: 'DELETE',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function() {
-                        $('#productsTable').DataTable().ajax.reload();
-                        toastr.success('Product deleted successfully');
-                    },
-                    error: function() {
-                        toastr.error('Failed to delete product');
-                    }
+
+                showConfirmModal("Are you sure you want to delete this product?", function() {
+                    $.ajax({
+                        url: url,
+                        type: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(res) {
+                            $('#productsTable').DataTable().ajax.reload();
+                            toastr.success(res.message || 'Product deleted successfully');
+                        },
+                        error: function() {
+                            toastr.error('Failed to delete product');
+                        }
+                    });
                 });
             });
         });

@@ -75,30 +75,31 @@
             });
 
             // DELETE ATTRIBUTE
+            // DELETE ATTRIBUTE
             $(document).on('click', '.delete-attr', function(e) {
                 e.preventDefault();
 
                 let url = $(this).data('url');
 
-                if (!confirm('Delete this attribute?')) return;
-
-                $.ajax({
-                    url: url,
-                    type: 'DELETE',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(res) {
-                        if (res.success) {
-                            toastr.success(res.message || 'Deleted successfully');
-                            table.ajax.reload();
-                        } else {
-                            toastr.error(res.message || 'Delete failed');
+                showConfirmModal("Are you sure you want to delete this attribute?", function() {
+                    $.ajax({
+                        url: url,
+                        type: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(res) {
+                            if (res.success) {
+                                toastr.success(res.message || 'Deleted successfully');
+                                table.ajax.reload();
+                            } else {
+                                toastr.error(res.message || 'Delete failed');
+                            }
+                        },
+                        error: function() {
+                            toastr.error('Something went wrong');
                         }
-                    },
-                    error: function() {
-                        toastr.error('Something went wrong');
-                    }
+                    });
                 });
             });
 

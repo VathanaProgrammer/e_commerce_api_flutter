@@ -20,6 +20,7 @@ Route::get('/test', function () {
 });
 
 Route::get('/home', [HomeController::class, 'index']);
+
 Route::get('products/{id}', [ProductController::class, 'show']);
 Route::post('/sale/proccess', [SalesController::class, 'test']);
 

@@ -121,6 +121,33 @@
                 autoWidth: false
             });
 
+            // Delete User
+            $(document).on('click', '.delete-user', function(e) {
+                e.preventDefault();
+                let url = $(this).data('url');
+
+                showConfirmModal("Are you sure you want to delete this user?", function() {
+                    $.ajax({
+                        url: url,
+                        type: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(res) {
+                            if (res.success) {
+                                toastr.success('User deleted successfully');
+                                $('#usersTable').DataTable().ajax.reload();
+                            } else {
+                                toastr.error('Failed to delete user');
+                            }
+                        },
+                        error: function() {
+                            toastr.error('Something went wrong');
+                        }
+                    });
+                });
+            });
+
         });
     </script>
 @endsection

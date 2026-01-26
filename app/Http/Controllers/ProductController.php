@@ -358,4 +358,18 @@ class ProductController extends Controller
             return response()->json(['success' => false, 'msg' => 'Failed to update product. Please try again.'], 500);
         }
     }
+    public function destroy($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            // Delete image if exists
+            if ($product->image_url && file_exists(public_path('uploads/products/' . basename($product->image_url)))) {
+                unlink(public_path('uploads/products/' . basename($product->image_url)));
+            }
+            $product->delete();
+            return response()->json(['success' => true, 'message' => 'Product deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to delete product'], 500);
+        }
+    }
 }
