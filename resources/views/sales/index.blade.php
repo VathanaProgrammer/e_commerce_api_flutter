@@ -3,6 +3,15 @@
 @section('styles')
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <style>
+        /* Fix for Leaflet tiles breaking in Bootstrap */
+        .leaflet-pane img {
+            max-width: none !important;
+        }
+        .leaflet-container {
+            z-index: 1000; /* Ensure map is not covered */
+        }
+    </style>
 @endsection
 
 @section('content')
