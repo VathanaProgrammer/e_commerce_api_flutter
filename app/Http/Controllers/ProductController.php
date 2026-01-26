@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Models\Category;
 use Yajra\DataTables\Facades\DataTables;
+use App\Http\Requests\ProductRequest;
 
 class ProductController extends Controller
 {
