@@ -161,11 +161,15 @@
 
                 <!-- LEFT: Logo + Name -->
                 <div class="d-flex align-items-center gap-2">
-                    <div class="rounded-circle bg-white d-flex justify-content-center align-items-center"
+                    <div class="rounded-circle bg-white d-flex justify-content-center align-items-center overflow-hidden"
                         style="width:40px; height:40px;">
-                        <i class="bi bi-shop text-dark"></i>
+                        @if(session('business.logo'))
+                            <img src="{{ session('business.logo') }}" alt="Logo" class="w-100 h-100" style="object-fit: cover;">
+                        @else
+                            <i class="bi bi-shop text-dark"></i>
+                        @endif
                     </div>
-                    <a href="{{ route('home') }}" class="text-white fw-bold fs-5 mb-0">
+                    <a href="{{ route('home') }}" class="text-white fw-bold fs-5 mb-0 text-decoration-none">
                         {{ session('business.name', 'Business Name') }}
                     </a>
                 </div>
@@ -216,11 +220,13 @@
                         </button>
 
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ route('users.profile', auth()->id()) }}">Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ route('users.profile', auth()->id()) }}"><i class="bi bi-person me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item open-business-settings" href="#"><i class="bi bi-gear me-2"></i>Business Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form class="logout-form" method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="dropdown-item">Logout</button>
+                                    <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
                                 </form>
                             </li>
 
@@ -262,6 +268,9 @@
                     </div>
                 </div>
             </div>
+
+            <!-- BUSINESS SETTINGS MODAL -->
+            @include('business.settings_modal')
 
         </div>
 

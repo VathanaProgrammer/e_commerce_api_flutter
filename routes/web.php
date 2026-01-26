@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Middleware\AdminSidebarMenu;
 use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BusinessController;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,6 +75,13 @@ Route::middleware(['web', 'auth'])->group(function () {
         Route::get('/{id}', [App\Http\Controllers\SalesController::class, 'show'])->name('sales.show');
         Route::get('/{id}/edit', [App\Http\Controllers\SalesController::class, 'edit'])->name('sales.edit');
         Route::delete('/{id}', [App\Http\Controllers\SalesController::class, 'destroy'])->name('sales.destroy');
+    });
+
+    // Business Settings
+    Route::prefix('business')->group(function () {
+        Route::get('/settings', [BusinessController::class, 'index'])->name('business.settings');
+        Route::post('/settings', [BusinessController::class, 'update'])->name('business.settings.update');
+        Route::delete('/logo', [BusinessController::class, 'removeLogo'])->name('business.logo.remove');
     });
 
 });

@@ -189,5 +189,19 @@
             </div>
         </div>
 
+        <!-- Divider -->
+        <div class="my-4 mx-4 border-t border-slate-200"></div>
+
+        <!-- Settings Section -->
+        <div class="px-2">
+            <p class="px-4 text-xs text-slate-400 uppercase tracking-wider mb-2">Settings</p>
+            
+            <a href="#" class="open-business-settings sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-100 mb-1"
+               style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+                <i class="bi bi-gear text-lg"></i>
+                <span>Business Settings</span>
+            </a>
+        </div>
+
     </nav>
 </aside>
