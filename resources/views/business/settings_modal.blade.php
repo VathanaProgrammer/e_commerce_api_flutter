@@ -347,6 +347,7 @@
     }
 </style>
 
+@section('scripts')
 <script>
     $(document).ready(function() {
         const settingsModal = document.getElementById('businessSettingsModal');
@@ -575,3 +576,4 @@
         });
     });
 </script>
+@endsection
