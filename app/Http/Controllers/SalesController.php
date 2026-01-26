@@ -112,7 +112,16 @@ class SalesController extends Controller
                                    href="#"
                                    onclick="event.preventDefault();"
                                    data-transaction-id="' . $tx->id . '">
-                                   View
+                                   View Details
+                                </a>
+                            </li>
+                             <li>
+                                <a class="dropdown-item view-map"
+                                   href="#"
+                                   onclick="event.preventDefault();"
+                                   data-lat="' . $tx->lat . '"
+                                   data-lng="' . $tx->long . '">
+                                   View on Map
                                 </a>
                             </li>
                             <li>
