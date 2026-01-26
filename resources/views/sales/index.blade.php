@@ -1,19 +1,3 @@
-@extends('layouts.app')
-
-@section('styles')
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <style>
-        /* Fix for Leaflet tiles breaking in Bootstrap */
-        .leaflet-pane img {
-            max-width: none !important;
-        }
-        .leaflet-container {
-            z-index: 1000; /* Ensure map is not covered */
-        }
-    </style>
-@endsection
-
 @section('content')
     <div class="container py-4">
         <div class="row">
@@ -44,78 +28,13 @@
     </div>
 
     @include('sales.view_model')
-
-    <!-- Map Modal -->
-    <div class="modal fade" id="mapModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Transaction Location</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-0" style="height: 500px;">
-                    <div id="map" style="width: 100%; height: 100%;"></div>
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
 @section('scripts')
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
     <script>
         $(document).ready(function() {
             let map = null;
             let marker = null;
-            const mapModal = new bootstrap.Modal(document.getElementById('mapModal'));
-
-            // View Map Handler
-            $(document).on('click', '.view-map', function(e) {
-                e.preventDefault();
-                
-                let lat = $(this).data('lat');
-                let lng = $(this).data('lng');
-
-                if (!lat || !lng) {
-                    toastr.warning('No location data available for this transaction.');
-                    return;
-                }
-
-                // Force numeric values
-                lat = parseFloat(lat);
-                lng = parseFloat(lng);
-
-                mapModal.show();
-
-                // Initialize map after modal is shown (required for Leaflet to size correctly)
-                $('#mapModal').off('shown.bs.modal').on('shown.bs.modal', function() {
-                    // Cleanup previous map instance
-                    if (map) {
-                        map.off();
-                        map.remove();
-                        map = null;
-                    }
-
-                    // Small delay to ensure modal transition is completely finished
-                    setTimeout(function() {
-                        map = L.map('map').setView([lat, lng], 15);
-
-                        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                            maxZoom: 19,
-                            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                        }).addTo(map);
-
-                        L.marker([lat, lng]).addTo(map)
-                            .bindPopup('<b>Transaction Location</b>')
-                            .openPopup();
-
-                        // Force a recalculation of the map size
-                        map.invalidateSize();
-                    }, 100);
-                });
-            });
-
+            
             const table = $('#salesOrdersTable').DataTable({
                 processing: true,
                 serverSide: true,

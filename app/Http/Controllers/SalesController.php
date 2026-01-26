@@ -116,11 +116,9 @@ class SalesController extends Controller
                                 </a>
                             </li>
                              <li>
-                                <a class="dropdown-item view-map"
-                                   href="#"
-                                   onclick="event.preventDefault();"
-                                   data-lat="' . $tx->lat . '"
-                                   data-lng="' . $tx->long . '">
+                                <a class="dropdown-item"
+                                   href="https://www.openstreetmap.org/?mlat=' . $tx->lat . '&mlon=' . $tx->long . '#map=15/' . $tx->lat . '/' . $tx->long . '"
+                                   target="_blank">
                                    View on Map
                                 </a>
                             </li>
