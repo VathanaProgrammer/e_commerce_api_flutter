@@ -99,6 +99,17 @@ class SalesController extends Controller
             )
 
             ->addColumn('action', function ($tx) {
+                $mapLink = '';
+                if ($tx->lat && $tx->long) {
+                    $mapLink = '<li>
+                                <a class="dropdown-item"
+                                   href="https://www.openstreetmap.org/?mlat=' . $tx->lat . '&mlon=' . $tx->long . '#map=15/' . $tx->lat . '/' . $tx->long . '"
+                                   target="_blank">
+                                   View on Map
+                                </a>
+                            </li>';
+                }
+
                 return '
                     <div class="dropdown">
                         <button class="btn btn-sm btn-primary dropdown-toggle"
@@ -115,13 +126,7 @@ class SalesController extends Controller
                                    View Details
                                 </a>
                             </li>
-                             <li>
-                                <a class="dropdown-item"
-                                   href="https://www.openstreetmap.org/?mlat=' . $tx->lat . '&mlon=' . $tx->long . '#map=15/' . $tx->lat . '/' . $tx->long . '"
-                                   target="_blank">
-                                   View on Map
-                                </a>
-                            </li>
+                            ' . $mapLink . '
                             <li>
                                 <a class="dropdown-item text-danger delete-sale"
                                    href="#"
