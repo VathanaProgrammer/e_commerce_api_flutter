@@ -364,7 +364,6 @@
                     <html>
                         <head>
                             <title>Print Invoice - ${invoiceNo}</title>
-                            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
                             <style>
                                 body { padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
                                 .print-header { border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 30px; }
