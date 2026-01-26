@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
 
     <style>
         /* Navbar Animation Styles */
@@ -221,7 +222,7 @@
 
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{{ route('users.profile', auth()->id()) }}"><i class="bi bi-person me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item open-business-settings" href="#"><i class="bi bi-gear me-2"></i>Business Settings</a></li>
+                            <li><a class="dropdown-item open-business-settings" data-id="{{ session('business.id') }}" href="#"><i class="bi bi-gear me-2"></i>Business Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form class="logout-form" method="POST" action="{{ route('logout') }}">
@@ -387,6 +388,7 @@
         <script src="{{ asset('js/app.js') }}"></script>
         @include('includes.js')
         @yield('scripts')
+        @stack('scripts')
 </body>
 
 </html>

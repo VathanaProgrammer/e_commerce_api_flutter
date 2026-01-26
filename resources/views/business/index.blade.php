@@ -38,9 +38,6 @@
     </x-widget>
 </div>
 
-{{-- Modal for editing --}}
-@include('business.settings_modal')
-
 <style>
     #businessTable thead th {
         background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -109,16 +106,9 @@
         });
 
         // Use the existing modal-based edit flow
-        $(document).on('click', '.edit-business', function() {
-            // The open-business-settings logic in settings_modal.blade.php 
-            // already handles loading and showing the modal.
-            // We just trigger a click on a hidden or dummy element if needed, 
-            // but since we updated the logic, let's just trigger the modal directly.
-            
-            // Note: settings_modal.blade.php already has a $(document).on('click', '.open-business-settings', ...)
-            // We can just give our button the same class or trigger the function.
-            // To match user's controller style, we likely want a clean JS flow.
-        });
+        // Note: The 'Edit' button triggers .open-business-settings which is handled globally
+        // by the settings_modal.blade.php script.
+        
         
         // Delete Business
         $(document).on('click', '.delete-business', function(e) {

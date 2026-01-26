@@ -283,6 +283,7 @@
     </div>
 </div>
 
+@push('styles')
 <style>
     #businessSettingsModal .nav-pills .nav-link {
         color: #64748b;
@@ -346,8 +347,9 @@
         transition: all 0.3s ease;
     }
 </style>
+@endpush
 
-@section('scripts')
+@push('scripts')
 <script>
     $(document).ready(function() {
         const settingsModal = document.getElementById('businessSettingsModal');
@@ -576,4 +578,4 @@
         });
     });
 </script>
-@endsection
+@endpush
