@@ -5,20 +5,39 @@ namespace App\Http\Controllers;
 use App\Models\Business;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 
 class BusinessController extends Controller
 {
     /**
-     * Get business settings
+     * Display business settings page
      */
     public function index()
     {
-        $business = Business::first();
+        return view('business.index');
+    }
+
+    /**
+     * Get business data for DataTables
+     */
+    public function data()
+    {
+        $business = Business::query();
         
-        return response()->json([
-            'success' => true,
-            'data' => $business
-        ]);
+        return DataTables::of($business)
+            ->addColumn('logo', function ($row) {
+                if ($row->logo_url) {
+                    return '<img src="' . $row->logo_url . '" class="rounded shadow-sm" width="50" height="50" style="object-fit: contain;">';
+                }
+                return '<span class="badge bg-secondary">No Logo</span>';
+            })
+            ->addColumn('action', function ($row) {
+                return '<button class="btn btn-sm btn-primary open-business-settings" data-id="' . $row->id . '">
+                            <i class="bi bi-pencil-square me-1"></i> Edit
+                        </button>';
+            })
+            ->rawColumns(['logo', 'action'])
+            ->make(true);
     }
 
     /**
