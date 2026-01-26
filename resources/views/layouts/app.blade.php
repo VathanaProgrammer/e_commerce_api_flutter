@@ -113,6 +113,41 @@
         .navbar .text-opacity-75:hover {
             background: rgba(255,255,255,0.1) !important;
         }
+
+        /* ============================================
+           MODAL BACKDROP FIX
+           ============================================ */
+        
+        /* Ensure modal backdrop is properly layered */
+        .modal-backdrop {
+            z-index: 1040 !important;
+        }
+
+        .modal {
+            z-index: 1050 !important;
+        }
+
+        /* Ensure sidebar stays below modal */
+        aside {
+            z-index: 100;
+        }
+
+        /* Ensure navbar stays below modal */
+        .navbar {
+            z-index: 1030;
+        }
+
+        /* Fix for stuck backdrop - make sure it's not blocking when hidden */
+        .modal-backdrop.fade:not(.show) {
+            pointer-events: none !important;
+            opacity: 0 !important;
+        }
+
+        /* Ensure body scroll is restored */
+        body.modal-open-fix {
+            overflow: auto !important;
+            padding-right: 0 !important;
+        }
     </style>
 </head>
 
@@ -290,7 +325,54 @@
                         toastr.error(@json($error));
                     @endforeach
                 @endif
+
+                // ============================================
+                // MODAL BACKDROP FIX
+                // ============================================
+                
+                // Clean up modal backdrop when any modal is hidden
+                $(document).on('hidden.bs.modal', '.modal', function () {
+                    // Remove any orphaned backdrops
+                    if ($('.modal:visible').length === 0) {
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open').css({
+                            'overflow': '',
+                            'padding-right': ''
+                        });
+                    }
+                });
+
+                // Fallback: Clean up on escape key
+                $(document).on('keydown', function(e) {
+                    if (e.key === 'Escape' && $('.modal:visible').length === 0) {
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open').css({
+                            'overflow': '',
+                            'padding-right': ''
+                        });
+                    }
+                });
+
+                // Clean up any existing orphaned backdrops on page load
+                setTimeout(function() {
+                    if ($('.modal.show').length === 0 && $('.modal-backdrop').length > 0) {
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open');
+                    }
+                }, 500);
             });
+
+            // Global function to force close all modals and clean up
+            window.forceCloseModals = function() {
+                $('.modal').modal('hide');
+                setTimeout(function() {
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open').css({
+                        'overflow': '',
+                        'padding-right': ''
+                    });
+                }, 300);
+            };
         </script>
 
         <script src="{{ asset('js/app.js') }}"></script>

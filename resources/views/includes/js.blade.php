@@ -3,8 +3,51 @@
 
     $(document).ready(function() {
 
-        let globalConfirmModal = new bootstrap.Modal(document.getElementById('globalConfirmModal'));
+        // ============================================
+        // GLOBAL MODAL BACKDROP CLEANUP
+        // ============================================
+        
+        // Clean up function for modal backdrops
+        function cleanupModalBackdrop() {
+            if ($('.modal:visible').length === 0) {
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open').css({
+                    'overflow': '',
+                    'padding-right': ''
+                });
+            }
+        }
+
+        // Listen for all modal hidden events
+        $(document).on('hidden.bs.modal', '.modal', function() {
+            cleanupModalBackdrop();
+        });
+
+        // Cleanup on page click if no modal is visible but backdrop exists
+        $(document).on('click', function(e) {
+            if ($('.modal:visible').length === 0 && $('.modal-backdrop').length > 0) {
+                cleanupModalBackdrop();
+            }
+        });
+
+        // ============================================
+        // GLOBAL CONFIRM MODAL
+        // ============================================
+        
+        const globalConfirmModalEl = document.getElementById('globalConfirmModal');
+        let globalConfirmModal = null;
         let confirmCallback = null;
+
+        // Initialize modal only when needed
+        function getGlobalConfirmModal() {
+            if (!globalConfirmModal && globalConfirmModalEl) {
+                globalConfirmModal = new bootstrap.Modal(globalConfirmModalEl, {
+                    backdrop: true,
+                    keyboard: true
+                });
+            }
+            return globalConfirmModal;
+        }
 
         /**
          * Open the global confirmation modal
@@ -14,16 +57,36 @@
         window.showConfirmModal = function(message = "Are you sure?", onConfirm = null) {
             document.getElementById('globalConfirmModalBody').innerHTML = message;
             confirmCallback = onConfirm;
-            globalConfirmModal.show();
+            const modal = getGlobalConfirmModal();
+            if (modal) {
+                modal.show();
+            }
         }
 
         // Handle confirm button click
-        document.getElementById('globalConfirmModalConfirmBtn').addEventListener('click', function() {
-            if (typeof confirmCallback === "function") {
-                confirmCallback();
-            }
-            globalConfirmModal.hide();
-        });
+        const confirmBtn = document.getElementById('globalConfirmModalConfirmBtn');
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', function() {
+                const modal = getGlobalConfirmModal();
+                if (modal) {
+                    modal.hide();
+                }
+                // Execute callback after modal starts hiding
+                setTimeout(function() {
+                    if (typeof confirmCallback === "function") {
+                        confirmCallback();
+                    }
+                    confirmCallback = null;
+                }, 100);
+            });
+        }
+
+        // Cleanup when global confirm modal is hidden
+        if (globalConfirmModalEl) {
+            globalConfirmModalEl.addEventListener('hidden.bs.modal', function() {
+                cleanupModalBackdrop();
+            });
+        }
 
 
         $(document).on('submit', '.logout-form', function(e) {

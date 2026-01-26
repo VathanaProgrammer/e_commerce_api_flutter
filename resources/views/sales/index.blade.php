@@ -175,11 +175,35 @@
                     .get();
             }
 
+            // Initialize modal once and reuse
+            const transactionModalEl = document.getElementById('transactionModal');
             let t_modal = null;
+            
+            // Get or create modal instance
+            function getTransactionModal() {
+                if (!t_modal) {
+                    t_modal = new bootstrap.Modal(transactionModalEl, {
+                        backdrop: true,
+                        keyboard: true
+                    });
+                }
+                return t_modal;
+            }
+
+            // Clean up modal on hidden
+            transactionModalEl.addEventListener('hidden.bs.modal', function () {
+                // Ensure backdrop is removed
+                $('.modal-backdrop').remove();
+                $('body').removeClass('modal-open').css({
+                    'overflow': '',
+                    'padding-right': ''
+                });
+            });
 
             // Click handler for table rows
             $(document).on('click', '#salesOrdersTable tbody tr', function(e) {
-                if ($(e.target).closest('.dropdown').length) {
+                // Ignore clicks on checkboxes and dropdowns
+                if ($(e.target).closest('.dropdown, .transaction-checkbox, input[type="checkbox"]').length) {
                     return;
                 }
 
@@ -191,8 +215,8 @@
             });
 
             function loadTransactionDetails(transactionId) {
-                t_modal = new bootstrap.Modal(document.getElementById('transactionModal'));
-                t_modal.show();
+                const modal = getTransactionModal();
+                modal.show();
 
                 $.ajax({
                     url: '{{ route('sales.show', ':id') }}'.replace(':id', transactionId),
@@ -281,16 +305,18 @@
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             errorMessage += '\n' + xhr.responseJSON.message;
                         }
-                        t_modal.hide();
+                        
+                        // Close modal and clean up
+                        const modal = getTransactionModal();
+                        modal.hide();
+                        
+                        // Show error after modal closes
+                        setTimeout(function() {
+                            toastr.error(errorMessage);
+                        }, 300);
                     }
                 });
             }
-
-            $(document).on('click', '#close-transaction-modal', function() {
-                if (t_modal) {
-                    t_modal.hide();
-                }
-            });
 
             // Delete Sale/Transaction
             $(document).on('click', '.delete-sale', function(e) {
