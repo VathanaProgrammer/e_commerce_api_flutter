@@ -27,6 +27,93 @@
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <style>
+        /* Navbar Animation Styles */
+        .navbar {
+            animation: slideDown 0.4s ease-out forwards;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .navbar .btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .navbar .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .navbar .dropdown-menu {
+            animation: dropdownFadeIn 0.2s ease-out;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .navbar .dropdown-item {
+            transition: all 0.2s ease;
+            padding: 10px 20px;
+        }
+
+        .navbar .dropdown-item:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
+            padding-left: 25px;
+        }
+
+        /* Notification badge animation */
+        .navbar .badge {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* User avatar hover effect */
+        .navbar .rounded-circle {
+            transition: all 0.3s ease;
+        }
+
+        .navbar .dropdown:hover .rounded-circle {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* Date badge styling */
+        .navbar .text-opacity-75 {
+            transition: all 0.3s ease;
+        }
+
+        .navbar .text-opacity-75:hover {
+            background: rgba(255,255,255,0.1) !important;
+        }
+    </style>
 </head>
 
 <body class="bg-light">
@@ -115,7 +202,7 @@
             @include('layouts.sidebar')
 
             <!-- MAIN CONTENT -->
-            <main class="flex-grow-1 bg-gray-200">
+            <main class="flex-grow-1 bg-gray-200 page-content">
                 @yield('content')
             </main>
             <!-- GLOBAL MODAL -->

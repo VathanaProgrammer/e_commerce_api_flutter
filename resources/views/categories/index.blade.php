@@ -6,10 +6,15 @@
         @include('categories.create')
         <x-widget title="Category List">
 
-            <div class="mb-3">
-                <button class="btn btn-sm btn-success rounded-0" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
-                    <i class="fas fa-plus"></i> Create New Category
+            <div class="mb-4 d-flex justify-content-between align-items-center">
+                <button class="btn btn-success rounded-pill px-4 shadow-sm hover-lift" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
+                    <i class="bi bi-plus-lg me-2"></i> Create New Category
                 </button>
+                <div class="d-flex gap-2">
+                    <span class="badge bg-light text-dark rounded-pill px-3 py-2">
+                        <i class="bi bi-tags me-1"></i> Categories Management
+                    </span>
+                </div>
             </div>
 
             <div class="table-responsive w-100 overflow-hidden">

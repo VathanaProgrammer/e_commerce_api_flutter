@@ -4,11 +4,16 @@
     <div class="container py-4">
         <x-widget title="Attributes List">
 
-            <div class="mb-3">
-                <button class="btn btn-success btn-sm rounded-0" data-bs-toggle="modal"
+            <div class="mb-4 d-flex justify-content-between align-items-center">
+                <button class="btn btn-success rounded-pill px-4 shadow-sm hover-lift" data-bs-toggle="modal"
                     data-bs-target="#addAttributeModal">
-                    <i class="fas fa-plus"></i> Add Attribute
+                    <i class="bi bi-plus-lg me-2"></i> Add Attribute
                 </button>
+                <div class="d-flex gap-2">
+                    <span class="badge bg-light text-dark rounded-pill px-3 py-2">
+                        <i class="bi bi-sliders me-1"></i> Attributes Management
+                    </span>
+                </div>
             </div>
 
             <div class="card border-0 shadow-none">
@@ -33,6 +38,43 @@
     </div>
     @include('attributes.edit')
     @include('attributes.create')
+
+    <style>
+        #attributesTable thead th {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: none;
+            padding: 15px 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            color: #475569;
+        }
+
+        #attributesTable tbody tr {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        #attributesTable tbody tr:hover {
+            background-color: rgba(102, 126, 234, 0.05) !important;
+            transform: scale(1.002);
+        }
+
+        #attributesTable tbody td {
+            padding: 14px 12px;
+            vertical-align: middle;
+        }
+
+        /* Attribute value badges */
+        #attributesTable .badge {
+            transition: all 0.2s ease;
+        }
+
+        #attributesTable .badge:hover {
+            transform: scale(1.05);
+        }
+    </style>
 @endsection
 
 @section('scripts')

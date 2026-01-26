@@ -2,36 +2,91 @@
 
 @section('styles')
 <style>
+    /* Stat Cards Animation */
     .stat-card {
         border: none;
-        border-radius: 15px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 20px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         overflow: hidden;
+        opacity: 0;
+        transform: translateY(30px);
+        animation: cardSlideUp 0.6s ease forwards;
     }
+    
+    .stat-card:nth-child(1) { animation-delay: 0.1s; }
+    .stat-card:nth-child(2) { animation-delay: 0.2s; }
+    .stat-card:nth-child(3) { animation-delay: 0.3s; }
+    .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes cardSlideUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
     }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .stat-card:hover::before {
+        left: 100%;
+    }
+
     .stat-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
-        background: rgba(255, 255, 255, 0.2);
+        font-size: 26px;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
     }
+
+    .stat-card:hover .stat-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
     .bg-gradient-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-    .bg-gradient-success { background: linear-gradient(135deg, #2af598 0%, #009efd 100%); }
-    .bg-gradient-warning { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); }
+    .bg-gradient-success { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+    .bg-gradient-warning { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
     .bg-gradient-info { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
     
+    /* Cards Section Animation */
     .recent-orders-card {
         border: none;
-        border-radius: 15px;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        opacity: 0;
+        animation: fadeInUp 0.6s ease 0.5s forwards;
     }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+    }
+
     .table thead th {
         border-top: none;
         text-transform: uppercase;
@@ -40,12 +95,74 @@
         letter-spacing: 0.5px;
         color: #6c757d;
     }
+
+    .table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.05) !important;
+    }
+
     .status-dot {
-        width: 8px;
-        height: 8px;
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
         display: inline-block;
-        margin-right: 5px;
+        margin-right: 8px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(1.1); }
+    }
+
+    /* Quick Actions Animation */
+    .quick-action-btn {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .quick-action-btn:hover {
+        transform: translateX(5px);
+    }
+
+    .quick-action-btn i {
+        transition: transform 0.3s ease;
+    }
+
+    .quick-action-btn:hover i {
+        transform: scale(1.2);
+    }
+
+    /* Header Animation */
+    .dashboard-header {
+        opacity: 0;
+        animation: slideDown 0.5s ease forwards;
+    }
+
+    @keyframes slideDown {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+    }
+
+    /* Animated Counter */
+    .counter-value {
+        display: inline-block;
+    }
+
+    /* Chart Container Animation */
+    .chart-container {
+        opacity: 0;
+        animation: fadeInUp 0.6s ease 0.4s forwards;
     }
 </style>
 @endsection
@@ -53,14 +170,14 @@
 @section('content')
 <div class="container py-4">
     <!-- Header Section -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 dashboard-header">
         <div>
-            <h4 class="fw-bold mb-0">Dashboard Overview</h4>
-            <p class="text-muted small mb-0">Welcome back, {{ auth()->user()->first_name }}! Here's what's happening today.</p>
+            <h4 class="fw-bold mb-1" style="font-size: 1.75rem;">Dashboard Overview</h4>
+            <p class="text-muted mb-0">Welcome back, <span class="fw-semibold text-primary">{{ auth()->user()->first_name }}</span>! Here's what's happening today.</p>
         </div>
         <div>
-            <button class="btn btn-white shadow-sm btn-sm fw-bold border">
-                <i class="fas fa-calendar-alt me-2 text-primary"></i> {{ now()->format('M d, Y') }}
+            <button class="btn btn-white shadow-sm btn-sm fw-bold border rounded-pill px-3" style="transition: all 0.3s ease;">
+                <i class="bi bi-calendar3 me-2 text-primary"></i> {{ now()->format('M d, Y') }}
             </button>
         </div>
     </div>
@@ -69,56 +186,56 @@
     <div class="row g-4 mb-4">
         <!-- Revenue -->
         <div class="col-md-3">
-            <div class="card stat-card bg-gradient-primary text-white shadow-sm h-100">
-                <div class="card-body">
+            <div class="card stat-card bg-gradient-primary text-white shadow h-100 position-relative" style="animation-delay: 0.1s;">
+                <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="stat-icon"><i class="fas fa-wallet"></i></div>
-                        <span class="badge bg-white bg-opacity-25">+12.5%</span>
+                        <div class="stat-icon"><i class="bi bi-wallet2"></i></div>
+                        <span class="badge bg-white bg-opacity-25 rounded-pill px-3">+12.5%</span>
                     </div>
-                    <h6 class="text-white text-opacity-75 small mb-1">Total Revenue</h6>
-                    <h3 class="fw-bold mb-0">${{ number_format($data['total_sales'], 2) }}</h3>
+                    <h6 class="text-white text-opacity-75 small mb-1 text-uppercase" style="letter-spacing: 0.5px;">Total Revenue</h6>
+                    <h3 class="fw-bold mb-0 counter-value">${{ number_format($data['total_sales'], 2) }}</h3>
                 </div>
             </div>
         </div>
 
         <!-- Orders -->
         <div class="col-md-3">
-            <div class="card stat-card bg-gradient-success text-white shadow-sm h-100">
-                <div class="card-body">
+            <div class="card stat-card bg-gradient-success text-white shadow h-100 position-relative" style="animation-delay: 0.2s;">
+                <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
-                        <span class="badge bg-white bg-opacity-25">+8.2%</span>
+                        <div class="stat-icon"><i class="bi bi-bag-check"></i></div>
+                        <span class="badge bg-white bg-opacity-25 rounded-pill px-3">+8.2%</span>
                     </div>
-                    <h6 class="text-white text-opacity-75 small mb-1">Total Orders</h6>
-                    <h3 class="fw-bold mb-0">{{ number_format($data['total_orders']) }}</h3>
+                    <h6 class="text-white text-opacity-75 small mb-1 text-uppercase" style="letter-spacing: 0.5px;">Total Orders</h6>
+                    <h3 class="fw-bold mb-0 counter-value">{{ number_format($data['total_orders']) }}</h3>
                 </div>
             </div>
         </div>
 
         <!-- Products -->
         <div class="col-md-3">
-            <div class="card stat-card bg-gradient-warning text-white shadow-sm h-100">
-                <div class="card-body">
+            <div class="card stat-card bg-gradient-warning text-white shadow h-100 position-relative" style="animation-delay: 0.3s;">
+                <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="stat-icon"><i class="fas fa-box"></i></div>
-                        <span class="badge bg-white bg-opacity-25">Stock</span>
+                        <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+                        <span class="badge bg-white bg-opacity-25 rounded-pill px-3">Stock</span>
                     </div>
-                    <h6 class="text-white text-opacity-75 small mb-1">Active Products</h6>
-                    <h3 class="fw-bold mb-0">{{ number_format($data['total_products']) }}</h3>
+                    <h6 class="text-white text-opacity-75 small mb-1 text-uppercase" style="letter-spacing: 0.5px;">Active Products</h6>
+                    <h3 class="fw-bold mb-0 counter-value">{{ number_format($data['total_products']) }}</h3>
                 </div>
             </div>
         </div>
 
         <!-- Customers -->
         <div class="col-md-3">
-            <div class="card stat-card bg-gradient-info text-white shadow-sm h-100">
-                <div class="card-body">
+            <div class="card stat-card bg-gradient-info text-white shadow h-100 position-relative" style="animation-delay: 0.4s;">
+                <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="stat-icon"><i class="fas fa-users"></i></div>
-                        <span class="badge bg-white bg-opacity-25">Live</span>
+                        <div class="stat-icon"><i class="bi bi-people"></i></div>
+                        <span class="badge bg-white bg-opacity-25 rounded-pill px-3">Live</span>
                     </div>
-                    <h6 class="text-white text-opacity-75 small mb-1">Total Customers</h6>
-                    <h3 class="fw-bold mb-0">{{ number_format($data['total_users']) }}</h3>
+                    <h6 class="text-white text-opacity-75 small mb-1 text-uppercase" style="letter-spacing: 0.5px;">Total Customers</h6>
+                    <h3 class="fw-bold mb-0 counter-value">{{ number_format($data['total_users']) }}</h3>
                 </div>
             </div>
         </div>
@@ -145,37 +262,50 @@
 
         <!-- Quick Actions & Top Products -->
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 mb-4" style="animation: fadeInUp 0.6s ease 0.5s forwards; opacity: 0;">
                 <div class="card-body p-4">
-                    <h5 class="fw-bold mb-3">Quick Actions</h5>
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-lightning-charge text-warning me-2"></i>Quick Actions
+                    </h5>
                     <div class="d-grid gap-2">
-                        <a href="{{ route('products.create') }}" class="btn btn-primary btn-sm py-2 rounded-3 text-start">
-                            <i class="fas fa-plus-circle me-2"></i> Add New Product
+                        <a href="{{ route('products.create') }}" class="btn btn-primary btn-sm py-2 rounded-3 text-start quick-action-btn d-flex align-items-center">
+                            <i class="bi bi-plus-circle me-2"></i> 
+                            <span>Add New Product</span>
+                            <i class="bi bi-arrow-right ms-auto"></i>
                         </a>
-                        <a href="{{ route('sales.orders') }}" class="btn btn-outline-secondary btn-sm py-2 rounded-3 text-start">
-                            <i class="fas fa-list me-2"></i> View All Orders
+                        <a href="{{ route('sales.orders') }}" class="btn btn-outline-secondary btn-sm py-2 rounded-3 text-start quick-action-btn d-flex align-items-center">
+                            <i class="bi bi-list-ul me-2"></i> 
+                            <span>View All Orders</span>
+                            <i class="bi bi-arrow-right ms-auto"></i>
                         </a>
-                        <a href="{{ route('users.index') }}" class="btn btn-outline-secondary btn-sm py-2 rounded-3 text-start">
-                            <i class="fas fa-user-plus me-2"></i> Manage Users
+                        <a href="{{ route('users.index') }}" class="btn btn-outline-secondary btn-sm py-2 rounded-3 text-start quick-action-btn d-flex align-items-center">
+                            <i class="bi bi-person-plus me-2"></i> 
+                            <span>Manage Users</span>
+                            <i class="bi bi-arrow-right ms-auto"></i>
                         </a>
                     </div>
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-4">
+            <div class="card border-0 shadow-sm rounded-4" style="animation: fadeInUp 0.6s ease 0.6s forwards; opacity: 0;">
                 <div class="card-body p-4">
-                    <h5 class="fw-bold mb-3">System Status</h5>
-                    <div class="d-flex align-items-center mb-3">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-activity text-success me-2"></i>System Status
+                    </h5>
+                    <div class="d-flex align-items-center mb-3 p-2 rounded-2" style="background: rgba(40, 167, 69, 0.1);">
                         <div class="status-dot bg-success"></div>
                         <span class="small fw-medium">API: Online</span>
+                        <span class="ms-auto badge bg-success rounded-pill">Active</span>
                     </div>
-                    <div class="d-flex align-items-center mb-3">
+                    <div class="d-flex align-items-center mb-3 p-2 rounded-2" style="background: rgba(40, 167, 69, 0.1);">
                         <div class="status-dot bg-success"></div>
                         <span class="small fw-medium">Payments: Active</span>
+                        <span class="ms-auto badge bg-success rounded-pill">Running</span>
                     </div>
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center p-2 rounded-2" style="background: rgba(40, 167, 69, 0.1);">
                         <div class="status-dot bg-success"></div>
                         <span class="small fw-medium">Database: Optimized</span>
+                        <span class="ms-auto badge bg-success rounded-pill">Healthy</span>
                     </div>
                 </div>
             </div>

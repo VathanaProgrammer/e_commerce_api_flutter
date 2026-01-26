@@ -147,48 +147,131 @@
 
     <style>
         .section-box {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            border: 1px solid #e0e0e0;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .section-box:nth-child(1) { animation-delay: 0.1s; }
+        .section-box:nth-child(2) { animation-delay: 0.2s; }
+        .section-box:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        .section-box:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            border-color: #cbd5e1;
         }
         
         .section-title {
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #333;
-            border-bottom: 2px solid #dee2e6;
-            padding-bottom: 8px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1e293b;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            display: inline-block;
         }
 
         .attribute-group {
-            padding: 12px;
+            padding: 16px;
             background: white;
-            border-radius: 6px;
-            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .attribute-group:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-color: #667eea;
         }
 
         .variant-card {
             background: white;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .variant-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
         }
 
         .variant-badges {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 10px;
+            gap: 8px;
+            margin-top: 12px;
         }
 
         .attr-badge {
-            background: #e3f2fd;
-            padding: 4px 10px;
-            border-radius: 4px;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            padding: 6px 14px;
+            border-radius: 20px;
             font-size: 0.85rem;
-            border: 1px solid #90caf9;
+            border: 1px solid #c7d2fe;
+            color: #4338ca;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .attr-badge:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            padding: 10px 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+
+        #imagePreview {
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        #imagePreview:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
         }
     </style>
 @endsection

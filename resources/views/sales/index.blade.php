@@ -4,32 +4,75 @@
     <div class="container py-4">
         <div class="row">
             <div class="col-12">
-                <x-widget title="Sales list">
-                    <table id="salesOrdersTable" class="table table-striped table-hover display nowrap w-full">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <input type="checkbox" id="select-all">
-                                </th>
-                                <th>Action</th>
-                                <th>User</th>
-                                <th>Total Items</th>
-                                <th>Total Price</th>
-                                <th>Status</th>
-                                <th>Payments</th>
-                                <th>Shipping Address</th>
-                                <th>Shipping Status</th>
-                                <th>Invoice No</th>
-                                <th>Discount</th>
-                            </tr>
-                        </thead>
-                    </table>
+                <x-widget title="Sales Orders">
+                    <div class="mb-4 d-flex justify-content-between align-items-center">
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-primary rounded-pill px-3 py-2">
+                                <i class="bi bi-receipt me-1"></i> All Orders
+                            </span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-light text-dark rounded-pill px-3 py-2">
+                                <i class="bi bi-funnel me-1"></i> Click row to view details
+                            </span>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="salesOrdersTable" class="table table-hover display nowrap w-full">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" id="select-all" class="form-check-input">
+                                    </th>
+                                    <th>Action</th>
+                                    <th>User</th>
+                                    <th>Total Items</th>
+                                    <th>Total Price</th>
+                                    <th>Status</th>
+                                    <th>Payments</th>
+                                    <th>Shipping Address</th>
+                                    <th>Shipping Status</th>
+                                    <th>Invoice No</th>
+                                    <th>Discount</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                 </x-widget>
             </div>
         </div>
     </div>
 
     @include('sales.view_model')
+
+    <style>
+        #salesOrdersTable thead th {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: none;
+            padding: 15px 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            color: #475569;
+        }
+
+        #salesOrdersTable tbody tr {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+        }
+
+        #salesOrdersTable tbody tr:hover {
+            background-color: rgba(102, 126, 234, 0.08) !important;
+            transform: scale(1.002);
+        }
+
+        #salesOrdersTable tbody td {
+            padding: 14px 12px;
+            vertical-align: middle;
+        }
+    </style>
 @endsection
 @section('scripts')
     <script>
