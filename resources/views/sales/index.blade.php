@@ -390,16 +390,26 @@
                                 </div>
                             </div>
                             ${content}
-                            <script>
-                                window.onload = function() {
-                                    window.print();
-                                    setTimeout(function() { window.close(); }, 100);
-                                };
-                            <\/script>
                         </body>
                     </html>
                 `);
                 printWindow.document.close();
+
+                // Wait for styles/images to load before printing
+                printWindow.onload = function() {
+                    printWindow.focus();
+                    printWindow.print();
+                    printWindow.close();
+                };
+
+                // Fallback if onload doesn't fire (sometimes happens with document.write)
+                setTimeout(function() {
+                    if (printWindow && !printWindow.closed) {
+                        printWindow.focus();
+                        printWindow.print();
+                        printWindow.close();
+                    }
+                }, 1000);
             });
         });
     </script>
