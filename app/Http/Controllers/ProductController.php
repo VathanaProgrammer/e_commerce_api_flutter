@@ -145,51 +145,32 @@ class ProductController extends Controller
         return view('products.create', compact('categories', 'attributes'));
     }
 
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        Log::info('Storing new product', ['request' => $request->all()]);
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'description_lines.*' => 'nullable|string|max:500',
-            'variants.*.sku' => 'nullable|string|max:100',
-            'variants.*.price' => ['nullable', 'numeric', 'min:0', 'regex:/^\d+(\.\d{1,2})?$/'],
-            'variants.*.attributes.*' => 'nullable|exists:attribute_values,id',
-            'discount.value' => 'nullable|numeric|min:0',
-            'image' => 'nullable|image|max:2048',
-            'is_recommended' =>  'nullable|boolean',
-            'is_featured' => 'nullable|boolean',
-            'active' => 'nullable|boolean'
-
-        ]);
-
         DB::beginTransaction();
 
         try {
-            // 1. Handle image upload
-            $imageName = null;
+            $imagePath = null;
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $imageName = time() . '_' . $image->getClientOriginalName();
-                $image->move(public_path('uploads/products'), $imageName);
+                $filename = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('uploads/products'), $filename);
+                $imagePath = '/uploads/products/' . $filename;
             }
-            // 1. Create product
+
             $product = Product::create([
                 'name' => $request->name,
                 'category_id' => $request->category_id,
-                'image_url' => $imageName ? '/uploads/products/' . $imageName : null,
-                'is_recommended' => $request->has('is_recommended'),
-                'is_featured' => $request->has('is_featured'),
-                'active' => $request->has('active')
+                'image_url' => $imagePath,
+                'is_recommended' => $request->has('is_recommended') || $request->is_recommended == 1,
+                'is_featured' => $request->has('is_featured') || $request->is_featured == 1,
+                'active' => $request->has('active') || $request->active == 1
             ]);
 
-            // 2. Save description lines
             if ($request->description_lines) {
                 foreach ($request->description_lines as $index => $line) {
                     if ($line) {
-                        ProductDescriptionLine::create([
-                            'product_id' => $product->id,
+                        $product->descriptionLines()->create([
                             'text' => $line,
                             'sort_order' => $index,
                         ]);
@@ -197,36 +178,27 @@ class ProductController extends Controller
                 }
             }
 
-            // 3. Save variants and link attribute values
             if ($request->variants) {
                 foreach ($request->variants as $variantData) {
-                    $variant = ProductVariant::create([
-                        'product_id' => $product->id,
+                    $variant = $product->variants()->create([
                         'sku' => $variantData['sku'] ?? null,
                         'price' => $variantData['price'] ?? 0,
                     ]);
 
                     if (isset($variantData['attributes'])) {
-                        foreach ($variantData['attributes'] as $valueId) {
-                            ProductVariantAttribute::create([
-                                'product_variant_id' => $variant->id,
-                                'attribute_value_id' => $valueId,
-                            ]);
-                        }
+                        $variant->attributeValues()->attach($variantData['attributes']);
                     }
                 }
             }
+
             if ($request->filled('discount.value')) {
-                ProductDiscount::create([
-                    'name' => $request->discount['name']
-                        ?? $product->name . ' Discount',
-                    'product_id' => $product->id,
+                $product->discounts()->create([
+                    'name' => $request->discount['name'] ?? $product->name . ' Discount',
                     'value' => $request->discount['value'],
                     'is_percentage' => (bool) ($request->discount['is_percentage'] ?? true),
                     'active' => (bool) ($request->discount['active'] ?? true),
                 ]);
             }
-
 
             DB::commit();
             return response()->json([
@@ -236,63 +208,41 @@ class ProductController extends Controller
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to store product', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'request' => $request->all(),
-            ]);
-            return response()->json([
-                'success' => false,
-                'msg' => 'Failed to create product. Please try again.'
-            ], 500);
+            Log::error('Failed to store product: ' . $e->getMessage());
+            return response()->json(['success' => false, 'msg' => 'Failed to create product.'], 500);
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(ProductRequest $request, $id)
     {
-        Log::info('Updating product', ['id' => $id, 'request' => $request->all()]);
-        $product = Product::with(['descriptionLines', 'variants.attributeValues'])->findOrFail($id);
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'description_lines.*' => 'nullable|string|max:500',
-            'variants.*.sku' => 'nullable|string|max:100',
-            'variants.*.price' => ['nullable', 'numeric', 'min:0', 'regex:/^\d+(\.\d{1,2})?$/'],
-            'variants.*.attributes.*' => 'nullable|exists:attribute_values,id',
-            'is_recommended' =>  'nullable|boolean',
-            'is_featured' => 'nullable|boolean',
-            'active' => 'nullable|boolean'
-        ]);
+        $product = Product::findOrFail($id);
 
         DB::beginTransaction();
         try {
-            // 1. Handle image update
             if ($request->hasFile('image')) {
-                // Delete old image if exists
-                if ($product->image_url && file_exists(public_path('uploads/products/' . $product->image_url))) {
-                    unlink(public_path('uploads/products/' . $product->image_url));
+                if ($product->image_url && file_exists(public_path($product->image_url))) {
+                    unlink(public_path($product->image_url));
                 }
                 $image = $request->file('image');
-                $imageName = time() . '_' . $image->getClientOriginalName();
-                $image->move(public_path('uploads/products'), $imageName);
-                $product->image_url = $imageName;
+                $filename = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('uploads/products'), $filename);
+                $product->image_url = '/uploads/products/' . $filename;
             }
+
             $product->update([
                 'name' => $request->name,
                 'category_id' => $request->category_id,
-                'is_recommended' => $request->has('is_recommended'),
-                'is_featured' => $request->has('is_featured'),
-                'active' => $request->has('active')
+                'is_recommended' => $request->has('is_recommended') || $request->is_recommended == 1,
+                'is_featured' => $request->has('is_featured') || $request->is_featured == 1,
+                'active' => $request->has('active') || $request->active == 1
             ]);
 
-            // 1. Update description lines
+            // Update description lines
             $product->descriptionLines()->delete();
             if ($request->description_lines) {
                 foreach ($request->description_lines as $index => $line) {
                     if ($line) {
-                        ProductDescriptionLine::create([
-                            'product_id' => $product->id,
+                        $product->descriptionLines()->create([
                             'text' => $line,
                             'sort_order' => $index,
                         ]);
@@ -300,49 +250,37 @@ class ProductController extends Controller
                 }
             }
 
-            // 2. Update variants
-            $product->variants()->delete(); // remove old variants + their attribute links
+            // Update variants - simple approach: delete and re-create for consistency with generateVariants JS logic
+            $product->variants()->each(function($variant) {
+                $variant->attributeValues()->detach();
+                $variant->delete();
+            });
+
             if ($request->variants) {
                 foreach ($request->variants as $variantData) {
-                    $variant = ProductVariant::create([
-                        'product_id' => $product->id,
+                    $variant = $product->variants()->create([
                         'sku' => $variantData['sku'] ?? null,
                         'price' => $variantData['price'] ?? 0,
                     ]);
 
                     if (isset($variantData['attributes'])) {
-                        foreach ($variantData['attributes'] as $valueId) {
-                            ProductVariantAttribute::create([
-                                'product_variant_id' => $variant->id,
-                                'attribute_value_id' => $valueId,
-                            ]);
-                        }
+                        $variant->attributeValues()->attach($variantData['attributes']);
                     }
                 }
             }
 
-            $discountId = $request->input('discount_id');
+            // Update Discount
             $discountData = $request->input('discount');
-
-            if ($discountId) {
-                // Case: user selected an existing discount
+            if ($discountData && !empty($discountData['value'])) {
                 $product->discounts()->update(['active' => false]);
-                $product->discounts()->where('id', $discountId)->update(['active' => true]);
-            } elseif ($discountData && !empty($discountData['value'])) {
-                // Case: user added a new discount (no existing selected)
-                // Deactivate all old discounts
-                $product->discounts()->update(['active' => false]);
-
-                // Create new discount
-                ProductDiscount::create([
-                    'product_id' => $product->id,
+                $product->discounts()->create([
                     'name' => $discountData['name'] ?? $product->name . ' Discount',
                     'value' => $discountData['value'],
                     'is_percentage' => $discountData['is_percentage'] ?? true,
                     'active' => $discountData['active'] ?? true,
                 ]);
             } else {
-                // No discount selected or added → deactivate all
+                // If no discount data or value, deactivate all existing discounts
                 $product->discounts()->update(['active' => false]);
             }
 
@@ -350,12 +288,8 @@ class ProductController extends Controller
             return response()->json(['success' => true, 'msg' => 'Product updated successfully.', 'location' => route('products.index')], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to update product', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'request' => $request->all(),
-            ]);
-            return response()->json(['success' => false, 'msg' => 'Failed to update product. Please try again.'], 500);
+            Log::error('Failed to update product: ' . $e->getMessage());
+            return response()->json(['success' => false, 'msg' => 'Failed to update product.'], 500);
         }
     }
     public function destroy($id)
@@ -363,8 +297,8 @@ class ProductController extends Controller
         try {
             $product = Product::findOrFail($id);
             // Delete image if exists
-            if ($product->image_url && file_exists(public_path('uploads/products/' . basename($product->image_url)))) {
-                unlink(public_path('uploads/products/' . basename($product->image_url)));
+            if ($product->image_url && file_exists(public_path($product->image_url))) {
+                unlink(public_path($product->image_url));
             }
             $product->delete();
             return response()->json(['success' => true, 'message' => 'Product deleted successfully']);
