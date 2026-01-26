@@ -163,9 +163,9 @@ class ProductController extends Controller
                 'name' => $request->name,
                 'category_id' => $request->category_id,
                 'image_url' => $imagePath,
-                'is_recommended' => $request->has('is_recommended') || $request->is_recommended == 1,
-                'is_featured' => $request->has('is_featured') || $request->is_featured == 1,
-                'active' => $request->has('active') || $request->active == 1
+                'is_recommended' => $request->boolean('is_recommended'),
+                'is_featured' => $request->boolean('is_featured'),
+                'active' => $request->boolean('active')
             ]);
 
             if ($request->description_lines) {
@@ -230,13 +230,13 @@ class ProductController extends Controller
                 $product->image_url = '/uploads/products/' . $filename;
             }
 
-            $product->update([
+            $product->fill([
                 'name' => $request->name,
                 'category_id' => $request->category_id,
-                'is_recommended' => $request->has('is_recommended') || $request->is_recommended == 1,
-                'is_featured' => $request->has('is_featured') || $request->is_featured == 1,
-                'active' => $request->has('active') || $request->active == 1
-            ]);
+                'is_recommended' => $request->boolean('is_recommended'),
+                'is_featured' => $request->boolean('is_featured'),
+                'active' => $request->boolean('active')
+            ])->save();
 
             // Update description lines
             $product->descriptionLines()->delete();
