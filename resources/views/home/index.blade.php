@@ -136,7 +136,9 @@
                             <option>Last 30 Days</option>
                         </select>
                     </div>
-                    <canvas id="salesChart" style="min-height: 300px;"></canvas>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="salesChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -246,11 +248,17 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const ctx = document.getElementById('salesChart').getContext('2d');
+        const ctx = document.getElementById('salesChart');
+        if (!ctx) return;
+
+        // Destroy existing chart if it exists to prevent loops/leaks
+        if (window.mySalesChart) {
+            window.mySalesChart.destroy();
+        }
         
         // Mock data for the chart
         const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        const data = {
+        const chartData = {
             labels: labels,
             datasets: [{
                 label: 'Sales ($)',
@@ -268,10 +276,13 @@
 
         const config = {
             type: 'line',
-            data: data,
+            data: chartData,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: {
+                    duration: 1000 // Fixed duration
+                },
                 plugins: {
                     legend: {
                         display: false
@@ -313,14 +324,11 @@
             }
         };
 
-        new Chart(ctx, config);
+        window.mySalesChart = new Chart(ctx.getContext('2d'), config);
     });
 
-    // Function to handle showing order details (calling from sales script if shared or implementing here)
+    // Function to handle showing order details
     function loadTransactionDetails(id) {
-        // Since the details modal is probably in sales/view_model, 
-        // we might need to include it or just redirect to sales list.
-        // For now, let's redirect or use toastr.
         window.location.href = "{{ route('sales.orders') }}?order_id=" + id;
     }
 </script>
