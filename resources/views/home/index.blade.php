@@ -8,7 +8,10 @@
         border-radius: 20px;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         overflow: hidden;
-        animation: cardSlideUp 0.6s ease both;
+        background-color: #ffffff; /* Fallback */
+        position: relative;
+        z-index: 1;
+        animation: cardSlideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
     }
     
     .row > div:nth-child(1) .stat-card { animation-delay: 0.1s; }
@@ -17,14 +20,23 @@
     .row > div:nth-child(4) .stat-card { animation-delay: 0.4s; }
 
     @keyframes cardSlideUp {
-        from {
+        0% {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
         }
-        to {
+        100% {
             opacity: 1;
             transform: translateY(0);
         }
+    }
+
+    .stat-card .card-body {
+        color: #ffffff !important;
+    }
+
+    .stat-card h3, .stat-card h6, .stat-card i {
+        color: #ffffff !important;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .stat-card:hover {

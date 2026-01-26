@@ -45,17 +45,9 @@ class SalesController extends Controller
 
             ->addColumn('total_items', fn($tx) => $tx->total_items)
 
-            ->addColumn(
-                'total_price',
-                fn($tx) =>
-                '$ ' . number_format($tx->total_sell_price, 2)
-            )
+            ->editColumn('total_sell_price', fn($tx) => '$ ' . number_format($tx->total_sell_price, 2))
 
-            ->addColumn(
-                'status',
-                fn($tx) =>
-                TransactionStatus::fromValue($tx->status->value)->badge()
-            )
+            ->editColumn('status', fn($tx) => $tx->status->badge())
 
             ->addColumn('payments', function ($tx) {
                 if ($tx->payments->isEmpty()) {
@@ -66,7 +58,7 @@ class SalesController extends Controller
                 foreach ($tx->payments as $p) {
                     $html .= '<li class="small">'
                         . strtoupper($p->method)
-                        . ' ' . PaymentStatus::fromValue($p->status->value)->badge()
+                        . ' ' . $p->status->badge()
                         . '</li>';
                 }
                 $html .= '</ul>';
@@ -74,29 +66,13 @@ class SalesController extends Controller
                 return $html;
             })
 
-            ->addColumn(
-                'shipping_address',
-                fn($tx) =>
-                $tx->shipping_address ?? '<span class="text-muted">--</span>'
-            )
+            ->editColumn('shipping_address', fn($tx) => $tx->shipping_address ?? '<span class="text-muted">--</span>')
 
-            ->addColumn(
-                'shipping_status',
-                fn($tx) =>
-                ShippingStatus::fromValue($tx->shipping_status->value)->badge()
-            )
+            ->editColumn('shipping_status', fn($tx) => $tx->shipping_status->badge())
 
-            ->addColumn(
-                'invoice_no',
-                fn($tx) =>
-                $tx->invoice_no ?? '<span class="text-muted">--</span>'
-            )
+            ->editColumn('invoice_no', fn($tx) => $tx->invoice_no ?? '<span class="text-muted">--</span>')
 
-            ->addColumn(
-                'discount_amount',
-                fn($tx) =>
-                '$ ' . number_format($tx->discount_amount, 2)
-            )
+            ->editColumn('discount_amount', fn($tx) => '$ ' . number_format($tx->discount_amount, 2))
 
             ->addColumn('action', function ($tx) {
                 $mapLink = '';
@@ -114,25 +90,25 @@ class SalesController extends Controller
                     <div class="dropdown">
                         <button class="btn btn-sm btn-primary dropdown-toggle"
                             type="button"
-                            data-bs-toggle="dropdown">
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
                             Actions
                         </button>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item"
+                                <a class="dropdown-item view-details-btn"
                                    href="#"
-                                   onclick="event.preventDefault();"
-                                   data-transaction-id="' . $tx->id . '">
-                                   View Details
+                                   data-id="' . $tx->id . '">
+                                   <i class="bi bi-eye me-2"></i>View Details
                                 </a>
                             </li>
                             ' . $mapLink . '
+                            <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item text-danger delete-sale"
                                    href="#"
-                                   onclick="event.preventDefault();"
                                    data-url="' . route('sales.destroy', $tx->id) . '">
-                                    Delete
+                                    <i class="bi bi-trash me-2"></i>Delete
                                 </a>
                             </li>
                         </ul>
@@ -147,6 +123,8 @@ class SalesController extends Controller
                 'shipping_address',
                 'shipping_status',
                 'invoice_no',
+                'discount_amount',
+                'total_sell_price',
                 'action',
             ])
 

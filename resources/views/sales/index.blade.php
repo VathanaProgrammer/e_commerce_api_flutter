@@ -106,7 +106,7 @@
                         name: 'total_items'
                     },
                     {
-                        data: 'total_price',
+                        data: 'total_sell_price',
                         name: 'total_sell_price'
                     },
                     {
@@ -212,6 +212,12 @@
                 if (rowData && rowData.id) {
                     loadTransactionDetails(rowData.id);
                 }
+            });
+
+            $(document).on('click', '.view-details-btn', function(e) {
+                e.preventDefault();
+                const id = $(this).data('id');
+                loadTransactionDetails(id);
             });
 
             function loadTransactionDetails(transactionId) {
