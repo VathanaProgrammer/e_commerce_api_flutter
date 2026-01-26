@@ -366,19 +366,32 @@
         // Open settings modal
         $(document).on('click', '.open-business-settings', function(e) {
             e.preventDefault();
-            loadBusinessSettings();
+            const id = $(this).data('id') || '';
+            loadBusinessSettings(id);
             getBusinessSettingsModal().show();
         });
 
         // Load business settings
-        function loadBusinessSettings() {
+        function loadBusinessSettings(id) {
+            let url = "{{ route('business.show', ':id') }}".replace(':id', id);
+            
+            // If no ID (like from a generic link), we might need to handle it 
+            // but the DataTable button always provides an ID.
+            if (!id) {
+                // Fallback for generic calls if any
+                url = "{{ route('business.show', 1) }}"; 
+            }
+
             $.ajax({
-                url: "{{ route('business.settings') }}",
+                url: url,
                 method: 'GET',
                 success: function(res) {
                     if (res.success && res.data) {
                         const data = res.data;
                         
+                        // Set ID for the update URL
+                        $('#businessSettingsForm').attr('data-id', data.id);
+
                         // General
                         $('#businessName').val(data.name || '');
                         $('#businessTimezone').val(data.timezone || 'UTC');
@@ -480,6 +493,7 @@
         $('#saveBusinessSettings').on('click', function() {
             const form = $('#businessSettingsForm')[0];
             const formData = new FormData(form);
+            const id = $('#businessSettingsForm').attr('data-id') || '';
             
             // Handle checkbox
             formData.set('tax_enabled', $('#businessTaxEnabled').is(':checked') ? 1 : 0);
@@ -487,8 +501,13 @@
             const $btn = $(this);
             $btn.prop('disabled', true).html('<i class="bi bi-arrow-repeat me-2" style="animation: spin 1s linear infinite;"></i>Saving...');
 
+            let updateUrl = "{{ route('business.settings.update', ':id') }}".replace(':id', id);
+            if (!id) {
+                updateUrl = "{{ route('business.settings.update') }}"; // Fallback to first if no ID
+            }
+
             $.ajax({
-                url: "{{ route('business.settings.update') }}",
+                url: updateUrl,
                 method: 'POST',
                 data: formData,
                 processData: false,
@@ -497,18 +516,18 @@
                     if (res.success) {
                         toastr.success(res.message || 'Settings saved successfully');
                         
-                        // Update navbar business name
-                        if (res.data && res.data.name) {
-                            $('.navbar a[href="{{ route('home') }}"]').text(res.data.name);
-                        }
-
                         // Close modal
                         getBusinessSettingsModal().hide();
 
-                        // Reload page to refresh session data
-                        setTimeout(function() {
-                            location.reload();
-                        }, 1000);
+                        // Reload table if on business settings page
+                        if ($('#businessTable').length) {
+                            $('#businessTable').DataTable().ajax.reload();
+                        } else {
+                            // Reload page to refresh session data on other pages
+                            setTimeout(function() {
+                                location.reload();
+                            }, 1000);
+                        }
                     } else {
                         toastr.error(res.message || 'Failed to save settings');
                     }

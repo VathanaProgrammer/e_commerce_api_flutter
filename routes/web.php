@@ -81,7 +81,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::prefix('business')->group(function () {
         Route::get('/settings', [BusinessController::class, 'index'])->name('business.settings');
         Route::get('/data', [BusinessController::class, 'data'])->name('business.data');
-        Route::post('/settings', [BusinessController::class, 'update'])->name('business.settings.update');
+        Route::get('/{id}', [BusinessController::class, 'show'])->name('business.show');
+        Route::post('/settings/{id?}', [BusinessController::class, 'update'])->name('business.settings.update');
+        Route::delete('/{id}', [BusinessController::class, 'destroy'])->name('business.destroy');
         Route::delete('/logo', [BusinessController::class, 'removeLogo'])->name('business.logo.remove');
     });
 

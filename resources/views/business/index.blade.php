@@ -120,8 +120,31 @@
             // To match user's controller style, we likely want a clean JS flow.
         });
         
-        // Since settings_modal.blade.php is included, we'll ensure the Edit button triggers it.
-        // I will update the class in index.blade.php to match the one expected by settings_modal.blade.php
+        // Delete Business
+        $(document).on('click', '.delete-business', function(e) {
+            e.preventDefault();
+            const id = $(this).data('id');
+            const url = "{{ route('business.destroy', ':id') }}".replace(':id', id);
+
+            showConfirmModal("Are you sure you want to delete this business? This action cannot be undone.", function() {
+                $.ajax({
+                    url: url,
+                    type: 'DELETE',
+                    data: { _token: '{{ csrf_token() }}' },
+                    success: function(res) {
+                        if (res.success) {
+                            toastr.success(res.message);
+                            table.ajax.reload();
+                        } else {
+                            toastr.error(res.message);
+                        }
+                    },
+                    error: function() {
+                        toastr.error('Something went wrong');
+                    }
+                });
+            });
+        });
     });
 </script>
 @endsection

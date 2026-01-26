@@ -34,6 +34,9 @@ class BusinessController extends Controller
             ->addColumn('action', function ($row) {
                 return '<button class="btn btn-sm btn-primary open-business-settings" data-id="' . $row->id . '">
                             <i class="bi bi-pencil-square me-1"></i> Edit
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-business" data-id="' . $row->id . '">
+                            <i class="bi bi-trash me-1"></i> Delete
                         </button>';
             })
             ->rawColumns(['logo', 'action'])
@@ -41,9 +44,46 @@ class BusinessController extends Controller
     }
 
     /**
+     * Delete business
+     */
+    public function destroy($id)
+    {
+        $business = Business::findOrFail($id);
+        
+        // Delete logo if exists
+        if ($business->logo && file_exists(public_path('uploads/business/' . $business->logo))) {
+            unlink(public_path('uploads/business/' . $business->logo));
+        }
+
+        $business->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Business deleted successfully'
+        ]);
+    }
+
+    /**
+     * Get single business data as JSON
+     */
+    public function show($id)
+    {
+        $business = Business::find($id);
+        
+        if (!$business) {
+            return response()->json(['success' => false, 'message' => 'Business not found'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $business
+        ]);
+    }
+
+    /**
      * Update business settings
      */
-    public function update(Request $request)
+    public function update(Request $request, $id = null)
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -69,10 +109,10 @@ class BusinessController extends Controller
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
-        $business = Business::first();
-
-        if (!$business) {
-            $business = new Business();
+        if ($id) {
+            $business = Business::findOrFail($id);
+        } else {
+            $business = Business::first() ?? new Business();
         }
 
         // Handle logo upload
