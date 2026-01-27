@@ -3,574 +3,481 @@
 @section('styles')
 <style>
     :root {
-        --depth-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
-        --hover-depth-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
-        --card-bg: rgba(255, 255, 255, 0.95);
+        --depth-1: 0 4px 10px rgba(0,0,0,0.1);
+        --depth-2: 0 15px 35px rgba(0,0,0,0.15);
+        --depth-3: 0 30px 60px rgba(0,0,0,0.25);
+        --accent-glow: 0 0 20px rgba(99, 102, 241, 0.4);
     }
 
-    /* Dashboard Container Perspective */
+    /* Immersive 3D Space */
     .dashboard-container {
-        perspective: 1000px;
+        perspective: 2000px;
+        transform-style: preserve-3d;
+        padding-top: 2rem;
     }
 
-    /* 3D Clean Stat Cards */
-    .stat-card-3d {
-        border: 1px solid rgba(255, 255, 255, 0.4) !important;
-        border-radius: 24px;
-        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        background: var(--card-bg);
-        backdrop-filter: blur(10px);
-        box-shadow: var(--depth-shadow) !important;
-        overflow: hidden;
-        position: relative;
+    /* Super 3D Card Base */
+    .super-3d-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 30px;
+        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         transform-style: preserve-3d;
+        box-shadow: var(--depth-2);
+        position: relative;
+        overflow: visible; /* Allow Z-depth elements to pop out */
         height: 100%;
+        cursor: pointer;
     }
     
-    .stat-card-3d:hover {
-        transform: translateY(-8px) rotateX(2deg) rotateY(-1deg);
-        box-shadow: var(--hover-depth-shadow) !important;
-        border-color: rgba(255, 255, 255, 0.6) !important;
+    .super-3d-card:hover {
+        transform: translateY(-15px) rotateX(4deg) rotateY(-4deg);
+        box-shadow: var(--depth-3);
+        border-color: rgba(255, 255, 255, 0.8);
     }
 
-    .stat-card-3d::before {
+    /* Floating Internal Elements */
+    .layer-base { transform: translateZ(20px); }
+    .layer-mid { transform: translateZ(50px); }
+    .layer-top { transform: translateZ(80px); }
+
+    /* Shadow under card when hovering */
+    .super-3d-card::after {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-        z-index: 10;
+        bottom: -20px;
+        left: 5%;
+        width: 90%;
+        height: 20px;
+        background: rgba(0,0,0,0.15);
+        filter: blur(20px);
+        border-radius: 50%;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+        transform: translateZ(-50px);
     }
 
-    .stat-icon-3d {
-        width: 60px;
-        height: 60px;
-        border-radius: 18px;
+    .super-3d-card:hover::after {
+        opacity: 1;
+    }
+
+    /* Icon Box with Extreme Depth */
+    .icon-box-3d {
+        width: 70px;
+        height: 70px;
+        border-radius: 22px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
-        margin-bottom: 20px;
-        transition: all 0.4s ease;
-        transform: translateZ(20px);
-    }
-
-    /* Gradient Backgrounds for Icons with subtle 3D */
-    .icon-box-primary { background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); color: white; }
-    .icon-box-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
-    .icon-box-warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; }
-    .icon-box-info { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; }
-
-    /* Counter Styling */
-    .counter-value {
-        font-size: 2rem;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        color: #1e293b;
-        margin-bottom: 4px;
-        display: block;
-        transform: translateZ(30px);
-    }
-
-    .stat-label {
-        color: #64748b;
-        font-weight: 600;
-        font-size: 0.875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        transform: translateZ(10px);
-    }
-
-    /* Glass Panels for Charts/Tables */
-    .glass-panel {
-        background: var(--card-bg);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        border-radius: 28px;
-        box-shadow: var(--depth-shadow);
-        transition: transform 0.4s ease, box-shadow 0.4s ease;
-    }
-
-    .glass-panel:hover {
-        box-shadow: var(--hover-depth-shadow);
-    }
-
-    /* Recent Orders Enhancement */
-    .table-clean {
-        border-collapse: separate;
-        border-spacing: 0 8px;
-    }
-
-    .table-clean tbody tr {
-        background: white;
-        transition: all 0.3s ease;
-        border-radius: 12px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-
-    .table-clean tbody tr td {
-        border: none;
-        padding: 1.25rem 1rem;
-    }
-
-    .table-clean tbody tr td:first-child { border-radius: 12px 0 0 12px; }
-    .table-clean tbody tr td:last-child { border-radius: 0 12px 12px 0; }
-
-    .table-clean tbody tr:hover {
-        transform: scale(1.01) translateY(-2px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-        z-index: 10;
+        font-size: 28px;
+        margin-bottom: 25px;
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        color: white;
+        box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.5);
         position: relative;
     }
 
-    /* Animation Keyframes */
-    @keyframes fadeInUp3D {
-        from {
-            opacity: 0;
-            transform: translateY(30px) translateZ(-50px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0) translateZ(0);
-        }
+    .icon-box-3d::before {
+        content: '';
+        position: absolute;
+        inset: -5px;
+        background: inherit;
+        filter: blur(15px);
+        opacity: 0.3;
+        border-radius: inherit;
+        transform: translateZ(-10px);
     }
 
-    .animate-3d {
-        animation: fadeInUp3D 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-        opacity: 0;
+    /* Typography Over 3D */
+    .counter-hero {
+        font-size: 2.75rem;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        background: linear-gradient(180deg, #1e293b 0%, #475569 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0;
+        filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
     }
 
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.2s; }
-    .delay-3 { animation-delay: 0.3s; }
-    .delay-4 { animation-delay: 0.4s; }
+    .stat-label-3d {
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: #64748b;
+        margin-bottom: 8px;
+        display: block;
+    }
 
-    /* Quick Action Buttons */
-    .btn-3d-action {
-        border-radius: 16px;
-        padding: 12px 20px;
+    /* Decorative Floating Pills */
+    .floating-pill {
+        position: absolute;
+        padding: 5px 12px;
+        border-radius: 100px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        background: rgba(255,255,255,0.9);
+        box-shadow: var(--depth-1);
+        right: -10px;
+        top: 20px;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    /* Table Rows as Floating Bars */
+    .floating-table tr {
+        background: white;
+        margin-bottom: 15px;
+        display: table-row;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        border-radius: 20px;
+    }
+
+    .floating-table tbody {
+        border-spacing: 0 12px;
+        border-collapse: separate;
+    }
+
+    .floating-table tr td {
         border: none;
-        background: #f8fafc;
-        color: #1e293b;
-        font-weight: 600;
-        transition: all 0.3s ease;
+        padding: 1.5rem 1rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+    }
+
+    .floating-table tr td:first-child { border-radius: 20px 0 0 20px; padding-left: 2rem; }
+    .floating-table tr td:last-child { border-radius: 0 20px 20px 0; padding-right: 2rem; }
+
+    .floating-table tr:hover {
+        transform: scale(1.02) translateZ(30px);
+        box-shadow: var(--depth-2);
+        position: relative;
+        z-index: 100;
+    }
+
+    /* Operations Buttons */
+    .op-btn-3d {
+        background: #ffffff;
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: 20px;
+        padding: 18px;
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 12px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
-
-    .btn-3d-action:hover {
-        background: white;
-        transform: translateX(5px) scale(1.02);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        color: #6366f1;
-    }
-
-    .btn-3d-action i {
-        font-size: 1.25rem;
-        padding: 8px;
-        border-radius: 12px;
-        background: rgba(99, 102, 241, 0.1);
-    }
-
-    /* Status Pill */
-    .status-badge-3d {
-        padding: 6px 12px;
-        border-radius: 100px;
-        font-size: 0.75rem;
+        gap: 15px;
+        margin-bottom: 15px;
+        transition: all 0.4s ease;
+        text-decoration: none;
+        color: #1e293b;
         font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.025em;
-        background: rgba(16, 185, 129, 0.1);
-        color: #059669;
-        border: 1px solid rgba(16, 185, 129, 0.2);
     }
+
+    .op-btn-3d:hover {
+        background: #6366f1;
+        color: white;
+        transform: translateZ(40px) translateX(10px);
+        box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.5);
+    }
+
+    .op-btn-3d i {
+        font-size: 1.4rem;
+        width: 45px;
+        height: 45px;
+        background: rgba(0,0,0,0.03);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+    }
+
+    .op-btn-3d:hover i {
+        background: rgba(255,255,255,0.2);
+    }
+
+    /* Background Orbs */
+    .bg-orb {
+        position: fixed;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        filter: blur(80px);
+        z-index: -1;
+        opacity: 0.4;
+        animation: floatOrb 20s infinite alternate;
+    }
+
+    @keyframes floatOrb {
+        from { transform: translate(-10%, -10%) rotate(0deg); }
+        to { transform: translate(10%, 10%) rotate(360deg); }
+    }
+
+    /* Performance Chart Glass */
+    .chart-container-3d {
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 40px;
+        padding: 2.5rem;
+        box-shadow: var(--depth-2);
+        transform-style: preserve-3d;
+    }
+
 </style>
 @endsection
 
 @section('content')
-<div class="container py-5 dashboard-container">
-    <!-- Header Section -->
-    <div class="row align-items-center mb-5 animate-3d">
+<div class="bg-orb" style="background: #e0e7ff; top: -100px; right: -100px;"></div>
+<div class="bg-orb" style="background: #fae8ff; bottom: -100px; left: -100px; animation-delay: -5s;"></div>
+
+<div class="container py-4 dashboard-container">
+    <!-- Super Header -->
+    <div class="row mb-5 align-items-center" style="transform: translateZ(100px);">
         <div class="col-lg-8">
-            <h1 class="fw-800 display-6 mb-2" style="color: #1e293b;">Hello, <span class="text-primary">{{ auth()->user()->first_name }}</span> 👋</h1>
-            <p class="text-muted lead mb-0">Unified commerce analytics & operations dashboard.</p>
+            <h1 class="display-5 fw-900 mb-0" style="color: #0f172a; letter-spacing: -0.05em;">
+                Command <span class="text-primary" style="text-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);">Center</span>
+            </h1>
+            <p class="text-muted fw-600 fs-5 mt-2">Welcome back, {{ auth()->user()->first_name }}. The system is running at peak performance.</p>
         </div>
-        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-            <div class="d-inline-flex p-2 bg-white rounded-pill shadow-sm border">
-                <div class="px-3 py-1 border-end">
-                    <span class="small text-muted d-block">Server Status</span>
-                    <span class="badge bg-success-subtle text-success p-0" style="font-size: 0.7rem;"><i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i> Optimal</span>
+        <div class="col-lg-4 text-lg-end">
+            <div class="bg-white p-2 rounded-pill shadow-sm d-inline-block border">
+                <span class="badge bg-primary rounded-pill px-3 py-2 me-2">LIVE</span>
+                <span class="fw-800 pe-3">{{ now()->format('D, M d') }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main 3D Grid -->
+    <div class="row g-5 mb-5">
+        <!-- Revenue Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card super-3d-card p-4">
+                <div class="layer-top floating-pill text-success">
+                    <i class="bi bi-arrow-up-right me-1"></i> 12.5%
                 </div>
-                <div class="px-3 py-1">
-                    <span class="small text-muted d-block">Local Time</span>
-                    <span class="fw-bold small">{{ now()->format('h:i A') }}</span>
+                <div class="layer-mid icon-box-3d" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+                <div class="layer-base">
+                    <span class="stat-label-3d">Net Revenue</span>
+                    <h2 class="counter-hero">${{ number_format($data['total_sales'] ?? 0, 2) }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card super-3d-card p-4">
+                <div class="layer-mid icon-box-3d">
+                    <i class="bi bi-cart4"></i>
+                </div>
+                <div class="layer-base">
+                    <span class="stat-label-3d">Transactions</span>
+                    <h2 class="counter-hero">{{ number_format($data['total_orders'] ?? 0) }}</h2>
+                </div>
+                <div class="layer-top floating-pill text-primary" style="top: auto; bottom: 20px;">
+                    Peak Volume
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card super-3d-card p-4">
+                <div class="layer-mid icon-box-3d" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                </div>
+                <div class="layer-base">
+                    <span class="stat-label-3d">Active Assets</span>
+                    <h2 class="counter-hero">{{ number_format($data['total_products'] ?? 0) }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card super-3d-card p-4">
+                <div class="layer-mid icon-box-3d" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                    <i class="bi bi-person-bounding-box"></i>
+                </div>
+                <div class="layer-base">
+                    <span class="stat-label-3d">User Reach</span>
+                    <h2 class="counter-hero">{{ number_format($data['total_users'] ?? 0) }}</h2>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Stats Row -->
-    <div class="row g-4 mb-5">
-        <!-- Revenue -->
-        <div class="col-md-3">
-            <div class="card stat-card-3d animate-3d delay-1">
-                <div class="card-body p-4">
-                    <div class="stat-icon-3d icon-box-primary shadow-lg">
-                        <i class="bi bi-currency-dollar"></i>
+    <!-- Analytics & Ops -->
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <div class="chart-container-3d">
+                <div class="d-flex justify-content-between align-items-center mb-5" style="transform: translateZ(30px);">
+                    <div>
+                        <h4 class="fw-900 mb-0">Market Analytics</h4>
+                        <p class="text-muted small">Real-time revenue dynamics</p>
                     </div>
-                    <span class="stat-label">Total Revenue</span>
-                    <h2 class="counter-value">${{ number_format($data['total_sales'] ?? 0, 2) }}</h2>
-                    <div class="d-flex align-items-center mt-3">
-                        <span class="text-success fw-bold small"><i class="bi bi-graph-up-arrow me-1"></i>+12.5%</span>
-                        <span class="text-muted small ms-2">vs last month</span>
+                    <div class="btn-group shadow-sm rounded-pill overflow-hidden border">
+                        <button class="btn btn-white btn-sm px-4 active">WEEKLY</button>
+                        <button class="btn btn-white btn-sm px-4">MONTHLY</button>
                     </div>
+                </div>
+                <div style="height: 400px; transform: translateZ(50px);">
+                    <canvas id="superChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Orders -->
-        <div class="col-md-3">
-            <div class="card stat-card-3d animate-3d delay-2">
-                <div class="card-body p-4">
-                    <div class="stat-icon-3d icon-box-success shadow-lg">
-                        <i class="bi bi-cart-check"></i>
-                    </div>
-                    <span class="stat-label">Total Orders</span>
-                    <h2 class="counter-value">{{ number_format($data['total_orders'] ?? 0) }}</h2>
-                    <div class="d-flex align-items-center mt-3">
-                        <span class="text-success fw-bold small"><i class="bi bi-graph-up-arrow me-1"></i>+8.2%</span>
-                        <span class="text-muted small ms-2">processed</span>
-                    </div>
+        <div class="col-lg-4">
+            <h5 class="fw-800 mb-4 ps-2" style="transform: translateZ(20px);">Quick Executions</h5>
+            <div style="perspective: 1000px;">
+                <a href="{{ route('products.create') }}" class="op-btn-3d">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Deploy New Product</span>
+                </a>
+                <a href="{{ route('sales.orders') }}" class="op-btn-3d">
+                    <i class="bi bi-kanban"></i>
+                    <span>Order Pipeline</span>
+                </a>
+                <a href="{{ route('users.index') }}" class="op-btn-3d">
+                    <i class="bi bi-fingerprint"></i>
+                    <span>Security & Access</span>
+                </a>
+            </div>
+
+            <div class="card super-3d-card mt-4 bg-dark text-white p-4" style="border: none;">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="spinner-grow text-success spinner-grow-sm me-3"></div>
+                    <h6 class="mb-0 fw-800">SYSTEM STATUS</h6>
                 </div>
+                <div class="progress bg-white bg-opacity-10 mb-2" style="height: 6px;">
+                    <div class="progress-bar bg-success" style="width: 85%"></div>
+                </div>
+                <span class="small text-muted">Node Cluster: Stable (99.9% Uptime)</span>
             </div>
         </div>
 
-        <!-- Products -->
-        <div class="col-md-3">
-            <div class="card stat-card-3d animate-3d delay-3">
-                <div class="card-body p-4">
-                    <div class="stat-icon-3d icon-box-warning shadow-lg">
-                        <i class="bi bi-box-seam"></i>
-                    </div>
-                    <span class="stat-label">Active Products</span>
-                    <h2 class="counter-value">{{ number_format($data['total_products'] ?? 0) }}</h2>
-                    <div class="d-flex align-items-center mt-3">
-                        <span class="text-warning fw-bold small"><i class="bi bi-check-circle me-1"></i>Optimized</span>
-                        <span class="text-muted small ms-2">in catalog</span>
-                    </div>
+        <!-- Floating Table -->
+        <div class="col-12 mt-4">
+            <div class="chart-container-3d">
+                <div class="d-flex justify-content-between align-items-center mb-4" style="transform: translateZ(30px);">
+                    <h4 class="fw-900 mb-0">Incoming Activity</h4>
+                    <a href="{{ route('sales.orders') }}" class="btn btn-primary rounded-pill px-4 fw-800 shadow-lg">EXPLORE ALL</a>
                 </div>
-            </div>
-        </div>
-
-        <!-- Customers -->
-        <div class="col-md-3">
-            <div class="card stat-card-3d animate-3d delay-4">
-                <div class="card-body p-4">
-                    <div class="stat-icon-3d icon-box-info shadow-lg">
-                        <i class="bi bi-people"></i>
-                    </div>
-                    <span class="stat-label">Total Customers</span>
-                    <h2 class="counter-value">{{ number_format($data['total_users'] ?? 0) }}</h2>
-                    <div class="d-flex align-items-center mt-3">
-                        <span class="text-info fw-bold small"><i class="bi bi-person-check me-1"></i>Verified</span>
-                        <span class="text-muted small ms-2">active users</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-4">
-        <!-- Sales Chart -->
-        <div class="col-lg-8 animate-3d delay-1">
-            <div class="card glass-panel border-0 h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div>
-                            <h5 class="fw-800 mb-1">Performance Overview</h5>
-                            <p class="text-muted small mb-0">Daily sales trajectory</p>
-                        </div>
-                        <div class="btn-group shadow-sm rounded-pill overflow-hidden">
-                            <button class="btn btn-white btn-sm px-3 active">7D</button>
-                            <button class="btn btn-white btn-sm px-3">30D</button>
-                        </div>
-                    </div>
-                    <div style="height: 350px;">
-                        <canvas id="salesChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Side Widgets -->
-        <div class="col-lg-4 animate-3d delay-2">
-            <!-- Quick Management -->
-            <div class="card glass-panel border-0 mb-4 p-2">
-                <div class="card-body">
-                    <h6 class="fw-800 mb-4 text-uppercase letter-spacing-1 text-primary">Operations</h6>
-                    
-                    <a href="{{ route('products.create') }}" class="btn-3d-action text-decoration-none">
-                        <i class="bi bi-plus-square"></i>
-                        <span>New Product</span>
-                        <i class="bi bi-chevron-right ms-auto small opacity-50"></i>
-                    </a>
-                    
-                    <a href="{{ route('sales.orders') }}" class="btn-3d-action text-decoration-none">
-                        <i class="bi bi-receipt"></i>
-                        <span>Manage Orders</span>
-                        <i class="bi bi-chevron-right ms-auto small opacity-50"></i>
-                    </a>
-                    
-                    <a href="{{ route('users.index') }}" class="btn-3d-action text-decoration-none">
-                        <i class="bi bi-shield-lock"></i>
-                        <span>Access Control</span>
-                        <i class="bi bi-chevron-right ms-auto small opacity-50"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Health Monitor -->
-            <div class="card glass-panel border-0 p-2">
-                <div class="card-body">
-                    <h6 class="fw-800 mb-4 text-uppercase letter-spacing-1 text-success">System Health</h6>
-                    
-                    <div class="d-flex align-items-center mb-4">
-                        <div class="p-2 rounded-3 bg-success-subtle me-3">
-                            <i class="bi bi-cpu text-success fs-5"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="small fw-600">API Load</span>
-                                <span class="small text-muted">24%</span>
-                            </div>
-                            <div class="progress" style="height: 6px; border-radius: 10px;">
-                                <div class="progress-bar bg-success" style="width: 24%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        <div class="p-2 rounded-3 bg-primary-subtle me-3">
-                            <i class="bi bi-hdd-network text-primary fs-5"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="small fw-600">Storage</span>
-                                <span class="small text-muted">1.2 GB / 5 GB</span>
-                            </div>
-                            <div class="progress" style="height: 6px; border-radius: 10px;">
-                                <div class="progress-bar bg-primary" style="width: 35%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Orders Table -->
-        <div class="col-12 mt-4 animate-3d delay-3">
-            <div class="card glass-panel border-0">
-                <div class="card-header bg-transparent py-4 border-0">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="fw-800 mb-1">Latest Transactions</h5>
-                            <p class="text-muted small mb-0">Real-time order synchronization</p>
-                        </div>
-                        <a href="{{ route('sales.orders') }}" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm">
-                            Explorer All <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive px-4 pb-4">
-                        <table class="table table-clean align-middle mb-0">
-                            <thead>
-                                <tr class="text-muted small text-uppercase fw-700">
-                                    <th class="border-0">Order</th>
-                                    <th class="border-0">Customer</th>
-                                    <th class="border-0">Payload</th>
-                                    <th class="border-0">Revenue</th>
-                                    <th class="border-0">Status</th>
-                                    <th class="border-0 text-end">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($data['recent_orders'] as $order)
-                                <tr>
-                                    <td>
-                                        <span class="fw-800 text-dark">#{{ $order->invoice_no ?? $order->id }}</span>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center me-3 fw-800" style="width: 40px; height: 40px; font-size: 14px;">
-                                                {{ strtoupper(substr($order->user->first_name ?? 'G', 0, 1)) }}
-                                            </div>
-                                            <div>
-                                                <div class="fw-700 text-dark">{{ $order->user->first_name ?? 'Guest' }}</div>
-                                                <div class="text-muted small">{{ $order->created_at->format('M d, H:i') }}</div>
-                                            </div>
+                <div class="table-responsive">
+                    <table class="table floating-table align-middle">
+                        <thead>
+                            <tr class="text-muted small">
+                                <th class="border-0 opacity-50">IDENTIFIER</th>
+                                <th class="border-0 opacity-50">SOURCE</th>
+                                <th class="border-0 opacity-50 text-center">PAYLOAD</th>
+                                <th class="border-0 opacity-50">VALUE</th>
+                                <th class="border-0 opacity-50 text-end">STATE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($data['recent_orders'] as $order)
+                            <tr>
+                                <td><span class="fw-900">#{{ $order->invoice_no ?? $order->id }}</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sq me-3 bg-indigo-subtle">
+                                            {{ strtoupper(substr($order->user->first_name ?? 'G', 0, 1)) }}
                                         </div>
-                                    </td>
-                                    <td>
-                                        <div class="badge bg-light text-dark border py-2 px-3 rounded-3 fw-600">
-                                            <i class="bi bi-box me-1"></i> {{ $order->total_items }} SKU
+                                        <div>
+                                            <div class="fw-800 text-dark">{{ $order->user->first_name ?? 'Guest' }}</div>
+                                            <div class="small text-muted">{{ $order->created_at->diffForHumans() }}</div>
                                         </div>
-                                    </td>
-                                    <td>
-                                        <span class="fw-800 text-primary">${{ number_format($order->total_sell_price, 2) }}</span>
-                                    </td>
-                                    <td>
-                                        {!! $order->status->badge() !!}
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3 view-order-details" data-id="{{ $order->id }}">
-                                            View Logs
-                                        </button>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="6" class="text-center py-5 text-muted">
-                                        <i class="bi bi-inbox fs-1 d-block mb-3 opacity-25"></i>
-                                        No transactions recorded today.
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border px-3 py-2 rounded-pill fw-600">
+                                        {{ $order->total_items }} SKU
+                                    </span>
+                                </td>
+                                <td><span class="fw-900 text-primary">${{ number_format($order->total_sell_price, 2) }}</span></td>
+                                <td class="text-end">{!! $order->status->badge() !!}</td>
+                            </tr>
+                            @empty
+                            <tr><td colspan="5" class="text-center py-5">System idle - No records found.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .avatar-sq {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: #6366f1;
+    }
+</style>
 @endsection
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    $(document).ready(function() {
-        
-        // --- 📊 SALES ANALYTICS CHART ---
-        const initSalesChart = () => {
-            const $canvas = $('#salesChart');
-            if (!$canvas.length) return;
+$(document).ready(function() {
+    const ctx = document.getElementById('superChart').getContext('2d');
+    
+    // Glossy Gradient
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
+    gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
 
-            const ctx = $canvas[0].getContext('2d');
-            
-            // Create Gradient
-            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(99, 102, 241, 0.2)');
-            gradient.addColorStop(1, 'rgba(99, 102, 241, 0)');
-
-            const salesData = {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                datasets: [{
-                    label: 'Revenue',
-                    data: [1200, 1900, 1500, 2500, 2200, 3000, 2800],
-                    fill: true,
-                    backgroundColor: gradient,
-                    borderColor: '#6366f1',
-                    borderWidth: 3,
-                    tension: 0.45,
-                    pointRadius: 6,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#6366f1',
-                    pointBorderWidth: 3,
-                    pointHoverRadius: 8,
-                    pointHoverBackgroundColor: '#6366f1',
-                    pointHoverBorderColor: '#fff',
-                }]
-            };
-
-            const chartConfig = {
-                type: 'line',
-                data: salesData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        intersect: false,
-                        mode: 'index',
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            padding: 12,
-                            backgroundColor: '#1e293b',
-                            titleFont: { size: 14, weight: 'bold' },
-                            bodyFont: { size: 13 },
-                            cornerRadius: 12,
-                            displayColors: false,
-                            callbacks: {
-                                label: (context) => ` Revenue: $${context.parsed.y.toLocaleString()}`
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { 
-                                color: 'rgba(0,0,0,0.03)',
-                                drawBorder: false 
-                            },
-                            ticks: { 
-                                callback: val => '$' + val,
-                                font: { size: 11, weight: '600' },
-                                color: '#94a3b8',
-                                padding: 10
-                            }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { 
-                                font: { size: 11, weight: '600' },
-                                color: '#94a3b8',
-                                padding: 10
-                            }
-                        }
-                    }
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '23:59'],
+            datasets: [{
+                data: [400, 600, 550, 900, 800, 1200, 1100],
+                borderColor: '#6366f1',
+                borderWidth: 5,
+                backgroundColor: gradient,
+                fill: true,
+                tension: 0.5,
+                pointRadius: 0,
+                pointHoverRadius: 8,
+                pointHoverBorderWidth: 4,
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: '#6366f1',
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { display: false },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8', font: { weight: '800', size: 10 } }
                 }
-            };
-
-            new Chart(ctx, chartConfig);
-        };
-
-        // --- 🖱️ EVENT HANDLERS ---
-        const bindEvents = () => {
-            $(document).on('click', '.view-order-details', function() {
-                const orderId = $(this).data('id');
-                window.location.href = "{{ route('sales.orders') }}?order_id=" + orderId;
-            });
-        };
-
-        // Initialize Everything
-        initSalesChart();
-        bindEvents();
-
-        // 3D Card Hover Effect Enhancement
-        $('.stat-card-3d').on('mousemove', function(e) {
-            const card = $(this);
-            const rect = card[0].getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            
-            const rotateX = (y - centerY) / 10;
-            const rotateY = (centerX - x) / 10;
-            
-            card.css('transform', `perspective(1000px) translateY(-8px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`);
-        }).on('mouseleave', function() {
-            $(this).css('transform', '');
-        });
-
+            }
+        }
     });
+
+    // Super 3D Hover Interaction
+    $('.super-3d-card, .chart-container-3d').on('mousemove', function(e) {
+        const card = $(this);
+        const rect = card[0].getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const rotateX = (y - rect.height/2) / 10;
+        const rotateY = (rect.width/2 - x) / 10;
+        
+        card.css('transform', `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-10px)`);
+    }).on('mouseleave', function() {
+        $(this).css('transform', '');
+    });
+});
 </script>
 @endsection
 
