@@ -105,8 +105,8 @@
     }
 
     .product-circle-img {
-        width: 24px !important;
-        height: 24px !important;
+        width: 18px !important;
+        height: 18px !important;
         border-radius: 50%;
         object-fit: cover;
         border: 1px solid #1a1414ff;
@@ -293,7 +293,7 @@
             @component('components.widget', ['title' => 'Top Performance Products'])
                 <div class="list-group list-group-flush border-0">
                     @forelse($data['top_products'] ?? [] as $product)
-                    <div class="list-group-item bg-transparent border-0 px-0 py-1 d-flex align-items-center">
+                    <div class="list-group-item bg-transparent border-0 px-0 mb-2 mt-1 d-flex align-items-center">
                         <img src="{{ $product->variant->product->image_url ?? 'https://placehold.co/100x100?text=Product' }}" 
                              class="product-circle-img me-2">
                         <div class="flex-grow-1">
