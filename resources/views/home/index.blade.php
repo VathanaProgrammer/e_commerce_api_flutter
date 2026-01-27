@@ -9,30 +9,25 @@
         background-color: #f4f7fe;
     }
 
-    /* Dashboard Overhaul - High-End Aesthetic */
-    .dashboard-container {
-        padding-top: 2rem;
-        background-color: #f8fafc;
-        min-height: 100vh;
+    /* Widget Component Integration */
+    .widget-animate {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-bottom: 1.5rem !important;
     }
 
-    /* Vibrant Stat Cards */
+    .widget-animate:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Vibrant Stat Card (Used inside widget slot) */
     .stat-card-vibrant {
-        border-radius: 24px;
-        padding: 1.75rem;
+        border-radius: 12px;
+        padding: 1.25rem;
         color: white;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: none;
+        height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        height: 100%;
-        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
-    }
-
-    .stat-card-vibrant:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
     }
 
     .gradient-revenue { background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); }
@@ -41,78 +36,48 @@
     .gradient-users { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
 
     .stat-icon-white {
-        width: 44px;
-        height: 44px;
+        width: 36px;
+        height: 36px;
         background: rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
+        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 20px;
-        margin-bottom: 1.5rem;
+        font-size: 16px;
+        margin-bottom: 1rem;
     }
 
     .stat-v-label {
         font-weight: 500;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         opacity: 0.9;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.25rem;
     }
 
     .stat-v-value {
         font-weight: 800;
-        font-size: 1.85rem;
+        font-size: 1.5rem;
         margin-bottom: 0;
-        letter-spacing: -0.025em;
+        letter-spacing: -0.01em;
     }
 
-    /* Content Cards */
-    .content-card-modern {
-        background: white;
-        border-radius: 24px;
-        border: 1px solid #f1f5f9;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-        padding: 1.5rem;
-        height: 100%;
-        transition: box-shadow 0.3s ease;
-    }
-
-    .content-card-modern:hover {
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-title-modern {
-        font-weight: 700;
-        color: #1e293b;
-        font-size: 1.1rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    /* Table Refinement */
+    /* Content Area Refinements */
     .table-custom-clean th {
-        background: transparent;
+        background: #f8fafc;
         border-top: none;
-        border-bottom: 1px solid #f1f5f9;
+        border-bottom: 1px solid #edf2f7;
         color: #64748b;
         font-weight: 600;
         font-size: 0.75rem;
         text-transform: uppercase;
-        padding: 1rem;
+        padding: 0.75rem 1rem;
     }
 
     .table-custom-clean td {
-        padding: 1.25rem 1rem;
-        border-bottom: 1px solid #f8fafc;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #f1f5f9;
         vertical-align: middle;
         color: #334155;
-        font-size: 0.9rem;
-    }
-
-    .table-custom-clean tr:hover {
-        background-color: #f8fafc;
     }
 
     /* Buttons */
@@ -275,85 +240,88 @@
     </div>
 
     <!-- Stats Grid -->
-    <div class="row g-4 mb-5">
+    <div class="row g-4 mb-2">
         <div class="col-xl-3 col-md-6 fade-in-up delay-1">
-            <div class="stat-card-vibrant gradient-revenue">
-                <div>
-                    <div class="stat-icon-white">
-                        <i class="bi bi-currency-dollar"></i>
+            @include('components.widget', ['title' => 'Revenue'])
+                <div class="stat-card-vibrant gradient-revenue">
+                    <div>
+                        <div class="stat-icon-white">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="stat-v-label">Total GTV</div>
+                        <h3 class="stat-v-value">${{ number_format($data['total_sales'] ?? 0, 2) }}</h3>
                     </div>
-                    <div class="stat-v-label">Total Revenue</div>
-                    <h3 class="stat-v-value">${{ number_format($data['total_sales'] ?? 0, 2) }}</h3>
+                    <div class="mt-3 pt-2 border-top border-white border-opacity-10 d-flex align-items-center justify-content-between">
+                        <span class="small opacity-75">Growth WoW</span>
+                        <span class="fw-700 bg-white bg-opacity-20 px-2 py-1 rounded-pill small">
+                            {{ ($data['growth'] ?? 0) >= 0 ? '+' : '' }}{{ $data['growth'] ?? 0 }}%
+                        </span>
+                    </div>
                 </div>
-                <div class="mt-4 pt-2 border-top border-white border-opacity-10 d-flex align-items-center justify-content-between">
-                    <span class="small opacity-75">Growth WoW</span>
-                    <span class="fw-700 bg-white bg-opacity-20 px-2 py-1 rounded-pill small">
-                        {{ ($data['growth'] ?? 0) >= 0 ? '+' : '' }}{{ $data['growth'] ?? 0 }}%
-                    </span>
-                </div>
-            </div>
+            @endinclude
         </div>
         <div class="col-xl-3 col-md-6 fade-in-up delay-2">
-            <div class="stat-card-vibrant gradient-orders">
-                <div>
-                    <div class="stat-icon-white">
-                        <i class="bi bi-cart-check"></i>
+            @include('components.widget', ['title' => 'Orders'])
+                <div class="stat-card-vibrant gradient-orders">
+                    <div>
+                        <div class="stat-icon-white">
+                            <i class="bi bi-cart-check"></i>
+                        </div>
+                        <div class="stat-v-label">Success Rate</div>
+                        <h3 class="stat-v-value">{{ number_format($data['total_orders'] ?? 0) }}</h3>
                     </div>
-                    <div class="stat-v-label">Success Orders</div>
-                    <h3 class="stat-v-value">{{ number_format($data['total_orders'] ?? 0) }}</h3>
+                    <div class="mt-3 pt-2 border-top border-white border-opacity-10">
+                        <span class="small opacity-75">Confirmed lifecycle</span>
+                    </div>
                 </div>
-                <div class="mt-4 pt-2 border-top border-white border-opacity-10">
-                    <span class="small opacity-75">Lifetime Transactions</span>
-                </div>
-            </div>
+            @endinclude
         </div>
         <div class="col-xl-3 col-md-6 fade-in-up delay-3">
-            <div class="stat-card-vibrant gradient-products">
-                <div>
-                    <div class="stat-icon-white">
-                        <i class="bi bi-box-seam"></i>
+            @include('components.widget', ['title' => 'Products'])
+                <div class="stat-card-vibrant gradient-products">
+                    <div>
+                        <div class="stat-icon-white">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                        <div class="stat-v-label">Active Listing</div>
+                        <h3 class="stat-v-value">{{ number_format($data['total_products'] ?? 0) }}</h3>
                     </div>
-                    <div class="stat-v-label">Total Catalog</div>
-                    <h3 class="stat-v-value">{{ number_format($data['total_products'] ?? 0) }}</h3>
+                    <div class="mt-3 pt-2 border-top border-white border-opacity-10">
+                        <span class="small opacity-75">Managed inventory</span>
+                    </div>
                 </div>
-                <div class="mt-4 pt-2 border-top border-white border-opacity-10">
-                    <span class="small opacity-75">Active Products</span>
-                </div>
-            </div>
+            @endinclude
         </div>
         <div class="col-xl-3 col-md-6 fade-in-up delay-4">
-            <div class="stat-card-vibrant gradient-users">
-                <div>
-                    <div class="stat-icon-white">
-                        <i class="bi bi-people"></i>
+            @include('components.widget', ['title' => 'Customers'])
+                <div class="stat-card-vibrant gradient-users">
+                    <div>
+                        <div class="stat-icon-white">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div class="stat-v-label">Total Reach</div>
+                        <h3 class="stat-v-value">{{ number_format($data['total_users'] ?? 0) }}</h3>
                     </div>
-                    <div class="stat-v-label">New Customers</div>
-                    <h3 class="stat-v-value">{{ number_format($data['total_users'] ?? 0) }}</h3>
+                    <div class="mt-3 pt-2 border-top border-white border-opacity-10">
+                        <span class="small opacity-75">Verified accounts</span>
+                    </div>
                 </div>
-                <div class="mt-4 pt-2 border-top border-white border-opacity-10">
-                    <span class="small opacity-75">Verified Users</span>
-                </div>
-            </div>
+            @endinclude
         </div>
     </div>
 
     <!-- Analytics & Top Products -->
-    <div class="row g-4 mb-5">
+    <div class="row g-4 mb-2">
         <div class="col-lg-8 fade-in-up delay-1">
-            <div class="content-card-modern">
-                <div class="card-title-modern">
-                    <span>Revenue Trend</span>
-                    <span class="badge bg-light text-primary rounded-pill px-3 py-2 border shadow-sm small fw-700">Past 7 Days</span>
-                </div>
+            @include('components.widget', ['title' => 'Revenue Performance Trend'])
                 <div class="chart-container">
                     <canvas id="salesTrendsChart"></canvas>
                 </div>
-            </div>
+            @endinclude
         </div>
 
         <div class="col-lg-4 fade-in-up delay-2">
-            <div class="content-card-modern">
-                <div class="card-title-modern">Top Selling</div>
+            @include('components.widget', ['title' => 'Top Performance Products'])
                 <div class="list-group list-group-flush border-0">
                     @forelse($data['top_products'] ?? [] as $product)
                     <div class="list-group-item bg-transparent border-0 px-0 mb-3 d-flex align-items-center transition-all hover-lift-sm">
@@ -373,25 +341,19 @@
                     </div>
                     @endforelse
                 </div>
-            </div>
+            @endinclude
         </div>
     </div>
 
     <!-- Recent Activity Table -->
-    <div class="fade-in-up delay-3">
-        <div class="content-card-modern">
-            <div class="card-title-modern">
-                <span>Recent Activity Log</span>
-                <a href="{{ route('sales.orders') }}" class="btn btn-sm btn-light border-0 px-3 fw-700 text-primary rounded-pill">
-                    Journal <i class="bi bi-arrow-right ms-1"></i>
-                </a>
-            </div>
+    <div class="fade-in-up delay-3 mb-5">
+        @include('components.widget', ['title' => 'Recent Activity Journal'])
             <div class="table-responsive">
                 <table class="table table-custom-clean mb-0">
                     <thead>
                         <tr>
                             <th class="ps-0">Reference</th>
-                            <th>Customer & Account</th>
+                            <th>Customer Representative</th>
                             <th>Status Badge</th>
                             <th>Transaction Vol</th>
                             <th class="text-end pe-0">Action</th>
@@ -402,7 +364,7 @@
                         <tr>
                             <td class="ps-0">
                                 <span class="fw-800 text-dark">#{{ $order->invoice_no ?? $order->id }}</span>
-                                <div class="text-muted small mt-1">{{ $order->created_at->format('M d, H:i') }}</div>
+                                <div class="text-muted small mt-1" style="font-size: 0.7rem;">{{ $order->created_at->format('M d, H:i') }}</div>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
@@ -410,8 +372,8 @@
                                         {{ strtoupper(substr($order->user->first_name ?? 'C', 0, 1)) }}
                                     </div>
                                     <div>
-                                        <div class="fw-700 text-dark">{{ ($order->user->first_name ?? 'Walk-in') . ' ' . ($order->user->last_name ?? '') }}</div>
-                                        <div class="text-muted small" style="font-size: 0.75rem;">Verified Member</div>
+                                        <div class="fw-700 text-dark" style="font-size: 0.85rem;">{{ ($order->user->first_name ?? 'Walk-in') . ' ' . ($order->user->last_name ?? '') }}</div>
+                                        <div class="text-muted small" style="font-size: 0.7rem;">Verified Member</div>
                                     </div>
                                 </div>
                             </td>
@@ -420,7 +382,7 @@
                                 <span class="fw-800 text-dark">${{ number_format($order->total_sell_price, 2) }}</span>
                             </td>
                             <td class="text-end pe-0">
-                                <a href="{{ route('sales.show', $order->id) }}" class="btn btn-light btn-sm rounded-pill px-3 fw-700 transition-all">
+                                <a href="{{ route('sales.show', $order->id) }}" class="btn btn-light btn-sm rounded-pill px-3 fw-700 transition-all" style="font-size: 0.75rem;">
                                     Explore <i class="bi bi-chevron-right ms-1"></i>
                                 </a>
                             </td>
@@ -438,7 +400,7 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        @endinclude
     </div>
 </div>
 @endsection
