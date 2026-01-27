@@ -187,19 +187,33 @@
                     </div>
 
                     <!-- Notifications -->
-                    <div class="dropdown">
+                    <div class="dropdown" id="notification-dropdown">
                         <button class="btn btn-sm btn-transparent position-relative text-white"
                             data-bs-toggle="dropdown">
                             <i class="bi bi-bell fs-5"></i>
-                            <span
-                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                3
+                            <span id="notification-badge"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                                0
                             </span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end" style="min-width:200px;">
-                            <li><span class="dropdown-item text-dark">No new notifications</span></li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4" style="min-width:320px; max-height: 450px; overflow-y: auto;">
+                            <li class="px-3 py-2 border-bottom">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold">Recent Orders</span>
+                                    <span class="badge bg-light text-primary">New</span>
+                                </div>
+                            </li>
+                            <div id="notification-items">
+                                <li><span class="dropdown-item text-muted small py-3 text-center">Loading notifications...</span></li>
+                            </div>
+                            <li class="text-center border-top">
+                                <a href="{{ route('sales.orders') }}" class="dropdown-item small text-primary fw-bold py-2">View All Orders</a>
+                            </li>
                         </ul>
                     </div>
+
+                    <!-- Audio for Alerts -->
+                    <audio id="notification-audio" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
 
                     <!-- User Profile -->
                     <div class="dropdown">
@@ -388,6 +402,7 @@
         </script>
 
         <script src="{{ asset('js/app.js') }}"></script>
+        <script src="{{ asset('js/notifications.js') }}"></script>
         @include('includes.js')
         @yield('scripts')
         @stack('scripts')

@@ -13,7 +13,7 @@ use App\Http\Controllers\BusinessController;
 |--------------------------------------------------------------------------
 | Guest routes (NOT logged in)
 |--------------------------------------------------------------------------
-*/
+|*/
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -27,6 +27,10 @@ Route::middleware(['web', 'auth'])->group(function () {
     });
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
+    
+    // Notification Polling (Accessible by both Admin and Staff)
+    Route::get('/notifications/check', [\App\Http\Controllers\NotificationController::class, 'checkNewOrders'])->name('notifications.check');
+
     // Admin & Staff Routes
     Route::middleware(['role:admin|staff'])->group(function () {
         Route::get('/product', [ProductController::class, 'index'])->name('products.index');
@@ -75,7 +79,7 @@ Route::middleware(['web', 'auth'])->group(function () {
             Route::get('/{id}/edit', [\App\Http\Controllers\UserController::class, 'edit'])->name('users.edit');
             Route::put('/{id}', [\App\Http\Controllers\UserController::class, 'update'])->name('users.update');
             Route::get('/profile/{id}', [\App\Http\Controllers\UserController::class, 'profile'])->name('users.profile');
-            Route::get('/{id}', [\App\Http\Controllers\UserController::class, 'show'])->name('users.show');
+            // Route::get('/{id}', [\App\Http\Controllers\UserController::class, 'show'])->name('users.show');
             Route::delete('/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('users.destroy');
         });
 
