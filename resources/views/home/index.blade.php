@@ -30,35 +30,41 @@
         justify-content: space-between;
     }
 
-    .gradient-revenue { background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); }
-    .gradient-orders { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-    .gradient-products { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
-    .gradient-users { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
+    .gradient-revenue { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
+    .gradient-orders { background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); }
+    .gradient-products { background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); }
+    .gradient-users { background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); }
 
     .stat-icon-white {
-        width: 36px;
-        height: 36px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 8px;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(8px);
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 16px;
-        margin-bottom: 1rem;
+        font-size: 1.25rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 
     .stat-v-label {
-        font-weight: 500;
-        font-size: 0.8rem;
-        opacity: 0.9;
-        margin-bottom: 0.25rem;
+        font-weight: 600;
+        font-size: 0.7rem;
+        opacity: 0.8;
+        margin-bottom: 0.35rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 
     .stat-v-value {
         font-weight: 800;
-        font-size: 1.5rem;
+        font-size: 1.75rem;
         margin-bottom: 0;
-        letter-spacing: -0.01em;
+        letter-spacing: -0.02em;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     /* Content Area Refinements */
