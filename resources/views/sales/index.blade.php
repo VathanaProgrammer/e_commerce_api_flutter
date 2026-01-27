@@ -159,6 +159,15 @@
                 ]
             });
 
+            // Check for order_id in URL to auto-open modal
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('id');
+            if (orderId) {
+                setTimeout(() => {
+                    loadTransactionDetails(orderId);
+                }, 500);
+            }
+
             $(document).on('click', '.transaction-checkbox', function(e) {
                 e.stopPropagation();
             });

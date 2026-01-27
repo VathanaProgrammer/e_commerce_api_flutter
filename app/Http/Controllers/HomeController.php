@@ -42,7 +42,7 @@ class HomeController extends Controller
             'total_orders' => \App\Models\Transaction::count(),
             'total_sales' => \App\Models\Transaction::where('status', \App\Enums\TransactionStatus::Completed)->sum('total_sell_price'),
             'total_users' => \App\Models\User::where('role', 'customer')->count(),
-            'recent_orders' => \App\Models\Transaction::with('user')->latest()->take(6)->get(),
+            'recent_orders' => \App\Models\Transaction::with(['user', 'saleLines.variant.product'])->latest()->take(6)->get(),
             'growth' => round($growth, 1),
             'top_products' => \App\Models\TransactionSaleLine::select('product_variant_id')
                 ->selectRaw('SUM(qty) as total_qty, SUM(qty * price) as total_revenue')
