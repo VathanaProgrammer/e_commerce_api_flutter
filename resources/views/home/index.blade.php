@@ -9,26 +9,43 @@
         background-color: #f4f7fe;
     }
 
-    /* Container adjustment to match other pages */
+    /* Container adjustment - Fluid but with standard padding */
     .dashboard-container {
-        padding-top: 1rem;
+        padding-top: 1.5rem;
+        padding-left: 2rem;
+        padding-right: 2rem;
     }
 
-    /* Clean Card Style */
-    .modern-card {
+    /* Premium card look */
+    .premium-card {
         background: #ffffff;
-        border: none;
-        border-radius: 24px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        position: relative;
+        border: 1px solid rgba(0,0,0,0.05);
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
         overflow: hidden;
     }
 
-    .modern-card:hover {
+    .premium-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.07);
     }
+
+    .card-header-custom {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        background: #ffffff;
+    }
+
+    .card-body-custom {
+        padding: 1.5rem;
+        flex-grow: 1;
+    }
+
+    .bg-light-soft { background: #f8fafc; }
 
     /* Stat Cards */
     .stat-card-icon {
@@ -138,19 +155,19 @@
 @endsection
 
 @section('content')
-<div class="container py-4 dashboard-container">
+<div class="container-fluid dashboard-container">
     <!-- Header -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 fade-in-up">
         <div>
             <h1 class="fw-700 mb-1" style="font-size: 1.85rem; color: #1e293b;">Good morning, {{ auth()->user()->first_name }}</h1>
-            <p class="text-muted mb-0">Unified operational intelligence & analytics.</p>
+            <p class="text-muted mb-0">Operational performance & business intelligence dashboard.</p>
         </div>
         <div class="mt-3 mt-md-0 d-flex gap-2">
-            <button class="btn btn-white border shadow-sm rounded-pill px-4 fw-600">
-                <i class="bi bi-download me-2 text-primary"></i> Export
+            <button id="btnExportReport" class="btn btn-white border shadow-sm rounded-pill px-4 fw-600">
+                <i class="bi bi-download me-2 text-primary"></i> Export Report
             </button>
             <a href="{{ route('products.create') }}" class="btn btn-primary rounded-pill px-4 fw-600 shadow-sm border-0">
-                <i class="bi bi-plus-lg me-2"></i> New Product
+                <i class="bi bi-plus-lg me-2"></i> Add Product
             </a>
         </div>
     </div>
@@ -158,47 +175,57 @@
     <!-- Stats Grid -->
     <div class="row g-4 mb-5">
         <div class="col-xl-3 col-md-6 fade-in-up delay-1">
-            <div class="modern-card p-4">
-                <div class="stat-card-icon icon-primary">
-                    <i class="bi bi-currency-dollar"></i>
-                </div>
-                <h6 class="stat-label">Total Revenue</h6>
-                <div class="d-flex align-items-center justify-content-between">
-                    <h3 class="stat-value mb-0">${{ number_format($data['total_sales'] ?? 0, 2) }}</h3>
-                    <span class="badge-soft {{ ($data['growth'] ?? 0) >= 0 ? 'badge-soft-success' : 'badge-soft-danger' }}">
-                        {{ ($data['growth'] ?? 0) >= 0 ? '+' : '' }}{{ $data['growth'] ?? 0 }}%
-                    </span>
+            <div class="premium-card">
+                <div class="card-body-custom">
+                    <div class="stat-card-icon icon-primary">
+                        <i class="bi bi-currency-dollar"></i>
+                    </div>
+                    <h6 class="stat-label">Total Revenue</h6>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h3 class="stat-value mb-0">${{ number_format($data['total_sales'] ?? 0, 2) }}</h3>
+                        <span class="badge-soft {{ ($data['growth'] ?? 0) >= 0 ? 'badge-soft-success' : 'badge-soft-danger' }}">
+                            {{ ($data['growth'] ?? 0) >= 0 ? '+' : '' }}{{ $data['growth'] ?? 0 }}%
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6 fade-in-up delay-2">
-            <div class="modern-card p-4">
-                <div class="stat-card-icon icon-success">
-                    <i class="bi bi-bag-check"></i>
-                </div>
-                <h6 class="stat-label">Orders Success</h6>
-                <div class="d-flex align-items-center justify-content-between">
-                    <h3 class="stat-value mb-0">{{ number_format($data['total_orders'] ?? 0) }}</h3>
-                    <span class="text-muted small">Lifetime</span>
+            <div class="premium-card">
+                <div class="card-body-custom">
+                    <div class="stat-card-icon icon-success">
+                        <i class="bi bi-bag-check"></i>
+                    </div>
+                    <h6 class="stat-label">Orders Success</h6>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h3 class="stat-value mb-0">{{ number_format($data['total_orders'] ?? 0) }}</h3>
+                        <span class="text-muted small">Lifetime Total</span>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-xl-3 col-md-6 fade-in-up delay-3">
-            <div class="modern-card p-4">
-                <div class="stat-card-icon icon-warning">
-                    <i class="bi bi-box-seam"></i>
+            <div class="premium-card">
+                <div class="card-body-custom">
+                    <div class="stat-card-icon icon-warning">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                    <h6 class="stat-label">Active Catalog</h6>
+                    <h3 class="stat-value mb-0">{{ number_format($data['total_products'] ?? 0) }}</h3>
+                    <p class="text-muted small mb-0 mt-1">Managed products</p>
                 </div>
-                <h6 class="stat-label">Active Catalog</h6>
-                <h3 class="stat-value mb-0">{{ number_format($data['total_products'] ?? 0) }}</h3>
             </div>
         </div>
         <div class="col-xl-3 col-md-6 fade-in-up delay-4">
-            <div class="modern-card p-4">
-                <div class="stat-card-icon icon-info">
-                    <i class="bi bi-people"></i>
+            <div class="premium-card">
+                <div class="card-body-custom">
+                    <div class="stat-card-icon icon-info">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h6 class="stat-label">Verified Reach</h6>
+                    <h3 class="stat-value mb-0">{{ number_format($data['total_users'] ?? 0) }}</h3>
+                    <p class="text-muted small mb-0 mt-1">Registered customers</p>
                 </div>
-                <h6 class="stat-label">Verified Reach</h6>
-                <h3 class="stat-value mb-0">{{ number_format($data['total_users'] ?? 0) }}</h3>
             </div>
         </div>
     </div>
@@ -206,40 +233,46 @@
     <!-- Analytics & Top Products -->
     <div class="row g-4 mb-5">
         <div class="col-lg-8 fade-in-up delay-1">
-            <div class="modern-card p-4 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="premium-card">
+                <div class="card-header-custom">
                     <h5 class="fw-700 mb-0">Performance Trend</h5>
                     <div class="badge bg-light text-dark rounded-pill px-3 py-2 border shadow-sm small fw-600">
                         Past 7 Days
                     </div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="salesTrendsChart"></canvas>
+                <div class="card-body-custom">
+                    <div class="chart-container">
+                        <canvas id="salesTrendsChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="col-lg-4 fade-in-up delay-2">
-            <div class="modern-card p-4 h-100">
-                <h5 class="fw-700 mb-4">Top Performing</h5>
-                <div class="list-group list-group-flush">
-                    @forelse($data['top_products'] ?? [] as $product)
-                    <div class="list-group-item bg-transparent border-0 px-0 mb-3 d-flex align-items-center transition-all hover-lift-sm">
-                        <img src="{{ $product->variant->product->preview_image_url ?? 'https://placehold.co/100x100?text=Product' }}" class="product-img-sq me-3 shadow-sm border">
-                        <div class="flex-grow-1">
-                            <h6 class="mb-0 fw-600 text-truncate" style="max-width: 150px;">{{ $product->variant->product->name ?? 'Unknown' }}</h6>
-                            <span class="text-muted small fw-500">{{ $product->total_qty }} units sold</span>
+            <div class="premium-card">
+                <div class="card-header-custom">
+                    <h5 class="fw-700 mb-0">Top Performing</h5>
+                </div>
+                <div class="card-body-custom">
+                    <div class="list-group list-group-flush">
+                        @forelse($data['top_products'] ?? [] as $product)
+                        <div class="list-group-item bg-transparent border-0 px-0 mb-3 d-flex align-items-center transition-all hover-lift-sm">
+                            <img src="{{ $product->variant->product->preview_image_url ?? 'https://placehold.co/100x100?text=Product' }}" class="product-img-sq me-3 shadow-sm border">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 fw-600 text-truncate" style="max-width: 150px;">{{ $product->variant->product->name ?? 'Unknown' }}</h6>
+                                <span class="text-muted small fw-500">{{ $product->total_qty }} units sold</span>
+                            </div>
+                            <div class="text-end">
+                                <h6 class="mb-0 fw-700 text-dark">${{ number_format($product->total_revenue, 2) }}</h6>
+                            </div>
                         </div>
-                        <div class="text-end">
-                            <h6 class="mb-0 fw-700 text-dark">${{ number_format($product->total_revenue, 2) }}</h6>
+                        @empty
+                        <div class="text-center py-5">
+                            <i class="bi bi-graph-up opacity-25 fs-1 d-block mb-3"></i>
+                            <span class="text-muted small">No analytics yet.</span>
                         </div>
+                        @endforelse
                     </div>
-                    @empty
-                    <div class="text-center py-5">
-                        <i class="bi bi-graph-up opacity-25 fs-1 d-block mb-3"></i>
-                        <span class="text-muted small">No analytics yet.</span>
-                    </div>
-                    @endforelse
                 </div>
             </div>
         </div>
@@ -247,28 +280,28 @@
 
     <!-- Recent Transactions Table -->
     <div class="fade-in-up delay-3">
-        <div class="modern-card">
-            <div class="p-4 border-bottom d-flex justify-content-between align-items-center bg-light-soft">
-                <h5 class="fw-700 mb-0">Recent Activity</h5>
-                <a href="{{ route('sales.orders') }}" class="btn btn-sm btn-link text-primary fw-600 text-decoration-none">
-                    View Journal <i class="bi bi-arrow-right ms-1"></i>
+        <div class="premium-card">
+            <div class="card-header-custom bg-light-soft d-flex justify-content-between align-items-center">
+                <h5 class="fw-700 mb-0">Recent Activity Log</h5>
+                <a href="{{ route('sales.orders') }}" class="btn btn-sm btn-light border rounded-pill px-3 fw-600 text-primary">
+                    View All Activity <i class="bi bi-arrow-right ms-1"></i>
                 </a>
             </div>
             <div class="table-responsive">
                 <table class="table table-modern mb-0">
                     <thead>
                         <tr>
-                            <th>Transaction ID</th>
+                            <th class="ps-4">Transaction ID</th>
                             <th>Customer Representative</th>
                             <th>Current Status</th>
                             <th>Total Volume</th>
-                            <th class="text-end">Details</th>
+                            <th class="text-end pe-4">Details</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($data['recent_orders'] ?? [] as $order)
                         <tr class="transition-all">
-                            <td class="fw-700 text-primary">#{{ $order->invoice_no ?? $order->id }}</td>
+                            <td class="ps-4 fw-700 text-primary">#{{ $order->invoice_no ?? $order->id }}</td>
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3 border shadow-sm" style="width: 32px; height: 32px; font-size: 0.8rem; font-weight: 700; color: #4f46e5;">
@@ -282,7 +315,7 @@
                             </td>
                             <td>{!! $order->status->badge() !!}</td>
                             <td class="fw-700">${{ number_format($order->total_sell_price, 2) }}</td>
-                            <td class="text-end">
+                            <td class="text-end pe-4">
                                 <a href="{{ route('sales.show', $order->id) }}" class="btn btn-action btn-light-muted transition-all">
                                     <i class="bi bi-chevron-right"></i>
                                 </a>
@@ -308,6 +341,21 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Export button handler
+        const btnExport = document.getElementById('btnExportReport');
+        if (btnExport) {
+            btnExport.addEventListener('click', function() {
+                if (window.toastr) {
+                    toastr.info('Preparing your comprehensive business report...', 'Export Started');
+                    setTimeout(() => {
+                        window.print();
+                    }, 1000);
+                } else {
+                    window.print();
+                }
+            });
+        }
+
         const ctx = document.getElementById('salesTrendsChart').getContext('2d');
         const gradient = ctx.createLinearGradient(0, 0, 0, 300);
         gradient.addColorStop(0, 'rgba(79, 70, 229, 0.15)');
