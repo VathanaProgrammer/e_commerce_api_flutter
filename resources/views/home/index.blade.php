@@ -105,45 +105,15 @@
     }
 
     .product-circle-img {
-        width: 42px;
-        height: 42px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         object-fit: cover;
-        border: 2px solid white;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border: 1px solid #eee;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 </style>
 
-    /* Stat Cards */
-    .stat-card-icon {
-        width: 52px;
-        height: 52px;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 22px;
-        margin-bottom: 20px;
-    }
-
-    .icon-primary { background: #eef2ff; color: #4f46e5; }
-    .icon-success { background: #f0fdf4; color: #22c55e; }
-    .icon-warning { background: #fffbeb; color: #f59e0b; }
-    .icon-info { background: #f0f9ff; color: #0ea5e9; }
-
-    .stat-label {
-        font-size: 0.95rem;
-        font-weight: 500;
-        color: #64748b;
-        margin-bottom: 5px;
-    }
-
-    .stat-value {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #1e293b;
-        letter-spacing: -0.02em;
-    }
 
     /* Animations */
     @keyframes fadeIn {
@@ -374,7 +344,7 @@
                                         @endphp
                                         <img src="{{ $firstProduct->image_url ?? 'https://placehold.co/100x100?text=User' }}" 
                                              class="rounded-circle border shadow-sm" 
-                                             style="width: 38px; height: 38px; object-fit: cover;">
+                                             style="width: 32px; height: 32px; object-fit: cover;">
                                         <div class="position-absolute bottom-0 end-0 bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 16px; height: 16px; border: 1px solid #eee;">
                                             <span style="font-size: 8px; font-weight: 800;">{{ strtoupper(substr($order->user->first_name ?? 'C', 0, 1)) }}</span>
                                         </div>

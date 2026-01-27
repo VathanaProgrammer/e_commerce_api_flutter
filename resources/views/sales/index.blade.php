@@ -164,8 +164,11 @@
             const orderId = urlParams.get('id');
             if (orderId) {
                 setTimeout(() => {
+                    // Force remove any stuck backdrops before auto-opening
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open');
                     loadTransactionDetails(orderId);
-                }, 500);
+                }, 600);
             }
 
             $(document).on('click', '.transaction-checkbox', function(e) {
