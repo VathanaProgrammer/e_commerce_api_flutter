@@ -110,6 +110,12 @@
         border: 1px solid #1a1414ff;
         flex-shrink: 0;
     }
+    .chart-container {
+        position: relative;
+        height: 320px;
+        width: 100%;
+        margin-top: 10px;
+    }
 </style>
 
 
@@ -398,57 +404,97 @@
         }
 
         const ctx = document.getElementById('salesTrendsChart').getContext('2d');
+        
+        // Advanced Gradient Implementation
         const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, 'rgba(79, 70, 229, 0.15)');
-        gradient.addColorStop(1, 'rgba(79, 70, 229, 0)');
+        gradient.addColorStop(0, 'rgba(79, 70, 229, 0.25)'); // Indigo
+        gradient.addColorStop(0.5, 'rgba(124, 58, 237, 0.1)'); // Violet
+        gradient.addColorStop(1, 'rgba(124, 58, 237, 0)');
+
+        // Shadow Plugin for Chart.js
+        const shadowPlugin = {
+            id: 'shadowPlugin',
+            beforeDraw: (chart) => {
+                const { ctx } = chart;
+                ctx.save();
+                ctx.shadowColor = 'rgba(79, 70, 229, 0.35)';
+                ctx.shadowBlur = 15;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 10;
+            },
+            afterDraw: (chart) => {
+                chart.ctx.restore();
+            }
+        };
 
         new Chart(ctx, {
             type: 'line',
+            plugins: [shadowPlugin],
             data: {
                 labels: @json($data['revenue_chart']['labels']),
                 datasets: [{
-                    label: 'Daily Revenue ($)',
+                    label: 'Daily Revenue',
                     data: @json($data['revenue_chart']['data']),
                     borderColor: '#4f46e5',
-                    borderWidth: 3,
+                    borderWidth: 4,
                     backgroundColor: gradient,
                     fill: true,
-                    tension: 0.4,
+                    tension: 0.45,
                     pointBackgroundColor: '#ffffff',
                     pointBorderColor: '#4f46e5',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
+                    pointBorderWidth: 3,
+                    pointRadius: 0, // Hidden by default for clean look
+                    pointHoverRadius: 7,
+                    pointHoverBackgroundColor: '#4f46e5',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 4,
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: '#1e293b',
-                        padding: 12,
+                        backgroundColor: '#111827',
+                        titleFont: { family: 'Outfit', size: 13, weight: '700' },
+                        bodyFont: { family: 'Outfit', size: 14, weight: '500' },
+                        padding: 15,
                         cornerRadius: 12,
                         displayColors: false,
+                        yAlign: 'bottom',
                         callbacks: {
-                            label: (ctx) => ` $${ctx.parsed.y.toLocaleString()}`
+                            label: (ctx) => ` Revenue: $${ctx.parsed.y.toLocaleString()}`,
+                            title: (items) => `📅 ${items[0].label}`
                         }
                     }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        grid: { color: '#f1f5f9', drawBorder: false },
+                        grid: { 
+                            color: 'rgba(241, 245, 249, 1)', 
+                            drawBorder: false,
+                            borderDash: [5, 5]
+                        },
                         ticks: {
-                            font: { family: 'Outfit', size: 11 },
-                            color: '#64748b',
-                            callback: (val) => '$' + val
+                            font: { family: 'Outfit', size: 11, weight: '500' },
+                            color: '#94a3b8',
+                            padding: 10,
+                            callback: (val) => '$' + val.toLocaleString()
                         }
                     },
                     x: {
                         grid: { display: false },
-                        ticks: { font: { family: 'Outfit', size: 11 }, color: '#64748b' }
+                        ticks: { 
+                            font: { family: 'Outfit', size: 11, weight: '500' }, 
+                            color: '#94a3b8',
+                            padding: 10
+                        }
                     }
                 }
             }
