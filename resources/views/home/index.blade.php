@@ -105,10 +105,11 @@
     }
 
     .product-circle-img {
-        width: 12px !important;
-        height: 12px !important;
+        width: 24px !important;
+        height: 24px !important;
         border-radius: 50%;
         object-fit: cover;
+        border: 1px solid #1a1414ff;
     }
 </style>
 
@@ -294,7 +295,7 @@
                     @forelse($data['top_products'] ?? [] as $product)
                     <div class="list-group-item bg-transparent border-0 px-0 py-1 d-flex align-items-center">
                         <img src="{{ $product->variant->product->image_url ?? 'https://placehold.co/100x100?text=Product' }}" 
-                             style="width: 16px; height: 16px; border-radius: 50%; object-fit: cover; border: 1px solid #1a1414ff; margin-right: 8px;">
+                             class="product-circle-img me-2">
                         <div class="flex-grow-1">
                             <h6 class="mb-0 fw-700 text-dark text-truncate" style="max-width: 180px; font-size: 0.8rem;">
                                 {{ $product->variant->product->name ?? 'Unknown' }}
@@ -339,8 +340,7 @@
                             <td class="py-1">
                                 <div class="d-flex align-items-center">
                                     <img src="{{ $order->saleLines->first()->variant->product->image_url ?? 'https://placehold.co/100x100?text=Item' }}" 
-                                         class="rounded-circle border me-2" 
-                                         style="width: 16px; height: 16px; object-fit: cover; border-color: #1a1414ff !important;">
+                                         class="product-circle-img me-2">
                                     <div>
                                         <div class="fw-700 text-dark" style="font-size: 0.75rem;">{{ $order->user->first_name ?? 'Walk-in' }}</div>
                                         <div class="text-muted" style="font-size: 0.6rem;">{{ $order->saleLines->first()->variant->product->name ?? 'Item' }}</div>
