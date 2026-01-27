@@ -105,11 +105,10 @@
     }
 
     .product-circle-img {
-        width: 24px;
-        height: 24px;
+        width: 16px !important;
+        height: 16px !important;
         border-radius: 50%;
         object-fit: cover;
-        border: 1px solid #eee;
     }
 </style>
 
@@ -343,9 +342,9 @@
                                         @endphp
                                         <img src="{{ $firstProduct->image_url ?? 'https://placehold.co/100x100?text=User' }}" 
                                              class="rounded-circle border shadow-sm" 
-                                             style="width: 24px; height: 24px; object-fit: cover;">
-                                        <div class="position-absolute bottom-0 end-0 bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 16px; height: 16px; border: 1px solid #eee;">
-                                            <span style="font-size: 8px; font-weight: 800;">{{ strtoupper(substr($order->user->first_name ?? 'C', 0, 1)) }}</span>
+                                             style="width: 16px !important; height: 16px !important; object-fit: cover;">
+                                        <div class="position-absolute bottom-0 end-0 bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 10px; height: 10px; border: 1px solid #eee;">
+                                            <span style="font-size: 6px; font-weight: 800;">{{ strtoupper(substr($order->user->first_name ?? 'C', 0, 1)) }}</span>
                                         </div>
                                     </div>
                                     <div>
