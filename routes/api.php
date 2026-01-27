@@ -10,11 +10,16 @@ use App\Http\Controllers\Api\ABASandboxController;
 use App\Http\Controllers\Api\MockQRController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\UserOrdersController;
+use App\Http\Controllers\Api\UserProfileController;
 
 Route::get('sanctum/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 Route::post('/login', [AuthController::class, 'login']);
+
+// User Profile Routes
+Route::get('/user/profile/{id}', [UserProfileController::class, 'show']);
+Route::post('/user/profile/{id}', [UserProfileController::class, 'update']);
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);
 });
