@@ -105,11 +105,10 @@
     }
 
     .product-circle-img {
-        width: 18px !important;
-        height: 18px !important;
         border-radius: 50%;
         object-fit: cover;
         border: 1px solid #1a1414ff;
+        flex-shrink: 0;
     }
 </style>
 
@@ -295,9 +294,11 @@
                     @forelse($data['top_products'] ?? [] as $product)
                     <div class="list-group-item bg-transparent border-0 px-0 mb-2 mt-1 d-flex align-items-center">
                         <img src="{{ $product->variant->product->image_url ?? 'https://placehold.co/100x100?text=Product' }}" 
+                             width="16" height="16" 
+                             style="width: 16px !important; height: 16px !important; flex-shrink: 0;"
                              class="product-circle-img me-2">
-                        <div class="flex-grow-1">
-                            <h6 class="mb-0 fw-700 text-dark text-truncate" style="max-width: 180px; font-size: 0.8rem;">
+                        <div class="flex-grow-1 min-w-0">
+                            <h6 class="mb-0 fw-700 text-dark text-truncate" style="font-size: 0.75rem;">
                                 {{ $product->variant->product->name ?? 'Unknown' }}
                             </h6>
                         </div>
@@ -340,10 +341,12 @@
                             <td class="py-1">
                                 <div class="d-flex align-items-center">
                                     <img src="{{ $order->saleLines->first()->variant->product->image_url ?? 'https://placehold.co/100x100?text=Item' }}" 
+                                         width="16" height="16"
+                                         style="width: 16px !important; height: 16px !important; flex-shrink: 0;"
                                          class="product-circle-img me-2">
-                                    <div>
-                                        <div class="fw-700 text-dark" style="font-size: 0.75rem;">{{ $order->user->first_name ?? 'Walk-in' }}</div>
-                                        <div class="text-muted" style="font-size: 0.6rem;">{{ $order->saleLines->first()->variant->product->name ?? 'Item' }}</div>
+                                    <div class="min-w-0">
+                                        <div class="fw-700 text-dark" style="font-size: 0.75rem; line-height: 1;">{{ $order->user->first_name ?? 'Walk-in' }}</div>
+                                        <div class="text-muted text-truncate" style="font-size: 0.6rem; max-width: 100px;">{{ $order->saleLines->first()->variant->product->name ?? 'Item' }}</div>
                                     </div>
                                 </div>
                             </td>
