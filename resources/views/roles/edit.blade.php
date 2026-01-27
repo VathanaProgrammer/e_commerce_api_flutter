@@ -7,14 +7,12 @@
     :root {
         --premium-primary: #667eea;
         --premium-secondary: #764ba2;
-        --premium-bg: #f8fafc;
-        --premium-card-bg: #ffffff;
         --premium-border: #e2e8f0;
         --premium-text: #1e293b;
     }
 
     .premium-card {
-        background: var(--premium-card-bg);
+        background: #ffffff;
         border: 1px solid var(--premium-border);
         border-radius: 20px;
         overflow: hidden;
@@ -62,12 +60,6 @@
         padding-top: 10px;
         padding-bottom: 10px;
         font-weight: 500;
-        transition: all 0.2s;
-    }
-
-    .input-group-premium .form-control:focus {
-        border-color: var(--premium-primary);
-        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
     }
 
     .permission-group-card {
@@ -114,14 +106,6 @@
         background: #f8fafc;
     }
 
-    .custom-checkbox input {
-        width: 18px;
-        height: 18px;
-        border-radius: 5px;
-        margin-right: 12px;
-        cursor: pointer;
-    }
-
     .btn-submit {
         background: linear-gradient(135deg, var(--premium-primary) 0%, var(--premium-secondary) 100%);
         color: white;
@@ -150,7 +134,6 @@
                     @csrf
                     @method('PUT')
                     
-                    {{-- Basic Info Section --}}
                     <div class="premium-card mb-4">
                         <div class="card-header-premium">
                             <i class="bi bi-pencil-square me-2 text-primary"></i> Role Details
@@ -166,10 +149,7 @@
                         </div>
                     </div>
 
-                    {{-- Permissions Section --}}
-                    <div class="mb-3 d-flex align-items-center">
-                         <h5 class="fw-bold text-dark mb-0 ms-2">Update Authorized Permissions</h5>
-                    </div>
+                    <h5 class="fw-bold text-dark mb-3 ps-2">Update Authorized Permissions</h5>
                     
                     <div class="row g-4 mb-4">
                         @php
@@ -207,7 +187,6 @@
                         @endforeach
                     </div>
 
-                    {{-- Actions --}}
                     <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-4">
                         <a href="{{ route('roles.index') }}" class="btn btn-link text-muted fw-bold text-decoration-none px-4">
                             <i class="bi bi-arrow-left me-2"></i>Cancel
@@ -237,7 +216,7 @@ $(document).ready(function() {
 
         $.ajax({
             url: "{{ route('roles.update', $role->id) }}",
-            type: "POST", // Method is PUT via @method
+            type: "POST", 
             data: $(this).serialize(),
             success: function(res) {
                 if (res.success) {
