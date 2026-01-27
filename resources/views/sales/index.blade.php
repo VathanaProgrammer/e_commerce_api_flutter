@@ -164,11 +164,15 @@
             const orderId = urlParams.get('id');
             if (orderId) {
                 setTimeout(() => {
-                    // Force remove any stuck backdrops before auto-opening
+                    // Aggressively clear any existing backdrops that might cause a black screen
                     $('.modal-backdrop').remove();
-                    $('body').removeClass('modal-open');
+                    $('body').removeClass('modal-open').css('overflow', 'auto');
+                    
                     loadTransactionDetails(orderId);
-                }, 600);
+                    
+                    // Second pass to ensure no backdrop appeared
+                    setTimeout(() => { $('.modal-backdrop').remove(); }, 500);
+                }, 700);
             }
 
             $(document).on('click', '.transaction-checkbox', function(e) {
@@ -195,7 +199,7 @@
             function getTransactionModal() {
                 if (!t_modal) {
                     t_modal = new bootstrap.Modal(transactionModalEl, {
-                        backdrop: true,
+                        backdrop: false, // Prevent double-backdrop issues
                         keyboard: true
                     });
                 }

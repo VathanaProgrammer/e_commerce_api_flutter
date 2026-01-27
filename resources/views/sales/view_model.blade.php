@@ -1,5 +1,5 @@
 <!-- Bootstrap Modal with Styled Example Data -->
-<div class="modal fade" id="transactionModal" tabindex="-1" aria-labelledby="transactionModalLabel" aria-hidden="true">
+<div class="modal fade" id="transactionModal" tabindex="-1" aria-labelledby="transactionModalLabel" aria-hidden="true" style="z-index: 999999 !important;">
     <div class="modal-dialog modal-xl-plus modal-dialog-scrollable">
         <div class="modal-content">
             <!-- Modal Header -->
