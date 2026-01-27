@@ -242,7 +242,7 @@
     <!-- Stats Grid -->
     <div class="row g-4 mb-2">
         <div class="col-xl-3 col-md-6 fade-in-up delay-1">
-            @include('components.widget', ['title' => 'Revenue'])
+            @component('components.widget', ['title' => 'Revenue'])
                 <div class="stat-card-vibrant gradient-revenue">
                     <div>
                         <div class="stat-icon-white">
@@ -258,10 +258,10 @@
                         </span>
                     </div>
                 </div>
-            @endinclude
+            @endcomponent
         </div>
         <div class="col-xl-3 col-md-6 fade-in-up delay-2">
-            @include('components.widget', ['title' => 'Orders'])
+            @component('components.widget', ['title' => 'Orders'])
                 <div class="stat-card-vibrant gradient-orders">
                     <div>
                         <div class="stat-icon-white">
@@ -274,10 +274,10 @@
                         <span class="small opacity-75">Confirmed lifecycle</span>
                     </div>
                 </div>
-            @endinclude
+            @endcomponent
         </div>
         <div class="col-xl-3 col-md-6 fade-in-up delay-3">
-            @include('components.widget', ['title' => 'Products'])
+            @component('components.widget', ['title' => 'Products'])
                 <div class="stat-card-vibrant gradient-products">
                     <div>
                         <div class="stat-icon-white">
@@ -290,10 +290,10 @@
                         <span class="small opacity-75">Managed inventory</span>
                     </div>
                 </div>
-            @endinclude
+            @endcomponent
         </div>
         <div class="col-xl-3 col-md-6 fade-in-up delay-4">
-            @include('components.widget', ['title' => 'Customers'])
+            @component('components.widget', ['title' => 'Customers'])
                 <div class="stat-card-vibrant gradient-users">
                     <div>
                         <div class="stat-icon-white">
@@ -306,22 +306,22 @@
                         <span class="small opacity-75">Verified accounts</span>
                     </div>
                 </div>
-            @endinclude
+            @endcomponent
         </div>
     </div>
 
     <!-- Analytics & Top Products -->
     <div class="row g-4 mb-2">
         <div class="col-lg-8 fade-in-up delay-1">
-            @include('components.widget', ['title' => 'Revenue Performance Trend'])
+            @component('components.widget', ['title' => 'Revenue Performance Trend'])
                 <div class="chart-container">
                     <canvas id="salesTrendsChart"></canvas>
                 </div>
-            @endinclude
+            @endcomponent
         </div>
 
         <div class="col-lg-4 fade-in-up delay-2">
-            @include('components.widget', ['title' => 'Top Performance Products'])
+            @component('components.widget', ['title' => 'Top Performance Products'])
                 <div class="list-group list-group-flush border-0">
                     @forelse($data['top_products'] ?? [] as $product)
                     <div class="list-group-item bg-transparent border-0 px-0 mb-3 d-flex align-items-center transition-all hover-lift-sm">
@@ -341,13 +341,13 @@
                     </div>
                     @endforelse
                 </div>
-            @endinclude
+            @endcomponent
         </div>
     </div>
 
     <!-- Recent Activity Table -->
     <div class="fade-in-up delay-3 mb-5">
-        @include('components.widget', ['title' => 'Recent Activity Journal'])
+        @component('components.widget', ['title' => 'Recent Activity Journal'])
             <div class="table-responsive">
                 <table class="table table-custom-clean mb-0">
                     <thead>
@@ -400,7 +400,7 @@
                     </tbody>
                 </table>
             </div>
-        @endinclude
+        @endcomponent
     </div>
 </div>
 @endsection
