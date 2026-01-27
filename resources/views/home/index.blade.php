@@ -21,8 +21,8 @@
 
     /* Vibrant Stat Card (Used inside widget slot) */
     .stat-card-vibrant {
-        border-radius: 12px;
-        padding: 1.25rem;
+        border-radius: 8px;
+        padding: 0.75rem;
         color: white;
         height: 100%;
         display: flex;
@@ -292,14 +292,14 @@
             @component('components.widget', ['title' => 'Top Performance Products'])
                 <div class="list-group list-group-flush border-0">
                     @forelse($data['top_products'] ?? [] as $product)
-                    <div class="list-group-item bg-transparent border-0 px-0 mb-3 d-flex align-items-center transition-all hover-lift-sm">
-                        <img src="{{ $product->variant->product->image_url ?? 'https://placehold.co/100x100?text=Product' }}" class="product-circle-img me-3">
+                    <div class="list-group-item bg-transparent border-0 px-0 py-1 d-flex align-items-center">
                         <div class="flex-grow-1">
-                            <h6 class="mb-0 fw-700 text-dark text-truncate" style="max-width: 150px;">{{ $product->variant->product->name ?? 'Unknown' }}</h6>
-                            <span class="text-muted small fw-600">{{ $product->total_qty }} units sold</span>
+                            <h6 class="mb-0 fw-700 text-dark text-truncate" style="max-width: 180px; font-size: 0.8rem;">
+                                <i class="bi bi-dot me-1 text-primary"></i>{{ $product->variant->product->name ?? 'Unknown' }}
+                            </h6>
                         </div>
                         <div class="text-end">
-                            <h6 class="mb-0 fw-800 text-dark">${{ number_format($product->total_revenue, 2) }}</h6>
+                            <span class="badge bg-light text-dark fw-800" style="font-size: 0.65rem;">${{ number_format($product->total_revenue, 2) }}</span>
                         </div>
                     </div>
                     @empty
@@ -330,36 +330,21 @@
                     <tbody>
                         @forelse($data['recent_orders'] ?? [] as $order)
                         <tr>
-                            <td class="ps-0">
-                                <span class="fw-800 text-dark">#{{ $order->invoice_no ?? $order->id }}</span>
-                                <div class="text-muted small mt-1" style="font-size: 0.7rem;">{{ $order->created_at->format('M d, H:i') }}</div>
+                            <td class="ps-0 py-1">
+                                <span class="fw-800 text-dark" style="font-size: 0.75rem;">#{{ $order->invoice_no ?? $order->id }}</span>
+                                <div class="text-muted" style="font-size: 0.6rem;">{{ $order->created_at->format('H:i') }}</div>
                             </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="me-3 position-relative">
-                                        @php
-                                            $firstProduct = $order->saleLines->first()->variant->product ?? null;
-                                        @endphp
-                                        <img src="{{ $firstProduct->image_url ?? 'https://placehold.co/100x100?text=User' }}" 
-                                             class="rounded-circle" 
-                                             style="width: 12px !important; height: 12px !important; object-fit: cover;">
-                                        <div class="position-absolute bottom-0 end-0 bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 8px; height: 8px; border: 1px solid #eee;">
-                                            <span style="font-size: 4px; font-weight: 800;">{{ strtoupper(substr($order->user->first_name ?? 'C', 0, 1)) }}</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="fw-700 text-dark" style="font-size: 0.85rem;">{{ ($order->user->first_name ?? 'Walk-in') . ' ' . ($order->user->last_name ?? '') }}</div>
-                                        <div class="text-muted small" style="font-size: 0.7rem;">{{ $firstProduct->name ?? 'Verified Member' }}</div>
-                                    </div>
-                                </div>
+                            <td class="py-1">
+                                <div class="fw-700 text-dark" style="font-size: 0.75rem;">{{ $order->user->first_name ?? 'Walk-in' }}</div>
+                                <div class="text-muted" style="font-size: 0.6rem;">{{ $order->saleLines->first()->variant->product->name ?? 'Item' }}</div>
                             </td>
-                            <td>{!! $order->status->badge() !!}</td>
-                            <td>
-                                <span class="fw-800 text-dark">${{ number_format($order->total_sell_price, 2) }}</span>
+                            <td class="py-1">{!! $order->status->badge() !!}</td>
+                            <td class="py-1">
+                                <span class="fw-800 text-dark" style="font-size: 0.75rem;">${{ number_format($order->total_sell_price, 2) }}</span>
                             </td>
-                            <td class="text-end pe-0">
-                                <a href="{{ route('sales.orders', ['id' => $order->id]) }}" class="btn btn-light btn-sm rounded-pill px-3 fw-700 transition-all" style="font-size: 0.75rem;">
-                                    Explore <i class="bi bi-chevron-right ms-1"></i>
+                            <td class="text-end pe-0 py-1">
+                                <a href="{{ route('sales.orders', ['id' => $order->id]) }}" class="btn btn-light btn-sm px-2 fw-700" style="font-size: 0.6rem;">
+                                    View
                                 </a>
                             </td>
                         </tr>
