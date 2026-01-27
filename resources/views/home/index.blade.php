@@ -223,7 +223,7 @@
     <div class="row g-4 mb-2">
         <div class="col-xl-3 col-md-6 fade-in-up delay-1">
             @component('components.widget', ['title' => 'Revenue'])
-                <div class="stat-card-vibrant gradient-revenue">
+                <div class="stat-card-vibrant" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important; color: white !important;">
                     <div>
                         <div class="stat-icon-white">
                             <i class="bi bi-currency-dollar"></i>
@@ -242,7 +242,7 @@
         </div>
         <div class="col-xl-3 col-md-6 fade-in-up delay-2">
             @component('components.widget', ['title' => 'Orders'])
-                <div class="stat-card-vibrant gradient-orders">
+                <div class="stat-card-vibrant" style="background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%) !important; color: white !important;">
                     <div>
                         <div class="stat-icon-white">
                             <i class="bi bi-cart-check"></i>
@@ -258,7 +258,7 @@
         </div>
         <div class="col-xl-3 col-md-6 fade-in-up delay-3">
             @component('components.widget', ['title' => 'Products'])
-                <div class="stat-card-vibrant gradient-products">
+                <div class="stat-card-vibrant" style="background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%) !important; color: white !important;">
                     <div>
                         <div class="stat-icon-white">
                             <i class="bi bi-box-seam"></i>
@@ -274,7 +274,7 @@
         </div>
         <div class="col-xl-3 col-md-6 fade-in-up delay-4">
             @component('components.widget', ['title' => 'Customers'])
-                <div class="stat-card-vibrant gradient-users">
+                <div class="stat-card-vibrant" style="background: linear-gradient(135deg, #ec4899 0%, #be185d 100%) !important; color: white !important;">
                     <div>
                         <div class="stat-icon-white">
                             <i class="bi bi-people"></i>
