@@ -293,9 +293,11 @@
                 <div class="list-group list-group-flush border-0">
                     @forelse($data['top_products'] ?? [] as $product)
                     <div class="list-group-item bg-transparent border-0 px-0 py-1 d-flex align-items-center">
+                        <img src="{{ $product->variant->product->image_url ?? 'https://placehold.co/100x100?text=Product' }}" 
+                             style="width: 16px; height: 16px; border-radius: 50%; object-fit: cover; border: 1px solid #1a1414ff; margin-right: 8px;">
                         <div class="flex-grow-1">
                             <h6 class="mb-0 fw-700 text-dark text-truncate" style="max-width: 180px; font-size: 0.8rem;">
-                                <i class="bi bi-dot me-1 text-primary"></i>{{ $product->variant->product->name ?? 'Unknown' }}
+                                {{ $product->variant->product->name ?? 'Unknown' }}
                             </h6>
                         </div>
                         <div class="text-end">
@@ -335,16 +337,23 @@
                                 <div class="text-muted" style="font-size: 0.6rem;">{{ $order->created_at->format('H:i') }}</div>
                             </td>
                             <td class="py-1">
-                                <div class="fw-700 text-dark" style="font-size: 0.75rem;">{{ $order->user->first_name ?? 'Walk-in' }}</div>
-                                <div class="text-muted" style="font-size: 0.6rem;">{{ $order->saleLines->first()->variant->product->name ?? 'Item' }}</div>
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ $order->saleLines->first()->variant->product->image_url ?? 'https://placehold.co/100x100?text=Item' }}" 
+                                         class="rounded-circle border me-2" 
+                                         style="width: 16px; height: 16px; object-fit: cover; border-color: #1a1414ff !important;">
+                                    <div>
+                                        <div class="fw-700 text-dark" style="font-size: 0.75rem;">{{ $order->user->first_name ?? 'Walk-in' }}</div>
+                                        <div class="text-muted" style="font-size: 0.6rem;">{{ $order->saleLines->first()->variant->product->name ?? 'Item' }}</div>
+                                    </div>
+                                </div>
                             </td>
                             <td class="py-1">{!! $order->status->badge() !!}</td>
                             <td class="py-1">
                                 <span class="fw-800 text-dark" style="font-size: 0.75rem;">${{ number_format($order->total_sell_price, 2) }}</span>
                             </td>
                             <td class="text-end pe-0 py-1">
-                                <a href="{{ route('sales.orders', ['id' => $order->id]) }}" class="btn btn-light btn-sm px-2 fw-700" style="font-size: 0.6rem;">
-                                    View
+                                <a href="{{ route('sales.orders', ['id' => $order->id]) }}" class="btn btn-light btn-sm rounded-pill px-3 fw-700 transition-all" style="font-size: 0.7rem;">
+                                    Explore <i class="bi bi-chevron-right ms-1"></i>
                                 </a>
                             </td>
                         </tr>
