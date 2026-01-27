@@ -20,11 +20,13 @@ class RoleController extends Controller
         return DataTables::of($roles)
             ->addColumn('permissions', function ($role) {
                 return $role->permissions->pluck('name')->map(function ($name) {
-                    return '<span class="badge bg-info me-1">' . $name . '</span>';
+                    return '<span class="permission-badge">' . ucwords($name) . '</span>';
                 })->implode('');
             })
             ->addColumn('actions', function ($role) {
-                return '<a href="' . route('roles.edit', $role->id) . '" class="btn btn-sm btn-primary">Edit</a>';
+                return '<a href="' . route('roles.edit', $role->id) . '" class="btn btn-sm btn-premium-secondary" style="background:#f1f5f9; color:#667eea; border:none; border-radius:8px; font-weight:600; padding:6px 14px;">
+                            <i class="bi bi-pencil-square me-1"></i> Edit
+                        </a>';
             })
             ->rawColumns(['permissions', 'actions'])
             ->make(true);
