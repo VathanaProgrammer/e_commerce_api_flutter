@@ -22,7 +22,7 @@
     /* Vibrant Stat Card (Used inside widget slot) */
     .stat-card-vibrant {
         border-radius: 8px;
-        padding: 0.75rem;
+        padding: 1.5rem;
         color: white;
         height: 100%;
         display: flex;
