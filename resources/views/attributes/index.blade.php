@@ -17,7 +17,7 @@
             </div>
 
             <div class="card border-0 shadow-none">
-                <div class="card-body p-0">
+                <div class="card-body p-2">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0" id="attributesTable">
                             <thead class="table-light">
