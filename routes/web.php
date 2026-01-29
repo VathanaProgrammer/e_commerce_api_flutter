@@ -33,9 +33,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/notifications/check', [\App\Http\Controllers\NotificationController::class, 'checkNewOrders'])->name('notifications.check');
 
     // Profile Management (Accessible by all authenticated users)
-    Route::get('/profile/{id}', [\App\Http\Controllers\UserController::class, 'profile'])->name('users.profile');
     Route::get('/profile/edit', [\App\Http\Controllers\UserController::class, 'editProfile'])->name('profile.edit');
     Route::put('/profile/update', [\App\Http\Controllers\UserController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/profile/{id}', [\App\Http\Controllers\UserController::class, 'profile'])->name('users.profile');
 
     // Admin & Staff Routes
     Route::middleware(['role:admin|staff'])->group(function () {
