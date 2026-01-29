@@ -154,42 +154,15 @@ class ProductController extends Controller
 
     public function store(ProductRequest $request)
     {
+        DB::beginTransaction();
         try {
-            $product = Product::create([
-                'category_id' => $request->input('category_id'),
-                'name' => $request->input('name'),
-                'image_url' => $request->input('image_url'),
-                'is_recommended' => $request->input('is_recommended', false),
-                'is_featured' => $request->input('is_featured', false),
-                'active' => $request->input('active', true),
-            ]);
-
-            // Save description lines
-            if ($request->has('description_lines')) {
-                foreach ($request->input('description_lines') as $line) {
-                    if (!empty($line)) {
-                        ProductDescriptionLine::create([
-                            'product_id' => $product->id,
-                            'line' => $line,
-                        ]);
-                    }
-                }
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $filename = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('uploads/products'), $filename);
+                $imagePath = '/uploads/products/' . $filename;
             }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Product created successfully!',
-                'data' => $product
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error creating product: ' . $e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Error creating product: ' . $e->getMessage()
-            ], 500);
-        }
-    }
 
             $product = Product::create([
                 'name' => $request->name,
