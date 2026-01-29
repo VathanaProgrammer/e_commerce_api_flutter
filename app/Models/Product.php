@@ -12,6 +12,11 @@ class Product extends Model
 
     protected $fillable = ['category_id', 'name', 'image_url', 'is_recommended', 'is_featured', "active"];
 
+    public function scopeActive($query)
+    {
+        return $query->where('active', true);
+    }
+
     protected function imageUrl(): Attribute
     {
         return Attribute::make(

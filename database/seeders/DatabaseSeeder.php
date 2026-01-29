@@ -28,20 +28,24 @@ class DatabaseSeeder extends Seeder
         | Users
         |--------------------------------------------------------------------------
         */
-        $adminId = DB::table('users')->insertGetId([
-            'email' => 'admin@example.com',
-            'prefix' => 'Mr',
-            'first_name' => 'Admin',
-            'last_name' => 'User',
-            'gender' => 'male',
-            'profile_image_url' => null,
-            'is_active' => true,
-            'username' => 'admin',
-            'password_hash' => Hash::make('123'),
-            'role' => 'admin',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Only create admin user if doesn't exist
+        $existingAdmin = DB::table('users')->where('email', 'admin@example.com')->first();
+        if (!$existingAdmin) {
+            $adminId = DB::table('users')->insertGetId([
+                'email' => 'admin@example.com',
+                'prefix' => 'Mr',
+                'first_name' => 'Admin',
+                'last_name' => 'User',
+                'gender' => 'male',
+                'profile_image_url' => null,
+                'is_active' => true,
+                'username' => 'admin',
+                'password_hash' => Hash::make('123'),
+                'role' => 'admin',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -53,5 +57,12 @@ class DatabaseSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Review Criteria
+        |--------------------------------------------------------------------------
+        */
+        $this->call(ReviewCriteriaSeeder::class);
     }
 }
