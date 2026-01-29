@@ -22,7 +22,7 @@
                                     <i class="bi bi-camera text-white fs-3"></i>
                                 </div>
                             </div>
-                            <input type="file" name="profile_image_url" class="form-control form-control-sm rounded-pill"
+                            <input type="file" name="profile_image" class="form-control form-control-sm rounded-pill"
                                 accept="image/*" id="profileInput">
                             <small class="text-muted mt-2 d-block">JPG, PNG or GIF (Max 2MB)</small>
                         </div>
@@ -218,7 +218,7 @@
         $(document).ready(function() {
 
             // Preview profile image
-            $('input[name="profile_image_url"]').on('change', function(e) {
+            $('input[name="profile_image"]').on('change', function(e) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     $('#profilePreview').attr('src', e.target.result);

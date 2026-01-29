@@ -16,7 +16,7 @@
                          src="{{ $user->profile_image_url ?? '/img/default-user.png' }}" 
                          class="img-fluid rounded-circle mb-2"
                          style="width:100%; aspect-ratio:1/1; object-fit:cover;">
-                    <input type="file" name="profile_image_url" class="form-control form-control-sm rounded-0" accept="image/*">
+                    <input type="file" name="profile_image" class="form-control form-control-sm rounded-0" accept="image/*">
                 </div>
 
                 {{-- Other User Inputs --}}
