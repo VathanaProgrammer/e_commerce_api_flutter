@@ -1,22 +1,23 @@
 <!-- Sidebar -->
-<aside class="w-full h-full bg-white shadow-xl rounded-r-2xl py-4 sidebar-animate overflow-y-auto" 
-       style="background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);">
+<aside class="w-full h-full bg-slate-900 text-slate-300 shadow-2xl rounded-r-2xl py-6 sidebar-animate overflow-y-auto border-r border-slate-800">
 
-    <nav class="px-2">
+    <nav class="px-3 space-y-2">
 
         <!-- Home -->
         <a href="{{ route('home') }}"
-            class="sidebar-item relative flex items-center gap-3 px-4 py-3 rounded-xl mb-1
+            class="group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ease-in-out
            {{ request()->routeIs('home')
-               ? 'bg-gradient-to-r from-slate-800 to-slate-700 text-white font-semibold shadow-md'
-               : 'text-slate-600 hover:bg-slate-100' }}"
-            style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+               ? 'bg-blue-600/10 text-blue-400 font-medium'
+               : 'hover:bg-slate-800/50 hover:text-white' }}">
+            <i class="bi bi-grid-1x2 text-xl transition-transform group-hover:scale-110 {{ request()->routeIs('home') ? 'text-blue-500' : 'text-slate-500 group-hover:text-blue-400' }}"></i>
+            <span class="tracking-wide text-sm">Dashboard</span>
             @if (request()->routeIs('home'))
-                <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-indigo-500" style="animation: fadeInLeft 0.3s ease;"></span>
+                <span class="ml-auto w-1 h-1 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span>
             @endif
-            <i class="bi bi-house text-lg {{ request()->routeIs('home') ? 'icon-bounce' : '' }}"></i>
-            <span>Home</span>
         </a>
+
+        <!-- Section Label -->
+        <div class="px-4 mt-6 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">Management</div>
 
         <!-- Products -->
         @role('admin|staff')
@@ -27,70 +28,40 @@
                 request()->routeIs('attributes.*');
         @endphp
 
-        <div x-data="{ open: {{ $productActive ? 'true' : 'false' }} }" class="space-y-1 mb-1">
-
+        <div x-data="{ open: {{ $productActive ? 'true' : 'false' }} }">
             <button @click="open = !open"
-                class="sidebar-item relative w-full flex items-center justify-between px-4 py-3 rounded-xl
-                {{ $productActive ? 'bg-gradient-to-r from-slate-800 to-slate-700 text-white font-semibold shadow-md' : 'text-slate-600 hover:bg-slate-100' }}"
-                style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
-                @if ($productActive)
-                    <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-indigo-500"></span>
-                @endif
-
-                <span class="flex items-center gap-3">
-                    <i class="bi bi-box-seam text-lg"></i>
-                    <span>Products</span>
-                </span>
-
-                <i class="bi bi-chevron-down text-xs"
-                    :class="open && 'rotate-180'"
-                    style="transition: transform 0.3s ease;"></i>
+                class="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group
+                {{ $productActive ? 'bg-blue-600/10 text-blue-400 font-medium' : 'hover:bg-slate-800/50 hover:text-white' }}">
+                <div class="flex items-center gap-3">
+                    <i class="bi bi-box-seam text-xl transition-transform group-hover:scale-110 {{ $productActive ? 'text-blue-500' : 'text-slate-500 group-hover:text-blue-400' }}"></i>
+                    <span class="tracking-wide text-sm">Inventory</span>
+                </div>
+                <i class="bi bi-chevron-down text-[10px] transition-transform duration-300"
+                   :class="open ? 'rotate-180 text-blue-400' : 'text-slate-600'"></i>
             </button>
 
-            <div x-show="open" x-collapse.duration.300ms 
-                 class="ml-4 pl-4 border-l-2 border-slate-200 space-y-1"
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0 transform -translate-y-2"
-                 x-transition:enter-end="opacity-100 transform translate-y-0">
-
+            <div x-show="open" x-collapse
+                 class="mt-1 space-y-1 pl-11 pr-2 border-l-2 border-slate-800 ml-6">
+                
                 <a href="{{ route('products.index') }}"
-                    class="sidebar-subitem flex items-center gap-3 px-4 py-2.5 rounded-lg
-                   {{ request()->routeIs('products.index')
-                       ? 'bg-indigo-50 font-semibold text-indigo-700 border-l-2 border-indigo-500'
-                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}"
-                    style="transition: all 0.25s ease;">
-                    <i class="bi bi-list-ul text-sm"></i>
-                    <span>Product Lists</span>
+                   class="block px-3 py-2 text-sm rounded-lg transition-colors
+                   {{ request()->routeIs('products.index') ? 'text-blue-400 bg-blue-600/5 font-medium' : 'text-slate-400 hover:text-white hover:bg-slate-800/30' }}">
+                   Products
                 </a>
-
                 <a href="{{ route('products.create') }}"
-                    class="sidebar-subitem flex items-center gap-3 px-4 py-2.5 rounded-lg
-                   {{ request()->routeIs('products.create')
-                       ? 'bg-indigo-50 font-semibold text-indigo-700 border-l-2 border-indigo-500'
-                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}"
-                    style="transition: all 0.25s ease;">
-                    <i class="bi bi-plus-square text-sm"></i>
-                    <span>Add Product</span>
+                   class="block px-3 py-2 text-sm rounded-lg transition-colors
+                   {{ request()->routeIs('products.create') ? 'text-blue-400 bg-blue-600/5 font-medium' : 'text-slate-400 hover:text-white hover:bg-slate-800/30' }}">
+                   Add Product
                 </a>
-
                 <a href="{{ route('attributes.index') }}"
-                    class="sidebar-subitem flex items-center gap-3 px-4 py-2.5 rounded-lg
-                   {{ request()->routeIs('attributes.index')
-                       ? 'bg-indigo-50 font-semibold text-indigo-700 border-l-2 border-indigo-500'
-                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}"
-                    style="transition: all 0.25s ease;">
-                    <i class="bi bi-sliders text-sm"></i>
-                    <span>Attributes</span>
+                   class="block px-3 py-2 text-sm rounded-lg transition-colors
+                   {{ request()->routeIs('attributes.index') ? 'text-blue-400 bg-blue-600/5 font-medium' : 'text-slate-400 hover:text-white hover:bg-slate-800/30' }}">
+                   Attributes
                 </a>
-
                 <a href="{{ route('categories.index') }}"
-                    class="sidebar-subitem flex items-center gap-3 px-4 py-2.5 rounded-lg
-                   {{ request()->routeIs('categories.index')
-                       ? 'bg-indigo-50 font-semibold text-indigo-700 border-l-2 border-indigo-500'
-                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}"
-                    style="transition: all 0.25s ease;">
-                    <i class="bi bi-tags text-sm"></i>
-                    <span>Categories</span>
+                   class="block px-3 py-2 text-sm rounded-lg transition-colors
+                   {{ request()->routeIs('categories.index') ? 'text-blue-400 bg-blue-600/5 font-medium' : 'text-slate-400 hover:text-white hover:bg-slate-800/30' }}">
+                   Categories
                 </a>
             </div>
         </div>
@@ -102,38 +73,24 @@
             $salesActive = request()->routeIs('sales.orders.*') || request()->routeIs('sales.orders');
         @endphp
 
-        <div x-data="{ open: {{ $salesActive ? 'true' : 'false' }} }" class="space-y-1 mb-1">
+        <div x-data="{ open: {{ $salesActive ? 'true' : 'false' }} }">
             <button @click="open = !open"
-                class="sidebar-item relative w-full flex items-center justify-between px-4 py-3 rounded-xl
-                {{ $salesActive ? 'bg-gradient-to-r from-slate-800 to-slate-700 text-white font-semibold shadow-md' : 'text-slate-600 hover:bg-slate-100' }}"
-                style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
-                @if ($salesActive)
-                    <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-indigo-500"></span>
-                @endif
-
-                <span class="flex items-center gap-3">
-                    <i class="bi bi-receipt text-lg"></i>
-                    <span>Sales</span>
-                </span>
-
-                <i class="bi bi-chevron-down text-xs"
-                    :class="open && 'rotate-180'"
-                    style="transition: transform 0.3s ease;"></i>
+                class="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group
+                {{ $salesActive ? 'bg-emerald-600/10 text-emerald-400 font-medium' : 'hover:bg-slate-800/50 hover:text-white' }}">
+                <div class="flex items-center gap-3">
+                    <i class="bi bi-cart3 text-xl transition-transform group-hover:scale-110 {{ $salesActive ? 'text-emerald-500' : 'text-slate-500 group-hover:text-emerald-400' }}"></i>
+                    <span class="tracking-wide text-sm">Sales & Orders</span>
+                </div>
+                <i class="bi bi-chevron-down text-[10px] transition-transform duration-300"
+                   :class="open ? 'rotate-180 text-emerald-400' : 'text-slate-600'"></i>
             </button>
 
-            <div x-show="open" x-collapse.duration.300ms 
-                 class="ml-4 pl-4 border-l-2 border-slate-200 space-y-1"
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0 transform -translate-y-2"
-                 x-transition:enter-end="opacity-100 transform translate-y-0">
+            <div x-show="open" x-collapse
+                 class="mt-1 space-y-1 pl-11 pr-2 border-l-2 border-slate-800 ml-6">
                 <a href="{{ route('sales.orders') }}"
-                    class="sidebar-subitem flex items-center gap-3 px-4 py-2.5 rounded-lg
-                   {{ request()->routeIs('sales.orders')
-                       ? 'bg-indigo-50 font-semibold text-indigo-700 border-l-2 border-indigo-500'
-                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}"
-                    style="transition: all 0.25s ease;">
-                    <i class="bi bi-list-ul text-sm"></i>
-                    <span>Sale Order List</span>
+                   class="block px-3 py-2 text-sm rounded-lg transition-colors
+                   {{ request()->routeIs('sales.orders') ? 'text-emerald-400 bg-emerald-600/5 font-medium' : 'text-slate-400 hover:text-white hover:bg-slate-800/30' }}">
+                   All Orders
                 </a>
             </div>
         </div>
@@ -146,73 +103,46 @@
             $userActive = request()->routeIs('users.*') || request()->routeIs('roles.*');
         @endphp
 
-        <div x-data="{ open: {{ $userActive ? 'true' : 'false' }} }" class="space-y-1 mb-1">
-
+        <div x-data="{ open: {{ $userActive ? 'true' : 'false' }} }">
             <button @click="open = !open"
-                class="sidebar-item relative w-full flex items-center justify-between px-4 py-3 rounded-xl
-                {{ $userActive ? 'bg-gradient-to-r from-slate-800 to-slate-700 text-white font-semibold shadow-md' : 'text-slate-600 hover:bg-slate-100' }}"
-                style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
-                @if ($userActive)
-                    <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-indigo-500"></span>
-                @endif
-
-                <span class="flex items-center gap-3">
-                    <i class="bi bi-people text-lg"></i>
-                    <span>User Management</span>
-                </span>
-
-                <i class="bi bi-chevron-down text-xs"
-                    :class="open && 'rotate-180'"
-                    style="transition: transform 0.3s ease;"></i>
+                class="w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group
+                {{ $userActive ? 'bg-purple-600/10 text-purple-400 font-medium' : 'hover:bg-slate-800/50 hover:text-white' }}">
+                <div class="flex items-center gap-3">
+                    <i class="bi bi-people text-xl transition-transform group-hover:scale-110 {{ $userActive ? 'text-purple-500' : 'text-slate-500 group-hover:text-purple-400' }}"></i>
+                    <span class="tracking-wide text-sm">Users</span>
+                </div>
+                <i class="bi bi-chevron-down text-[10px] transition-transform duration-300"
+                   :class="open ? 'rotate-180 text-purple-400' : 'text-slate-600'"></i>
             </button>
 
-            <div x-show="open" x-collapse.duration.300ms 
-                 class="ml-4 pl-4 border-l-2 border-slate-200 space-y-1"
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0 transform -translate-y-2"
-                 x-transition:enter-end="opacity-100 transform translate-y-0">
-
+            <div x-show="open" x-collapse
+                 class="mt-1 space-y-1 pl-11 pr-2 border-l-2 border-slate-800 ml-6">
                 <a href="{{ route('users.index') }}"
-                    class="sidebar-subitem flex items-center gap-3 px-4 py-2.5 rounded-lg
-                   {{ request()->routeIs('users.index')
-                       ? 'bg-indigo-50 font-semibold text-indigo-700 border-l-2 border-indigo-500'
-                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}"
-                    style="transition: all 0.25s ease;">
-                    <i class="bi bi-person text-sm"></i>
-                    <span>Users List</span>
+                   class="block px-3 py-2 text-sm rounded-lg transition-colors
+                   {{ request()->routeIs('users.index') ? 'text-purple-400 bg-purple-600/5 font-medium' : 'text-slate-400 hover:text-white hover:bg-slate-800/30' }}">
+                   User List
                 </a>
-
                 <a href="{{ route('roles.index') }}"
-                    class="sidebar-subitem flex items-center gap-3 px-4 py-2.5 rounded-lg
-                   {{ request()->routeIs('roles.index')
-                       ? 'bg-indigo-50 font-semibold text-indigo-700 border-l-2 border-indigo-500'
-                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}"
-                    style="transition: all 0.25s ease;">
-                    <i class="bi bi-shield-lock text-sm"></i>
-                    <span>Roles</span>
+                   class="block px-3 py-2 text-sm rounded-lg transition-colors
+                   {{ request()->routeIs('roles.index') ? 'text-purple-400 bg-purple-600/5 font-medium' : 'text-slate-400 hover:text-white hover:bg-slate-800/30' }}">
+                   Roles & Permissions
                 </a>
             </div>
         </div>
         @endrole
 
-
-
-        <!-- Divider -->
-        <div class="my-4 mx-4 border-t border-slate-200"></div>
-
         @role('admin')
-        <div class="px-2">
-            <p class="px-4 text-xs text-slate-400 uppercase tracking-wider mb-2">Settings</p>
-            
-            <a href="{{ route('business.settings') }}" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl mb-1
-               {{ request()->routeIs('business.settings')
-                   ? 'bg-gradient-to-r from-slate-800 to-slate-700 text-white font-semibold shadow-md'
-                   : 'text-slate-600 hover:bg-slate-100' }}"
-               style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
-                <i class="bi bi-gear text-lg"></i>
-                <span>Business Settings</span>
-            </a>
-        </div>
+        <!-- Section Label -->
+        <div class="px-4 mt-6 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">Configuration</div>
+        
+        <a href="{{ route('business.settings') }}"
+            class="group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ease-in-out
+           {{ request()->routeIs('business.settings')
+               ? 'bg-amber-600/10 text-amber-400 font-medium'
+               : 'hover:bg-slate-800/50 hover:text-white' }}">
+            <i class="bi bi-gear text-xl transition-transform group-hover:rotate-90 {{ request()->routeIs('business.settings') ? 'text-amber-500' : 'text-slate-500 group-hover:text-amber-400' }}"></i>
+            <span class="tracking-wide text-sm">Business Settings</span>
+        </a>
         @endrole
 
     </nav>
