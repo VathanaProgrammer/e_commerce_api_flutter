@@ -117,8 +117,11 @@
 
     <script>
         window.onload = function() {
-            // Auto close preview if wanted, or just let user browse
-            // window.print();
+            window.print();
+        };
+
+        window.onafterprint = function() {
+             window.close();
         };
     </script>
 </body>
