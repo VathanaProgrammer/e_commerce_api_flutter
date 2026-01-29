@@ -64,4 +64,57 @@ class Product extends Model
     {
         return $this->belongsToMany(User::class, 'favorites');
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function approvedReviews()
+    {
+        return $this->reviews()->approved();
+    }
+
+    public function verifiedReviews()
+    {
+        return $this->reviews()->approved()->verified();
+    }
+
+    public function getAverageRatingAttribute(): float
+    {
+        return $this->approvedReviews()->avg('overall_rating') ?? 0;
+    }
+
+    public function getTotalReviewsAttribute(): int
+    {
+        return $this->approvedReviews()->count();
+    }
+
+    public function getVerifiedReviewsCountAttribute(): int
+    {
+        return $this->verifiedReviews()->count();
+    }
+
+    public function getRatingBreakdownAttribute(): array
+    {
+        $breakdown = [];
+        for ($i = 1; $i <= 5; $i++) {
+            $breakdown[$i] = $this->approvedReviews()
+                ->where('overall_rating', '>=', $i)
+                ->where('overall_rating', '<', $i + 1)
+                ->count();
+        }
+        return $breakdown;
+    }
+
+    public function getStarRatingAttribute(): string
+    {
+        $rating = round($this->average_rating);
+        return str_repeat('★', $rating) . str_repeat('☆', 5 - $rating);
+    }
+
+    public function updateRatingCounts(): void
+    {
+        $this->save();
+    }
 }
