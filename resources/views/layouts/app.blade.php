@@ -353,20 +353,53 @@
                 preventDuplicates: true,
                 escapeHtml: false,
             };
-            toastr.options.onShown = function() {
-                // 'this' refers to the toast DOM element in Toastr's onShown callback
-                let $toast = $(this);
-                if ($toast.hasClass('toast-success')) playAudio('success-audio');
-                else if ($toast.hasClass('toast-error')) playAudio('error-audio');
-            };
-
+            // Sound Player Wrapper
             function playAudio(id) {
                 const audio = document.getElementById(id);
-                if (!audio) return;
+                if (!audio) {
+                    console.error("Audio element not found:", id);
+                    return;
+                }
+                
+                // Reset and play
                 audio.pause();
                 audio.currentTime = 0;
-                audio.play().catch(() => {});
+                
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.warn("Audio playback failed (usually due to browser autoplay policy):", error);
+                    });
+                }
             }
+
+            // Proxy toastr methods to force sound playback
+            // This guarantees the sound runs exactly when the toast is requested
+            (function() {
+                const originalSuccess = toastr.success;
+                toastr.success = function(...args) {
+                    playAudio('success-audio');
+                    originalSuccess.apply(toastr, args);
+                };
+
+                const originalError = toastr.error;
+                toastr.error = function(...args) {
+                    playAudio('error-audio');
+                    originalError.apply(toastr, args);
+                };
+
+                const originalWarning = toastr.warning;
+                toastr.warning = function(...args) {
+                    playAudio('error-audio');
+                    originalWarning.apply(toastr, args);
+                };
+                
+                const originalInfo = toastr.info;
+                toastr.info = function(...args) {
+                    playAudio('success-audio');
+                    originalInfo.apply(toastr, args);
+                };
+            })();
 
             $(document).ready(function() {
                 @if (session()->has('success'))
