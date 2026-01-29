@@ -353,8 +353,9 @@
                 preventDuplicates: true,
                 escapeHtml: false,
             };
-            toastr.options.onShown = function(toast) {
-                let $toast = $(toast);
+            toastr.options.onShown = function() {
+                // 'this' refers to the toast DOM element in Toastr's onShown callback
+                let $toast = $(this);
                 if ($toast.hasClass('toast-success')) playAudio('success-audio');
                 else if ($toast.hasClass('toast-error')) playAudio('error-audio');
             };
