@@ -28,7 +28,7 @@
 <body>
     <div class="no-print mb-4 p-3 bg-light border-bottom d-flex justify-content-between">
         <span class="text-muted">Invoice Preview</span>
-        <button onclick="window.print()" class="btn btn-primary btn-sm">
+        <button onclick="window.print()" style="display: none;" class="btn btn-primary btn-sm">
             <i class="bi bi-printer me-2"></i> Print Now
         </button>
     </div>
