@@ -16,6 +16,8 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <!-- DataTables Responsive CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
     <!-- Toastr CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <!-- Animate.css -->
@@ -24,6 +26,7 @@
     <!-- Alpine -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" defer></script>
+
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
@@ -154,16 +157,22 @@
     </style>
 </head>
 
-<body class="bg-light">
+<body class="bg-light" x-data="{ mobileSidebarOpen: false }">
 
-    <div class="d-flex flex-column w-100">
+    <div class="d-flex flex-column w-100 min-vh-100">
 
-        <nav class="navbar navbar-expand-lg px-4 py-3 shadow-sm"
-            style="background: linear-gradient(90deg, #1e293b, #0f172a);">
+        <nav class="navbar navbar-expand-lg px-4 py-3 shadow-sm sticky-top"
+            style="background: linear-gradient(90deg, #1e293b, #0f172a); z-index: 1040;">
             <div class="container-fluid d-flex justify-content-between align-items-center">
 
                 <!-- LEFT: Logo + Name -->
                 <div class="d-flex align-items-center gap-2">
+                    <!-- Mobile Sidebar Toggle -->
+                    <button @click="mobileSidebarOpen = !mobileSidebarOpen" 
+                            class="btn btn-link text-white p-0 me-3 d-lg-none">
+                        <i class="bi bi-list fs-2"></i>
+                    </button>
+
                     <div class="rounded-circle bg-white d-flex justify-content-center align-items-center overflow-hidden"
                         style="width:40px; height:40px;">
                         @if(session('business.logo'))
@@ -180,8 +189,8 @@
                 <!-- RIGHT: Date + Notifications + User -->
                 <div class="d-flex align-items-center gap-3">
 
-                    <!-- Date -->
-                    <div class="text-white text-opacity-75 small px-3 py-1 rounded"
+                    <!-- Date (Hidden on small mobile) -->
+                    <div class="text-white text-opacity-75 small px-3 py-1 rounded d-none d-md-block"
                         style="background: rgba(255,255,255,0.05);">
                         {{ now()->format('D, M d Y') }}
                     </div>
@@ -232,7 +241,7 @@
 
                             </div>
 
-                            <span class="small">{{ auth()->user()->first_name . " " . auth()->user()->last_name ?? 'Guest' }}</span>
+                            <span class="small d-none d-md-inline">{{ auth()->user()->first_name . " " . auth()->user()->last_name ?? 'Guest' }}</span>
                             <i class="bi bi-chevron-down small"></i>
                         </button>
 
@@ -254,13 +263,30 @@
             </div>
         </nav>
 
-        <div class="d-flex">
+        <div class="d-flex flex-grow-1 position-relative overflow-hidden">
 
-            <!-- SIDEBAR -->
-            @include('layouts.sidebar')
+            <!-- SIDEBAR WRAPPER -->
+            <!-- Mobile Backdrop -->
+            <div x-show="mobileSidebarOpen" 
+                 x-transition:enter="transition-opacity ease-linear duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition-opacity ease-linear duration-300"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 @click="mobileSidebarOpen = false"
+                 class="fixed inset-0 bg-gray-900/80 z-40 d-lg-none"
+                 style="backdrop-filter: blur(4px);">
+            </div>
+
+            <!-- Sidebar Container -->
+            <div class="sidebar-wrapper fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:flex lg:flex-col"
+                 :class="mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'">
+                @include('layouts.sidebar')
+            </div>
 
             <!-- MAIN CONTENT -->
-            <main class="flex-grow-1 bg-gray-200 page-content">
+            <main class="flex-grow-1 bg-gray-200 page-content overflow-auto h-100 w-100">
                 @yield('content')
             </main>
             <!-- GLOBAL MODAL -->
@@ -302,6 +328,8 @@
         <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
+        <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>

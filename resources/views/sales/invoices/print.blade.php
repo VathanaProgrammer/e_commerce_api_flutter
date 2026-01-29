@@ -48,13 +48,13 @@
 
     <div class="user-info-box">
         <div class="row">
-            <div class="col-6">
+            <div class="col-12 col-md-6 mb-3 mb-md-0">
                 <h6 class="text-uppercase text-muted silver small mb-3">Customer Details</h6>
                 <div class="fw-bold fs-5">{{ $transaction->user->first_name ?? 'Guest' }} {{ $transaction->user->last_name ?? '' }}</div>
                 <div class="text-muted">{{ $transaction->user->email ?? '' }}</div>
                 <div class="text-muted small">{{ $transaction->shipping_address }}</div>
             </div>
-            <div class="col-6 text-end">
+            <div class="col-12 col-md-6 text-md-end">
                 <h6 class="text-uppercase text-muted small mb-3">Payment Summary</h6>
                 <div class="fs-4 fw-bold text-primary">${{ number_format($transaction->total_sell_price, 2) }}</div>
                 <div class="badge bg-success-subtle text-success px-3">{{ $transaction->status->label() }}</div>

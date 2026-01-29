@@ -1,5 +1,5 @@
 <!-- Sidebar -->
-<aside class="w-64 min-h-screen bg-white shadow-xl rounded-r-2xl py-4 sidebar-animate" 
+<aside class="w-full h-full bg-white shadow-xl rounded-r-2xl py-4 sidebar-animate overflow-y-auto" 
        style="background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);">
 
     <nav class="px-2">

@@ -81,6 +81,7 @@
             let marker = null;
             
             const table = $('#salesOrdersTable').DataTable({
+                responsive: true,
                 processing: true,
                 serverSide: true,
                 ajax: '{{ route('sales.orders.data') }}',
