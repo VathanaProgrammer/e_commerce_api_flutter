@@ -40,7 +40,7 @@
 
                             <!-- Profile Actions -->
                             <div class="d-grid gap-2 mt-4">
-                                <a href="{{ route('users.edit', auth()->user()->id) }}" 
+                                <a href="{{ route('profile.edit') }}" 
                                    class="btn btn-primary rounded-pill py-2 hover-lift">
                                     <i class="bi bi-pencil-square me-2"></i>Edit Profile
                                 </a>

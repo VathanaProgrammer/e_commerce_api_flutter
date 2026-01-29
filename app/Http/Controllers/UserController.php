@@ -200,4 +200,67 @@ class UserController extends Controller
             'location' => route('users.index')
         ]);
     }
+
+    /**
+     * Show edit form for the currently authenticated user.
+     */
+    public function editProfile()
+    {
+        $user = Auth::user();
+        return view('users.edit_profile', compact('user'));
+    }
+
+    /**
+     * Update the currently authenticated user's profile.
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        // Validate (removed administrative fields like role/is_active)
+        $request->validate([
+            'first_name' => 'required|string|max:100',
+            'last_name'  => 'max:100',
+            'email'      => 'required|email|unique:users,email,' . $user->id,
+            'username'   => 'nullable|string|max:100',
+            'password'   => 'nullable|string|min:3',
+            'gender'     => 'nullable|in:male,female,other',
+            'prefix'     => 'nullable|in:Mr,Miss,other',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        // Fill allowed fields
+        $user->fill([
+            'first_name' => $request->first_name,
+            'last_name'  => $request->last_name ?? null,
+            'email'      => $request->email,
+            'username'   => $request->username,
+            'gender'     => $request->gender,
+            'prefix'     => $request->prefix,
+            'phone'      => $request->phone ?? null,
+            'city'       => $request->city ?? null,
+            'address'    => $request->address ?? null,
+        ]);
+
+        // Password
+        if ($request->filled('password')) {
+            $user->password_hash = bcrypt($request->password);
+        }
+
+        // Profile image
+        if ($request->hasFile('profile_image')) {
+            $file = $request->file('profile_image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/users'), $filename);
+            $user->profile_image_url = '/uploads/users/' . $filename;
+        }
+
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'msg' => 'Profile updated successfully',
+            'location' => route('users.profile', $user->id)
+        ]);
+    }
 }

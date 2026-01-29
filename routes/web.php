@@ -4,7 +4,7 @@ use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ReviewController;
+
 use App\Http\Middleware\AdminSidebarMenu;
 use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\AuthController;
@@ -31,6 +31,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     
     // Notification Polling (Accessible by both Admin and Staff)
     Route::get('/notifications/check', [\App\Http\Controllers\NotificationController::class, 'checkNewOrders'])->name('notifications.check');
+
+    // Profile Management (Accessible by all authenticated users)
+    Route::get('/profile/{id}', [\App\Http\Controllers\UserController::class, 'profile'])->name('users.profile');
+    Route::get('/profile/edit', [\App\Http\Controllers\UserController::class, 'editProfile'])->name('profile.edit');
+    Route::put('/profile/update', [\App\Http\Controllers\UserController::class, 'updateProfile'])->name('profile.update');
 
     // Admin & Staff Routes
     Route::middleware(['role:admin|staff'])->group(function () {
@@ -70,23 +75,7 @@ Route::middleware(['web', 'auth'])->group(function () {
             Route::delete('/{id}', [App\Http\Controllers\SalesController::class, 'destroy'])->name('sales.destroy');
         });
 
-        // Review Management Routes (Admin & Staff)
-        Route::prefix('reviews')->group(function () {
-            Route::get('/', [ReviewController::class, 'index'])->name('reviews.index');
-            Route::get('/datatable', [ReviewController::class, 'getDataTable'])->name('reviews.datatable');
-            Route::get('/create', [ReviewController::class, 'create'])->name('reviews.create');
-            Route::post('/', [ReviewController::class, 'store'])->name('reviews.store');
-            Route::get('/{review}', [ReviewController::class, 'show'])->name('reviews.show');
-            Route::get('/{review}/edit', [ReviewController::class, 'edit'])->name('reviews.edit');
-            Route::put('/{review}', [ReviewController::class, 'update'])->name('reviews.update');
-            Route::delete('/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
-            Route::post('/{review}/approve', [ReviewController::class, 'approve'])->name('reviews.approve');
-            Route::post('/{review}/reject', [ReviewController::class, 'reject'])->name('reviews.reject');
-            Route::post('/{review}/feature', [ReviewController::class, 'feature'])->name('reviews.feature');
-            Route::post('/{review}/respond', [ReviewController::class, 'respond'])->name('reviews.respond');
-            Route::post('/{review}/vote-helpful', [ReviewController::class, 'voteHelpful'])->name('reviews.vote-helpful');
-            Route::get('/product/{product}', [ReviewController::class, 'getProductReviews'])->name('reviews.product');
-        });
+
     });
 
     // Admin Only Routes
@@ -98,7 +87,6 @@ Route::middleware(['web', 'auth'])->group(function () {
             Route::post('/store', [\App\Http\Controllers\UserController::class, 'store'])->name('users.store');
             Route::get('/{id}/edit', [\App\Http\Controllers\UserController::class, 'edit'])->name('users.edit');
             Route::put('/{id}', [\App\Http\Controllers\UserController::class, 'update'])->name('users.update');
-            Route::get('/profile/{id}', [\App\Http\Controllers\UserController::class, 'profile'])->name('users.profile');
             // Route::get('/{id}', [\App\Http\Controllers\UserController::class, 'show'])->name('users.show');
             Route::delete('/{id}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('users.destroy');
         });
