@@ -63,6 +63,6 @@ class DatabaseSeeder extends Seeder
         | Review Criteria
         |--------------------------------------------------------------------------
         */
-        $this->call(ReviewCriteriaSeeder::class);
+        // Review criteria seeder removed
     }
 }
