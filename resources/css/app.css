@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+[x-cloak] {
+    display: none !important;
+}
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
@@ -20,6 +24,7 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -31,6 +36,7 @@
         opacity: 0;
         transform: translateY(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -42,6 +48,7 @@
         opacity: 0;
         transform: translateX(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -53,6 +60,7 @@
         opacity: 0;
         transform: translateX(20px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -63,6 +71,7 @@
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -73,6 +82,7 @@
         opacity: 0;
         transform: scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -84,6 +94,7 @@
         transform: translateY(100%);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -91,9 +102,12 @@
 }
 
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.7;
     }
@@ -103,6 +117,7 @@
     0% {
         background-position: -200% 0;
     }
+
     100% {
         background-position: 200% 0;
     }
@@ -138,11 +153,25 @@
 }
 
 /* Animation Delays */
-.delay-100 { animation-delay: 0.1s; }
-.delay-200 { animation-delay: 0.2s; }
-.delay-300 { animation-delay: 0.3s; }
-.delay-400 { animation-delay: 0.4s; }
-.delay-500 { animation-delay: 0.5s; }
+.delay-100 {
+    animation-delay: 0.1s;
+}
+
+.delay-200 {
+    animation-delay: 0.2s;
+}
+
+.delay-300 {
+    animation-delay: 0.3s;
+}
+
+.delay-400 {
+    animation-delay: 0.4s;
+}
+
+.delay-500 {
+    animation-delay: 0.5s;
+}
 
 /* Initial state for animated elements */
 .animate-on-load {
@@ -165,7 +194,8 @@
    CARD & WIDGET ANIMATIONS
    ============================================ */
 
-.card, .widget-card {
+.card,
+.widget-card {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -179,12 +209,29 @@
 }
 
 /* Staggered card animations */
-.stagger-1 { animation-delay: 0.05s; }
-.stagger-2 { animation-delay: 0.1s; }
-.stagger-3 { animation-delay: 0.15s; }
-.stagger-4 { animation-delay: 0.2s; }
-.stagger-5 { animation-delay: 0.25s; }
-.stagger-6 { animation-delay: 0.3s; }
+.stagger-1 {
+    animation-delay: 0.05s;
+}
+
+.stagger-2 {
+    animation-delay: 0.1s;
+}
+
+.stagger-3 {
+    animation-delay: 0.15s;
+}
+
+.stagger-4 {
+    animation-delay: 0.2s;
+}
+
+.stagger-5 {
+    animation-delay: 0.25s;
+}
+
+.stagger-6 {
+    animation-delay: 0.3s;
+}
 
 /* ============================================
    BUTTON ANIMATIONS
@@ -243,27 +290,58 @@
     animation: fadeInUp 0.3s ease-out forwards;
 }
 
-.table-animate tbody tr:nth-child(1) { animation-delay: 0.05s; }
-.table-animate tbody tr:nth-child(2) { animation-delay: 0.1s; }
-.table-animate tbody tr:nth-child(3) { animation-delay: 0.15s; }
-.table-animate tbody tr:nth-child(4) { animation-delay: 0.2s; }
-.table-animate tbody tr:nth-child(5) { animation-delay: 0.25s; }
-.table-animate tbody tr:nth-child(6) { animation-delay: 0.3s; }
-.table-animate tbody tr:nth-child(7) { animation-delay: 0.35s; }
-.table-animate tbody tr:nth-child(8) { animation-delay: 0.4s; }
-.table-animate tbody tr:nth-child(9) { animation-delay: 0.45s; }
-.table-animate tbody tr:nth-child(10) { animation-delay: 0.5s; }
+.table-animate tbody tr:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.table-animate tbody tr:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.table-animate tbody tr:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.table-animate tbody tr:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.table-animate tbody tr:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.table-animate tbody tr:nth-child(6) {
+    animation-delay: 0.3s;
+}
+
+.table-animate tbody tr:nth-child(7) {
+    animation-delay: 0.35s;
+}
+
+.table-animate tbody tr:nth-child(8) {
+    animation-delay: 0.4s;
+}
+
+.table-animate tbody tr:nth-child(9) {
+    animation-delay: 0.45s;
+}
+
+.table-animate tbody tr:nth-child(10) {
+    animation-delay: 0.5s;
+}
 
 /* ============================================
    FORM ANIMATIONS
    ============================================ */
 
-.form-control, .form-select {
+.form-control,
+.form-select {
     transition: all 0.25s ease;
     border: 1px solid #dee2e6;
 }
 
-.form-control:focus, .form-select:focus {
+.form-control:focus,
+.form-select:focus {
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
     transform: translateY(-1px);
@@ -283,13 +361,15 @@ aside {
     animation: fadeInLeft 0.4s ease-out forwards;
 }
 
-aside a, aside button {
+aside a,
+aside button {
     text-decoration: none;
     color: inherit;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-aside a:hover, aside button:hover {
+aside a:hover,
+aside button:hover {
     transform: translateX(4px);
 }
 
@@ -416,8 +496,15 @@ aside .absolute {
 }
 
 @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
 }
 
 /* ============================================
