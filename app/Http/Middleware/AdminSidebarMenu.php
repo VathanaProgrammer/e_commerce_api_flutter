@@ -11,59 +11,78 @@ class AdminSidebarMenu
     public function handle(Request $request, Closure $next)
     {
         $user = auth()->user();
-        $role = $user->role ?? 'customer'; // get the user's role
+        $role = $user->role ?? 'customer'; 
 
-        // Reset first to avoid duplicates on every request
+        // Reset first to avoid duplicates
         Menu::reset();
         
-        $gray900 = '#1a1a1a'; // gray-900 color
-
-        // Add menu items
-        Menu::add('Home', [
+        // --- DASHBOARD ---
+        Menu::add('Dashboard', [
             'url' => route('home'),
-            'icon' => '<i class="bi bi-house"></i>',
-            'color' => $gray900,
+            'icon' => '<i class="bi bi-grid-1x2"></i>',
         ]);
 
-        Menu::add('Products', [
-            'icon' => '<i class="bi bi-box-seam"></i>',
-            'color' => $gray900,
-            'children' => [
-                [
-                    'title' => 'Product Lists',
-                    'url' => route('products.index'),
-                    'icon' => '<i class="bi bi-list-ul"></i>',
-                    'color' => $gray900,
-                ],
-                [
-                    'title' => 'Add Product',
-                    'url' => route('products.index'),
-                    'icon' => '<i class="bi bi-plus-square"></i>',
-                    'color' => $gray900,
-                ]
-            ]
-        ]);
+        Menu::add('Management', ['type' => 'label']);
 
-
-
-        if ($role !== 'admin') {
-            Menu::add('User Management', [
-                'icon' => '<i class="bi bi-people"></i>',
-                'color' => $gray900,
+        // --- PRODUCTS (Admin | Staff) ---
+        if ($role === 'admin' || $role === 'staff') {
+            Menu::add('Inventory', [
+                'icon' => '<i class="bi bi-box-seam"></i>',
                 'children' => [
                     [
-                        'title' => 'Users',
-                        'url' => route('users.index'),
-                        'icon' => '<i class="bi bi-person"></i>',
-                        'color' => $gray900,
+                        'title' => 'Products',
+                        'url' => route('products.index'),
                     ],
                     [
-                        'title' => 'Roles',
-                        'url' => route('roles.index'),
-                        'icon' => '<i class="bi bi-shield-lock"></i>',
-                        'color' => $gray900,
+                        'title' => 'Add Product',
+                        'url' => route('products.create'),
+                    ],
+                    [
+                        'title' => 'Attributes',
+                        'url' => route('attributes.index'),
+                    ],
+                    [
+                        'title' => 'Categories',
+                        'url' => route('categories.index'),
                     ]
                 ]
+            ]);
+        }
+
+        // --- SALES (Admin | Staff) ---
+        if ($role === 'admin' || $role === 'staff') {
+            Menu::add('Sales & Orders', [
+                'icon' => '<i class="bi bi-cart3"></i>',
+                'children' => [
+                    [
+                        'title' => 'All Orders',
+                        'url' => route('sales.orders'),
+                    ]
+                ]
+            ]);
+        }
+
+        // --- USERS (Admin Only) ---
+        if ($role === 'admin') {
+            Menu::add('Users', [
+                'icon' => '<i class="bi bi-people"></i>',
+                'children' => [
+                    [
+                        'title' => 'User List',
+                        'url' => route('users.index'),
+                    ],
+                    [
+                        'title' => 'Roles & Permissions',
+                        'url' => route('roles.index'),
+                    ]
+                ]
+            ]);
+
+            Menu::add('Configuration', ['type' => 'label']);
+
+            Menu::add('Business Settings', [
+                'url' => route('business.settings'),
+                'icon' => '<i class="bi bi-gear"></i>',
             ]);
         }
 
