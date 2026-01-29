@@ -15,26 +15,27 @@ class NotificationController extends Controller
     {
         $lastTimestamp = $request->get('since');
         
-        $query = Transaction::with('user')
-            ->orderBy('created_at', 'desc');
+        // Always fetch the 5 most recent orders for the dropdown
+        $latestOrders = Transaction::with('user')
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
 
+        $newOrders = collect([]);
+
+        // If we have a timestamp, check for ANY orders created after that time
         if ($lastTimestamp) {
-            $query->where('created_at', '>', Carbon::parse($lastTimestamp));
-        } else {
-            // If no timestamp, just return the 5 most recent
-            return response()->json([
-                'new_orders' => [],
-                'latest_orders' => $query->limit(5)->get()->map(function($order) {
-                    return $this->formatOrder($order);
-                }),
-                'timestamp' => now()->toDateTimeString()
-            ]);
+            $newOrders = Transaction::with('user')
+                ->where('created_at', '>', Carbon::parse($lastTimestamp))
+                ->orderBy('created_at', 'desc')
+                ->get();
         }
-
-        $newOrders = $query->get();
 
         return response()->json([
             'new_orders' => $newOrders->map(function($order) {
+                return $this->formatOrder($order);
+            }),
+            'latest_orders' => $latestOrders->map(function($order) {
                 return $this->formatOrder($order);
             }),
             'count' => $newOrders->count(),
