@@ -204,7 +204,7 @@ $(document).ready(function() {
     $(document).on('click', '.approve-review', function() {
         let id = $(this).data('id');
         if (confirm('Are you sure you want to approve this review?')) {
-            $.post('{{ route("reviews.approve") }}/' + id, {
+            $.post('{{ route("reviews.approve", "REPLACE_ID") }}'.replace('REPLACE_ID', id), {
                 _token: '{{ csrf_token() }}'
             }, function(response) {
                 if (response.success) {
@@ -220,7 +220,7 @@ $(document).ready(function() {
     $(document).on('click', '.reject-review', function() {
         let id = $(this).data('id');
         if (confirm('Are you sure you want to reject this review?')) {
-            $.post('{{ route("reviews.reject") }}/' + id, {
+            $.post('{{ route("reviews.reject", "REPLACE_ID") }}'.replace('REPLACE_ID', id), {
                 _token: '{{ csrf_token() }}'
             }, function(response) {
                 if (response.success) {
@@ -235,7 +235,7 @@ $(document).ready(function() {
 
     $(document).on('click', '.feature-review', function() {
         let id = $(this).data('id');
-        $.post('{{ route("reviews.feature") }}/' + id, {
+        $.post('{{ route("reviews.feature", "REPLACE_ID") }}'.replace('REPLACE_ID', id), {
             _token: '{{ csrf_token() }}'
         }, function(response) {
             if (response.success) {
@@ -257,7 +257,7 @@ $(document).ready(function() {
         let id = $('#response-review-id').val();
         let response = $('#admin-response').val();
         
-        $.post('{{ route("reviews.respond") }}/' + id, {
+        $.post('{{ route("reviews.respond", "REPLACE_ID") }}'.replace('REPLACE_ID', id), {
             _token: '{{ csrf_token() }}',
             response: response
         }, function(result) {
@@ -276,7 +276,7 @@ $(document).ready(function() {
         let id = $(this).data('id');
         if (confirm('Are you sure you want to delete this review?')) {
             $.ajax({
-                url: '{{ route("reviews.destroy") }}/' + id,
+                url: '{{ route("reviews.destroy", "REPLACE_ID") }}'.replace('REPLACE_ID', id),
                 type: 'DELETE',
                 data: {
                     _token: '{{ csrf_token() }}'

@@ -166,12 +166,13 @@ $(document).ready(function() {
     $.get('{{ route("reviews.product", $review->product) }}', function(response) {
         if (response.success) {
             let reviewsHtml = '';
+            const currentReviewId = {{ $review->id }}
             
             if (response.data.data.length === 0) {
                 reviewsHtml = '<p class="text-muted">No other reviews found for this product.</p>';
             } else {
                 response.data.data.forEach(function(review) {
-                    if (review.id !== {{ $review->id }}) {
+                    if (review.id !== currentReviewId) {
                         reviewsHtml += `
                             <div class="border-bottom pb-3 mb-3">
                                 <div class="d-flex justify-content-between">
@@ -196,7 +197,7 @@ $(document).ready(function() {
         let reviewId = $(this).data('id');
         let isHelpful = $(this).data('helpful');
         
-        $.post('{{ route("reviews.vote-helpful", '') }}/' + reviewId, {
+        $.post('{{ route("reviews.vote-helpful", "REPLACE_ID") }}'.replace('REPLACE_ID', reviewId), {
             _token: '{{ csrf_token() }}',
             is_helpful: isHelpful
         }, function(response) {
