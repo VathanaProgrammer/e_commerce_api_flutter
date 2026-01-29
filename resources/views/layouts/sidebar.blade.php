@@ -195,6 +195,60 @@
         </div>
         @endrole
 
+        <!-- Reviews -->
+        @role('admin|staff')
+        @php
+            $reviewActive = request()->routeIs('reviews.*');
+        @endphp
+
+        <div x-data="{ open: {{ $reviewActive ? 'true' : 'false' }} }" class="space-y-1 mb-1">
+            <button @click="open = !open"
+                class="sidebar-item relative w-full flex items-center justify-between px-4 py-3 rounded-xl
+                {{ $reviewActive ? 'bg-gradient-to-r from-slate-800 to-slate-700 text-white font-semibold shadow-md' : 'text-slate-600 hover:bg-slate-100' }}"
+                style="transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+                @if ($reviewActive)
+                    <span class="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-indigo-500"></span>
+                @endif
+
+                <span class="flex items-center gap-3">
+                    <i class="bi bi-star text-lg"></i>
+                    <span>Reviews</span>
+                </span>
+
+                <i class="bi bi-chevron-down text-xs"
+                    :class="open && 'rotate-180'"
+                    style="transition: transform 0.3s ease;"></i>
+            </button>
+
+            <div x-show="open" x-collapse.duration.300ms 
+                 class="ml-4 pl-4 border-l-2 border-slate-200 space-y-1"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 transform -translate-y-2"
+                 x-transition:enter-end="opacity-100 transform translate-y-0">
+
+                <a href="{{ route('reviews.index') }}"
+                    class="sidebar-subitem flex items-center gap-3 px-4 py-2.5 rounded-lg
+                   {{ request()->routeIs('reviews.index')
+                       ? 'bg-indigo-50 font-semibold text-indigo-700 border-l-2 border-indigo-500'
+                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}"
+                    style="transition: all 0.25s ease;">
+                    <i class="bi bi-chat-square-text text-sm"></i>
+                    <span>Review Management</span>
+                </a>
+
+                <a href="{{ route('reviews.create') }}"
+                    class="sidebar-subitem flex items-center gap-3 px-4 py-2.5 rounded-lg
+                   {{ request()->routeIs('reviews.create')
+                       ? 'bg-indigo-50 font-semibold text-indigo-700 border-l-2 border-indigo-500'
+                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }}"
+                    style="transition: all 0.25s ease;">
+                    <i class="bi bi-plus-square text-sm"></i>
+                    <span>Add Review</span>
+                </a>
+            </div>
+        </div>
+        @endrole
+
         <!-- Divider -->
         <div class="my-4 mx-4 border-t border-slate-200"></div>
 

@@ -44,6 +44,25 @@ class AdminSidebarMenu
             ]
         ]);
 
+        Menu::add('Reviews', [
+            'icon' => '<i class="bi bi-star"></i>',
+            'color' => $gray900,
+            'children' => [
+                [
+                    'title' => 'Review Management',
+                    'url' => route('reviews.index'),
+                    'icon' => '<i class="bi bi-chat-square-text"></i>',
+                    'color' => $gray900,
+                ],
+                [
+                    'title' => 'Add Review',
+                    'url' => route('reviews.create'),
+                    'icon' => '<i class="bi bi-plus-square"></i>',
+                    'color' => $gray900,
+                ]
+            ]
+        ]);
+
         if ($role !== 'admin') {
             Menu::add('User Management', [
                 'icon' => '<i class="bi bi-people"></i>',
