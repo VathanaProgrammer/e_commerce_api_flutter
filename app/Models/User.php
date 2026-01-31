@@ -78,4 +78,29 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Product::class, 'favorites');
     }
+
+    public function cartItems()
+    {
+        return $this->hasMany(\App\Models\Cart::class);
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(\App\Models\Address::class);
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(\App\Models\Notification::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(\App\Models\Review::class);
+    }
+
+    public function comparisons()
+    {
+        return $this->hasMany(\App\Models\ProductComparison::class);
+    }
 }

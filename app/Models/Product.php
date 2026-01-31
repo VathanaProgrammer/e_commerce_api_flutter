@@ -70,5 +70,24 @@ class Product extends Model
         return $this->belongsToMany(User::class, 'favorites');
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(\App\Models\Review::class);
+    }
+
+    public function cartItems()
+    {
+        return $this->hasManyThrough(
+            \App\Models\Cart::class,
+            ProductVariant::class,
+            'product_id',
+            'product_variant_id'
+        );
+    }
+
+    public function comparisons()
+    {
+        return $this->hasMany(\App\Models\ProductComparison::class);
+    }
 
 }
