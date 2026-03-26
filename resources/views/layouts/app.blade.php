@@ -181,7 +181,7 @@
                             <i class="bi bi-shop text-dark"></i>
                         @endif
                     </div>
-                    <a href="{{ route('home') }}" class="text-white fw-bold fs-5 mb-0 text-decoration-none">
+                    <a href="{{ route('home') }}" class="text-dark fw-bold fs-5 mb-0 text-decoration-none">
                         {{ session('business.name', 'Business Name') }}
                     </a>
                 </div>
