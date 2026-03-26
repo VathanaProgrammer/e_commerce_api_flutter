@@ -29,8 +29,8 @@ class RolePermissionSeeder extends Seeder
         }
 
         // Define Roles and Assign Permissions
-        $admin = Role::findOrCreate('admin');
-        $admin->givePermissionTo(Permission::all());
+        $adminRole = Role::findOrCreate('admin');
+        $adminRole->givePermissionTo(Permission::all());
 
         $staff = Role::findOrCreate('staff');
         $staff->givePermissionTo([
@@ -43,11 +43,33 @@ class RolePermissionSeeder extends Seeder
         $customer = Role::findOrCreate('customer');
         // Customers usually have limited web-based management access
 
+        // Create Default Admin User
+        $adminUser = User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'prefix' => 'Mr',
+                'first_name' => 'Admin',
+                'last_name' => 'User',
+                'gender' => 'male',
+                'is_active' => true,
+                'username' => 'admin',
+                'password_hash' => \Illuminate\Support\Facades\Hash::make('123'),
+                'role' => 'admin',
+            ]
+        );
+
+        // Assign Role
+        $adminUser->assignRole($adminRole);
+
         // Optional: Sync existing users from 'role' column to Spatie roles
         $users = User::all();
         foreach ($users as $user) {
-            if ($user->role) {
-                $user->assignRole($user->role);
+            if ($user->role && !$user->hasRole($user->role)) {
+                try {
+                    $user->assignRole($user->role);
+                } catch (\Exception $e) {
+                    // Role might not exist in Spatie tables yet
+                }
             }
         }
     }
